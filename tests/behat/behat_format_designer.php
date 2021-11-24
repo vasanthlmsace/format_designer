@@ -143,7 +143,7 @@ class behat_format_designer extends behat_base {
     /**
      * Check the activity completion info for designer format.
      *
-     * @Given /^I should see activity completioninfo "(?P<activiyt_idendifier>(?:[^"]|\\")*)" "(?P<completion_info>(?:[^"]|\\")*)" "(?P<Duration_info>(?:[^"]|\\")*)"$/
+     * @Given /^I should see designerinfo "(?P<acti_id>(?:[^"]|\\")*)" "(?P<com_info>(?:[^"]|\\")*)" "(?P<Dur_info>(?:[^"]|\\")*)"$/
      * @throws DriverException The step is not available when Javascript is disabled
      * @param string $activityidendifier
      * @param string $completioninfo

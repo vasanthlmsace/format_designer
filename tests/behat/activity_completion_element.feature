@@ -70,12 +70,12 @@ Feature: Sections can be check activity completion element in designer format
     And I am on "Course 1" course homepage
     Then I check the activity "assign2" to element "/descendant::div[contains(@class, 'purple')]"
     Then I check the activity "assign2" to element "/descendant::div[contains(@class, 'completion-info')]/descendant::i[contains(@class, 'fa-calendar')]"
-    And I should see activity completioninfo "assign2" "Complete by " "##last day of +5 days##%d %B %Y##"
+    And I should see designerinfo "assign2" "Complete by " "##last day of +5 days##%d %B %Y##"
     And I click on activity "assign2"
     And I am on "Course 1" course homepage
     Then I check the activity "assign2" to element "/descendant::div[contains(@class, 'success')]"
     Then I check the activity "assign2" to element "/descendant::div[contains(@class, 'completion-info')]/descendant::i[contains(@class, 'fa-check')]"
-    And I should see activity completioninfo "assign2" "Completed on " "##today##%d %B %Y##"
+    And I should see designerinfo "assign2" "Completed on " "##today##%d %B %Y##"
     Then I log out
 
   Scenario: Check the due date completion the activity
@@ -90,4 +90,4 @@ Feature: Sections can be check activity completion element in designer format
     And I am on "Course 1" course homepage
     Then I check the activity "assign3" to element "/descendant::div[contains(@class, 'danger')]"
     Then I check the activity "assign3" to element "/descendant::div[contains(@class, 'completion-info')]/descendant::i[contains(@class, 'fa-exclamation-triangle')]"
-    And I should see activity completioninfo "assign3" "Overdue " "5 days ago"
+    And I should see designerinfo "assign3" "Overdue " "5 days ago"

@@ -35,4 +35,3 @@ Feature: Sections can be switch the layouts in designer format
     Then I check the section "0" to layout "card"
     And I edit the section "0" to layout "link"
     Then I check the section "0" to layout "link"
-

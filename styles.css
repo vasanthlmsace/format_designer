@@ -139,7 +139,7 @@ ul.designer li.activity > .card:hover .show-on-hover .col a {
 }
 
 ul.designer li.activity > .card .show-on-hover .col .restricted a,
-ul.designer li.activity > .card:hover .show-on-hover .col .restricted a  {
+ul.designer li.activity > .card:hover .show-on-hover .col .restricted a {
     font-size: 20px;
     text-decoration: none;
     display: inline-block;
@@ -229,7 +229,7 @@ body.editing ul.designer .section .activity .editing_move {
 
 .course-content ul.designer li.section .right .icon-loader-block {
     position: absolute;
-    right: 0
+    right: 0;
 }
 
 .course-content ul.designer li.section .right .btn-group .action-menu .menubar {
