@@ -40,7 +40,6 @@ Feature: Sections can be check activity completion element in designer format
     And I press "Save changes"
     Then I log out
 
-
   Scenario: Check the manual mark completion the activity
     Given I am on the "Test assignment name" "assign activity editing" page logged in as teacher1
     And I follow "Expand all"

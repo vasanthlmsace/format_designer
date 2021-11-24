@@ -23,15 +23,16 @@ Feature: Sections can be switch the layouts in designer format
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
 
-    Scenario: View the able to change the section layout
-      Given "#section-0" "css_element" should be visible
-      Then  "#section-0 #section-designer-action button" "css_element" should be visible
+  Scenario: View the able to change the section layout
+    Given "#section-0" "css_element" should be visible
+    Then  "#section-0 #section-designer-action button" "css_element" should be visible
 
-    Scenario: Check the switch the section layout
-      Given "#section-0" "css_element" should be visible
-      And I edit the section "0" to layout "list"
-      Then I check the section "0" to layout "list"
-      And I edit the section "0" to layout "cards"
-      Then I check the section "0" to layout "card"
-      And I edit the section "0" to layout "link"
-      Then I check the section "0" to layout "link"
+  Scenario: Check the switch the section layout
+    Given "#section-0" "css_element" should be visible
+    And I edit the section "0" to layout "list"
+    Then I check the section "0" to layout "list"
+    And I edit the section "0" to layout "cards"
+    Then I check the section "0" to layout "card"
+    And I edit the section "0" to layout "link"
+    Then I check the section "0" to layout "link"
+

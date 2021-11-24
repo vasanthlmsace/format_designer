@@ -1,4 +1,4 @@
-@format @format_designer_section @javascript
+@format @format_designer @javascript
 Feature: Sections can be edited and deleted in designer format
   In order to rearrange my course contents
   As a teacher
