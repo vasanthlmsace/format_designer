@@ -36,7 +36,7 @@ Feature: Sections can be check activity completion element in designer format
     And I log in as "admin"
     And I navigate to "Plugins > Course formats > Designer format" in site administration
     And I set the following fields to these values:
-    | Date format | 24 November 2021 |
+    | Date format | ##today##%d %B %Y## |
     And I press "Save changes"
     Then I log out
 
