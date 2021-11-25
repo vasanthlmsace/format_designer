@@ -45,7 +45,7 @@
     {{#header}} {{> core_courseformat/local/content/section/header }} {{/header}}
     <div id="coursecontentcollapse{{num}}"
          class="content {{^iscoursedisplaymultipage}}
-             {{^sitehome}}course-content-item-content collapse {{#isactive}}show{{/isactive}}{{/sitehome}}
+             {{^sitehome}}course-content-item-content collapse {{#contentexpanded}}show{{/contentexpanded}}{{/sitehome}}
          {{/iscoursedisplaymultipage}}">
         {{#availability}}
             {{> core_courseformat/local/content/section/availability }}
@@ -58,5 +58,10 @@
         {{#cmsummary}} {{> core_courseformat/local/content/section/cmsummary }} {{/cmsummary}}
         {{#cmlist}} {{> format_designer/courseformat/content/section/cmlist }} {{/cmlist}}
         {{{cmcontrols}}}
+        {{#insertafter}}
+            {{#numsections}}
+                {{> core_courseformat/local/content/addsection}}
+            {{/numsections}}
+        {{/insertafter}}
     </div>
 </li>
