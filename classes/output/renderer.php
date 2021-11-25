@@ -33,7 +33,7 @@ class renderer extends section_renderer {
      * @return string the widget HTML
      */
     public function render_content($widget) {
-        return $this->render_from_template('format_designer/courseformat/content',
+        return $this->render_from_template('format_designer/courseformat/content/section',
         $widget->export_for_template($this));
     }
 

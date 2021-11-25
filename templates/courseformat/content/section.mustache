@@ -79,142 +79,48 @@
         "sitehome": false
     }
 }}
-{{> format_designer/courseformat/content/section }}
-<ul class="{{format}}" data-for="course_sectionlist">
-    {{#initialsection}}
+{{<format_designer/courseformat/content}}
+    {{$content}}
         <li id="section-{{num}}"
-        class="section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
-                {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}} current {{/iscurrent}}
-                {{#isstealth}} orphaned {{/isstealth}}"
-        data-sectionid="{{num}}"
-        data-sectionreturnid="{{sectionreturnid}}"
-        data-for="section"
-        data-id="{{id}}"
-        data-number="{{num}}"
-    >
-        {{#singleheader}} {{> core_courseformat/local/content/section/header }} {{/singleheader}}
-        <div class="left side">{{#iscurrent}} {{{currentlink}}} {{/iscurrent}}</div>
-        <div class="right side">
-        {{#controlmenu}}
-                {{> format_designer/courseformat/content/section/controlmenu }}
-        {{/controlmenu}}
-        <div class="icon-loader-block"></div>
-        </div>
-        {{#header}} {{> core_courseformat/local/content/section/header }} {{/header}}
-        <div id="coursecontentcollapse{{num}}"
-            class="content {{^iscoursedisplaymultipage}}
-                {{^sitehome}}course-content-item-content collapse {{#contentexpanded}}show{{/contentexpanded}}{{/sitehome}}
-            {{/iscoursedisplaymultipage}}">
-            {{#availability}}
-                {{> core_courseformat/local/content/section/availability }}
-            {{/availability}}
-            <div class="summary">
-            {{#summary}}
-                {{> core_courseformat/local/content/section/summary }}
-            {{/summary}}
+            class="section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
+                    {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}} current {{/iscurrent}}
+                    {{#isstealth}} orphaned {{/isstealth}}"
+            data-sectionid="{{num}}"
+            data-sectionreturnid="{{sectionreturnid}}"
+            data-for="section"
+            data-id="{{id}}"
+            data-number="{{num}}"
+        >
+            {{#singleheader}} {{> core_courseformat/local/content/section/header }} {{/singleheader}}
+            <div class="left side">{{#iscurrent}} {{{currentlink}}} {{/iscurrent}}</div>
+            <div class="right side">
+            {{#controlmenu}}
+                    {{> format_designer/courseformat/content/section/controlmenu }}
+            {{/controlmenu}}
+            <div class="icon-loader-block"></div>
             </div>
-            {{#cmsummary}} {{> core_courseformat/local/content/section/cmsummary }} {{/cmsummary}}
-            {{#cmlist}} {{> format_designer/courseformat/content/section/cmlist }} {{/cmlist}}
-            {{{cmcontrols}}}
-            {{#insertafter}}
-                {{#numsections}}
-                    {{> core_courseformat/local/content/addsection}}
-                {{/numsections}}
-            {{/insertafter}}
-        </div>
-        </li>
-    {{/initialsection}}
-    {{#sections}}
-        <li id="section-{{num}}"
-        class="section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
-                {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}} current {{/iscurrent}}
-                {{#isstealth}} orphaned {{/isstealth}}"
-        data-sectionid="{{num}}"
-        data-sectionreturnid="{{sectionreturnid}}"
-        data-for="section"
-        data-id="{{id}}"
-        data-number="{{num}}"
-    >
-        {{#singleheader}} {{> core_courseformat/local/content/section/header }} {{/singleheader}}
-        <div class="left side">{{#iscurrent}} {{{currentlink}}} {{/iscurrent}}</div>
-        <div class="right side">
-        {{#controlmenu}}
-                {{> format_designer/courseformat/content/section/controlmenu }}
-        {{/controlmenu}}
-        <div class="icon-loader-block"></div>
-        </div>
-        {{#header}} {{> core_courseformat/local/content/section/header }} {{/header}}
-        <div id="coursecontentcollapse{{num}}"
-            class="content {{^iscoursedisplaymultipage}}
-                {{^sitehome}}course-content-item-content collapse {{#contentexpanded}}show{{/contentexpanded}}{{/sitehome}}
-            {{/iscoursedisplaymultipage}}">
-            {{#availability}}
-                {{> core_courseformat/local/content/section/availability }}
-            {{/availability}}
-            <div class="summary">
-            {{#summary}}
-                {{> core_courseformat/local/content/section/summary }}
-            {{/summary}}
+            {{#header}} {{> core_courseformat/local/content/section/header }} {{/header}}
+            <div id="coursecontentcollapse{{num}}"
+                class="content {{^iscoursedisplaymultipage}}
+                    {{^sitehome}}course-content-item-content collapse {{#contentexpanded}}show{{/contentexpanded}}{{/sitehome}}
+                {{/iscoursedisplaymultipage}}">
+                {{#availability}}
+                    {{> core_courseformat/local/content/section/availability }}
+                {{/availability}}
+                <div class="summary">
+                {{#summary}}
+                    {{> core_courseformat/local/content/section/summary }}
+                {{/summary}}
+                </div>
+                {{#cmsummary}} {{> core_courseformat/local/content/section/cmsummary }} {{/cmsummary}}
+                {{#cmlist}} {{> format_designer/courseformat/content/section/cmlist }} {{/cmlist}}
+                {{{cmcontrols}}}
+                {{#insertafter}}
+                    {{#numsections}}
+                        {{> core_courseformat/local/content/addsection}}
+                    {{/numsections}}
+                {{/insertafter}}
             </div>
-            {{#cmsummary}} {{> core_courseformat/local/content/section/cmsummary }} {{/cmsummary}}
-            {{#cmlist}} {{> format_designer/courseformat/content/section/cmlist }} {{/cmlist}}
-            {{{cmcontrols}}}
-            {{#insertafter}}
-                {{#numsections}}
-                    {{> core_courseformat/local/content/addsection}}
-                {{/numsections}}
-            {{/insertafter}}
-        </div>
         </li>
-    {{/sections}}
-</ul>
-
-{{#hasnavigation}}
-    <ul class="{{format}}">
-    {{#singlesection}}
-        <li id="section-{{num}}"
-        class="section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
-                {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}} current {{/iscurrent}}
-                {{#isstealth}} orphaned {{/isstealth}}"
-        data-sectionid="{{num}}"
-        data-sectionreturnid="{{sectionreturnid}}"
-        data-for="section"
-        data-id="{{id}}"
-        data-number="{{num}}"
-    >
-        {{#singleheader}} {{> core_courseformat/local/content/section/header }} {{/singleheader}}
-        <div class="left side">{{#iscurrent}} {{{currentlink}}} {{/iscurrent}}</div>
-        <div class="right side">
-        {{#controlmenu}}
-                {{> format_designer/courseformat/content/section/controlmenu }}
-        {{/controlmenu}}
-        <div class="icon-loader-block"></div>
-        </div>
-        {{#header}} {{> core_courseformat/local/content/section/header }} {{/header}}
-        <div id="coursecontentcollapse{{num}}"
-            class="content {{^iscoursedisplaymultipage}}
-                {{^sitehome}}course-content-item-content collapse {{#contentexpanded}}show{{/contentexpanded}}{{/sitehome}}
-            {{/iscoursedisplaymultipage}}">
-            {{#availability}}
-                {{> core_courseformat/local/content/section/availability }}
-            {{/availability}}
-            <div class="summary">
-            {{#summary}}
-                {{> core_courseformat/local/content/section/summary }}
-            {{/summary}}
-            </div>
-            {{#cmsummary}} {{> core_courseformat/local/content/section/cmsummary }} {{/cmsummary}}
-            {{#cmlist}} {{> format_designer/courseformat/content/section/cmlist }} {{/cmlist}}
-            {{{cmcontrols}}}
-            {{#insertafter}}
-                {{#numsections}}
-                    {{> core_courseformat/local/content/addsection}}
-                {{/numsections}}
-            {{/insertafter}}
-        </div>
-        </li>
-    {{/singlesection}}
-    </ul>
-{{/hasnavigation}}
-
-
+    {{/content}}
+{{/format_designer/courseformat/content}}
