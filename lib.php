@@ -57,6 +57,19 @@ class format_designer extends core_courseformat\base {
         return true;
     }
 
+    /**
+     * Returns true if this course format uses activity indentation.
+     *
+     * Indentation is not supported by core formats anymore and may be deprecated in the future.
+     * This method will keep a default return "true" for legacy reasons but new formats should override
+     * it with a return false to prevent future deprecations.
+     *
+     * A message in a bottle: if indentation is finally deprecated, both behat steps i_indent_right_activity
+     * and i_indent_left_activity should be removed as well. Right now no core behat uses them but indentation
+     * is not officially deprecated so they are still available for the contrib formats.
+     *
+     * @return bool if the course format uses indentation.
+     */
     public function uses_indentation(): bool {
         return false;
     }
@@ -161,6 +174,16 @@ class format_designer extends core_courseformat\base {
         return $ajaxsupport;
     }
 
+    /**
+     * Returns true if this course format is compatible with content components.
+     *
+     * Using components means the content elements can watch the frontend course state and
+     * react to the changes. Formats with component compatibility can have more interactions
+     * without refreshing the page, like having drag and drop from the course index to reorder
+     * sections and activities.
+     *
+     * @return bool if the format is compatible with components.
+     */
     public function supports_components() {
         return true;
     }

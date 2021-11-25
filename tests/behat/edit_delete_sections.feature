@@ -1,4 +1,4 @@
-@format @format_designer @javascript
+@format @format_designer
 Feature: Sections can be edited and deleted in designer format
   In order to rearrange my course contents
   As a teacher
@@ -51,6 +51,7 @@ Feature: Sections can be edited and deleted in designer format
     Then I should see "This is the second section" in the "li#section-2" "css_element"
     And I should not see "Designer section 2" in the "li#section-2" "css_element"
 
+  @javascript
   Scenario: Inline edit section name in designer format
     When I set the field "Edit designer section name" in the "li#section-1" "css_element" to "Midterm evaluation"
     Then I should not see "Designer section 1" in the "region-main" "region"
@@ -75,16 +76,3 @@ Feature: Sections can be edited and deleted in designer format
     And I should see "Test choice name" in the "li#section-4" "css_element"
     And I should see "Designer section 4"
 
-  Scenario: Adding sections in designer format
-    When I follow "Add designer sections"
-    Then the field "Number of sections" matches value "1"
-    And I press "Add designer sections"
-    And I should see "Designer section 6" in the "li#section-6" "css_element"
-    And "li#section-7" "css_element" should not exist
-    And I follow "Add designer sections"
-    And I set the field "Number of sections" to "3"
-    And I press "Add designer sections"
-    And I should see "Designer section 7" in the "li#section-7" "css_element"
-    And I should see "Designer section 8" in the "li#section-8" "css_element"
-    And I should see "Designer section 9" in the "li#section-9" "css_element"
-    And "li#section-10" "css_element" should not exist
