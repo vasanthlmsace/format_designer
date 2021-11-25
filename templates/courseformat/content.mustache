@@ -102,22 +102,11 @@
 <div id="{{uniqid}}-course-format">
     <h2 class="accesshide">{{{title}}}</h2>
     {{{completionhelp}}}
-    <ul class="{{format}}" data-for="course_sectionlist">
-        {{#initialsection}}
-        {{> format_designer/courseformat/content/section }}
-        {{/initialsection}}
-        {{#sections}}
-            {{> format_designer/courseformat/content/section }}
-        {{/sections}}
-    </ul>
+    {{> format_designer/courseformat/content/section }}
     {{#hasnavigation}}
     <div class="single-section">
         {{#sectionnavigation}} {{> core_courseformat/local/content/sectionnavigation }} {{/sectionnavigation}}
-        <ul class="{{format}}">
-        {{#singlesection}}
-            {{> core_courseformat/local/content/section }}
-        {{/singlesection}}
-        </ul>
+        {{> format_designer/courseformat/content/section }}
         {{#sectionselector}} {{> core_courseformat/local/content/sectionselector }} {{/sectionselector}}
     </div>
     {{/hasnavigation}}

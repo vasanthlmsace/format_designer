@@ -75,4 +75,3 @@ Feature: Sections can be edited and deleted in designer format
     And I should not see "Test chat name"
     And I should see "Test choice name" in the "li#section-4" "css_element"
     And I should see "Designer section 4"
-
