@@ -12,16 +12,13 @@ ul.designer .card.card-list {
     -webkit-box-shadow: 1px 1px 11px 2px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 1px 1px 11px 2px rgba(0, 0, 0, 0.2);
 }
-
 ul.designer .card.card-list.restricted {
     border-color: #ccc;
 }
-
 ul.designer .card.card-list .card-body .mod-indent-outer .completion-info {
     text-align: center;
     margin-bottom: 5px;
 }
-
 ul.designer .card-layout .card.card-list .card-body .mod-indent-outer .completion-info {
     text-align: left;
 }
@@ -32,25 +29,20 @@ ul.designer .card-layout .card.card-list .card-body {
     padding: 10px;
     position: relative;
 }
-
 ul.designer .card.card-list .card-body .mod-indent-outer .mod-indent .row div:nth-child(2) .col {
     padding: 0;
     flex-basis: auto;
 }
-
 ul.designer .card.card-list .card-body .mod-indent-outer .mod-indent .row div:nth-child(2) .pull-right {
     float: none;
 }
-
 ul.designer .card.card-list .card-body .mod-indent-outer .mod-indent .mod-visits-block {
     display: none;
     transition: all .5s ease;
 }
-
 ul.designer .card.card-list .card-body .mod-indent-outer .mod-indent .mod-visits-block p {
     margin-bottom: 0;
 }
-
 ul.designer .card.card-list:hover .card-body .mod-indent-outer .mod-indent .row div:nth-child(2)
 .col + .mod-visits-block {
     display: inline-block;
@@ -66,36 +58,28 @@ ul.designer .card.card-list:hover .card-body .mod-indent-outer .mod-indent .row 
 ul.designer .card.card-list.purple {
     border-left-color: #0f6fc5;
 }
-
 ul.designer .card.card-list.success {
     border-left-color: #28a745;
 }
-
 ul.designer .card.card-list.warning {
     border-left-color: #fd7e14;
     background-color: #ffe4cf;
 }
-
 ul.designer .card.card-list.danger {
     border-left-color: #dc3545;
     background-color: #ffe6e8;
 }
-
 ul.designer .card.card-list.muted {
     border-left-color: #d8d8d8;
     color: #d8d8d8;
 }
-
 ul.designer .card.card-list.secondary {
     min-height: 150px;
     border-left-color: #d8d8d8;
-    padding: 10px;
 }
-
 ul.designer .list-layout .card.card-list.secondary {
     min-height: auto;
 }
-
 .editing ul.designer .section .list-layout li.activity {
     border: 0;
     background: none;
@@ -130,30 +114,20 @@ ul.designer .module-icons {
     right: 0;
     position: absolute;
 }
-
-/* ul.designer .show-on-hover {
-    opacity: 0;
-}
-
-ul.designer .restricted .show-on-hover {
-    opacity: 0;
-}
- */
 ul.designer li.activity > .card:hover .show-on-hover {
     opacity: 1;
     transition: all .5s ease;
 }
-
 ul.designer li.activity > .card .show-on-hover .col a,
 ul.designer li.activity > .card:hover .show-on-hover .col a {
     font-size: 12px;
     text-decoration: none;
     box-shadow: none;
 }
-ul.designer li.activity > .card .show-on-hover .col .text-secondary {
+ul.designer li.activity > .card .show-on-hover .col .font-weight-bold {
     display: none;
 }
-ul.designer li.activity:hover > .card .show-on-hover .col .text-secondary {
+ul.designer li.activity:hover > .card .show-on-hover .col .font-weight-bold {
     display: inline-block;
 }
 ul.designer li.activity > .card .show-on-hover .col .restricted a,
@@ -167,14 +141,12 @@ ul.designer li.activity > .card:hover .show-on-hover .col .restricted a {
     height: auto;
     line-height: normal;
 }
-
 ul.designer .module-icons a.dropdown-toggle,
 ul.designer .module-icons .menubar > .action-menu-item > a {
     color: #0f6fc5;
     font-weight: bold;
     font-size: 0.75em;
 }
-
 ul.designer .badge.badge-purple {
     background-color: #0f6fc5;
     color: white;
@@ -188,22 +160,13 @@ ul.designer .togglecompletion.badge-restricted {
     color: #333;
     background: #ccc;
 }
-
 ul.designer .togglecompletion .btn {
     line-height: 1;
 }
-
 ul.designer .togglecompletion .btn img {
     background-color: white;
     border-radius: 5px;
 }
-
-/* @media (min-width: 767px) and (max-width: 991px) {
-    ul.designer .togglecompletion {
-        float: none;
-    }
-} */
-
 .editing ul.designer .section .card-layout .activity .contentwithoutlink,
 .editing ul.designer .section .card-layout .activity .activityinstance {
     padding-right: 0;
@@ -232,11 +195,13 @@ ul.designer .togglecompletion .btn img {
     margin: 0;
     list-style: none;
 }
-
 .course-content ul.designer li.section {
     margin-top: 1.5rem;
     padding-bottom: 1rem;
     border: 0;
+}
+.course-content ul.designer li.section.main.restricted {
+    opacity: .4;
 }
 .course-content ul.designer li.section .restricted-section-block .availability-info {
     margin-top: 10px;
@@ -264,6 +229,7 @@ ul.designer .togglecompletion .btn img {
 .course-content ul.designer li.section .content {
     margin: 0;
     padding: 0;
+    clear: both;
 }
 .course-content ul.designer li.section .content .summary .no-overflow {
     width: 100%;
@@ -284,12 +250,10 @@ ul.designer .togglecompletion .btn img {
         flex: 0 0 50%;
         max-width: 50%;
     }
-
     ul.designer .list-layout .card.card-list .row .col-lg-3 {
         flex: 0 0 25%;
         max-width: 25%;
     }
-
     ul.designer .list-layout .card.card-list .row .col-lg-2 {
         flex: 0 0 25%;
         max-width: 25%;
@@ -299,6 +263,24 @@ ul.designer .togglecompletion .btn img {
 @media (max-width: 991px) {
     .designer .section.img-text .activity .row > div .pull-right {
         margin-top: 10px;
+    }
+}
+
+@media (max-width: 767px) {
+    .course-content ul.designer li.section > .d-flex {
+        display: block !important;
+    }
+    .course-content ul.designer li.section > .d-flex a.btn-icon {
+        display: inline-block;
+    }
+    .course-content ul.designer li.section h3.sectionname {
+        display: inline-block;
+    }
+    .course-content ul.designer li.section .restricted-section-block {
+        text-align: right;
+        display: block;
+        margin-right: 15px;
+        float: none;
     }
 }
 
@@ -316,16 +298,14 @@ ul.designer .togglecompletion .btn img {
     text-align: right;
     position: relative;
 }
-
 .course-content ul.designer li.section .right {
+    margin-bottom: 10px;
     position: relative;
 }
-
 .course-content ul.designer li.section .right .icon-loader-block {
     position: absolute;
     right: 0;
 }
-
 .course-content ul.designer li.section .right .btn-group .action-menu .menubar {
     height: 100%;
     margin-left: 10px;
@@ -356,35 +336,28 @@ ul.designer .togglecompletion .btn img {
     vertical-align: middle;
     display: none;
 }
-
 .designer .section.img-text .activity .restrict-block.show .info-content-block .availabilityinfo.isrestricted {
     display: inline-block;
 }
-
 .designer .section.img-text .activity .availabilityinfo .badge-info {
     display: none;
 }
-
 .designer .section.img-text .activity .availabilityinfo strong {
     font-size: 12px;
     margin-left: 5px;
     display: inline-block;
 }
-
 .designer .section.img-text .activity .call-action-block {
     vertical-align: middle;
     margin-left: 5px;
     float: right;
 }
-
 .designer .section.img-text .activity .restrict-block.show .call-action-block {
-    margin-top: 3px;
+    margin-top: 5px;
 }
-
 .designer .section.img-text .activity .restrict-block .call-action-block {
-    margin-top: 0;
+    margin-top: 5px;
 }
-
 .designer .section.img-text .activity .call-action-block a > span {
     line-height: 30px;
     text-indent: -999em;
@@ -400,7 +373,6 @@ ul.designer .togglecompletion .btn img {
     text-indent: 0;
     float: left;
 }
-
 .designer .section.img-text.list-layout .activity .activityinstance,
 .designer .section.img-text.list-layout .activity .availabilityinfo {
     margin-left: 50px;
@@ -413,17 +385,14 @@ ul.designer .togglecompletion .btn img {
 .editing .designer .section.img-text.card-layout .activity .availabilityinfo {
     margin-left: 30px;
 }
-
 .designer .section.img-text.list-layout .activity .availabilityinfo {
     opacity: .5;
 }
-
 .designer .section.list-layout .activity .actions,
 .designer .section.card-layout .activity .actions {
     top: 5px;
     right: 5px;
 }
-
 .designer .section.list-layout .activity img.activityicon,
 .designer .section.card-layout .activity img.activityicon {
     width: 40px;
@@ -432,22 +401,13 @@ ul.designer .togglecompletion .btn img {
     top: 10px;
     left: 10px;
 }
-
-.designer .section.list-layout .activity .restricted .instancename {
-    color: #6a737b;
-}
-
 .designer .section.card-layout .activity img.activityicon {
     top: 30px;
 }
-
 .designer .section.img-text .activity .activityinstance .instancename {
     font-size: 20px;
 }
-.designer .section.img-text.card-layout .activity .activityinstance .instancename {
-    color: #6a737b;
-}
-.designer .section.img-text.card-layout .activity .restricted .activityinstance .instancename {
+.designer .section.img-text .activity .restricted .activityinstance .instancename {
     color: #ccc;
 }
 .designer .section .content .section.card-layout {
@@ -481,10 +441,11 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity {
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: 15px;
+    margin-bottom: 15px !important;
     border: 0;
+    position: relative;
 }
-.designer .section .content .section li.activity.has-info {
+.designer .section .content .section li.activity.hasinfo {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 }
@@ -517,14 +478,30 @@ ul.designer .togglecompletion .btn img {
     display: inline-block;
 }
 .designer .section .content .section.link-layout li.activity .activityinstance {
+    width: 55%;
     vertical-align: middle;
 }
 .designer .section .content .section.link-layout li.activity .action-html-card {
+    width: 21%;
     margin-top: 0;
-}
-.designer .section .content .section.link-layout li.activity .center-reports-block {
+    margin-left: 0;
     display: inline-block;
     vertical-align: middle;
+    opacity: 0;
+}
+.designer .section .content .section.link-layout li.activity .restricted .action-html-card {
+    width: auto;
+}
+.designer .section .content .section.link-layout li.activity .center-reports-block {
+    width: 23%;
+    display: inline-block;
+    vertical-align: top;
+}
+.designer .section .content .section.link-layout li.activity .center-reports-block .pull-right {
+    float: none;
+}
+.designer .section .content .section.link-layout li.activity .center-reports-block .pull-right .completion-info {
+    text-align: center;
 }
 .designer .section .content .section li.activity .availability-block-content .availabilityinfo {
     width: 100%;
@@ -563,7 +540,6 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity .restricted .activityinstance .activity-type p {
     color: #ccc;
 }
-
 .designer .section .content .section li.activity .activityinstance .aalink {
     font-size: 20px;
     color: rgb(59, 59, 59);
@@ -577,59 +553,42 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity .activityinstance .aalink .instancename {
     font-weight: bold;
 }
-
 .designer .section .content .section li.activity .mod-content {
-
     margin-top: 10px;
-
     margin-left: 30px;
-
 }
 .designer .section .content .section.list-layout li.activity .mod-content {
     margin-left: 50px;
 }
-
-/* .designer .section .content .section.list-layout li.activity.hasinfo {
-    border-bottom: 0;
-}
-
-.designer .section .content .section.list-layout li.activity:hover {
-    background: none;
-}
- */
 .designer .section .content .section li.activity .restricted .mod-content {
     opacity: .5;
 }
-
 .designer .section .content .section li.activity .restricted .mod-content p {
     color: #6a737b;
 }
-
 .designer .section .content .section li.activity .completion-html-card {
     margin-left: 30px;
     margin-bottom: 10px;
 }
-
 .designer .section .content .section.card-layout li.activity .completion-html-card {
+    margin-top: 10px;
     margin-bottom: 10px;
 }
-
 .designer .section .content .section.card-layout li.activity .restricted
 .completion-html-card .completion-info .badge-restricted span {
     color: #6a737b;
 }
-
 .designer .section .content .section li.activity .mod-visits-block {
     min-height: 20px;
     transition: all .5s ease;
 }
 .designer .section .content .section.card-layout li.activity .mod-visits-block {
-    margin-left: 50px;
+    margin-top: 10px;
+    margin-left: 30px;
 }
 .designer .section .content .section.card-layout li.activity .mod-visits-block p {
     text-align: left;
 }
-
 .designer .section .content .section li.activity .mod-visits-block p {
     font-size: 12px;
     font-weight: normal;
@@ -637,19 +596,14 @@ ul.designer .togglecompletion .btn img {
     text-align: center;
     display: none;
 }
-
 .designer .section .content .section li.activity:hover .mod-visits-block p {
     display: block;
 }
-
 .designer .section .content .section li.activity .action-html-card {
     text-align: center;
     margin-top: 10px;
     margin-left: 50px;
     float: right;
-}
-.designer .section .content .section.link-layout li.activity .action-html-card {
-    opacity: 0;
 }
 .designer .section .content .section.link-layout li.activity .restricted .action-html-card {
     opacity: 1;
@@ -672,37 +626,34 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section.card-layout li.activity .restricted .action-html-card {
     display: block;
 }
-
-/* .designer .section .content .section li.activity .card.restricted .show-on-hover {
-    opacity: 1;
-} */
-
 .designer .section .content .section li.activity .action-html-card a {
     font-size: 12px;
     text-decoration: none;
+    box-shadow: none;
 }
 .designer .section .content .section li.activity:hover .action-html-card {
     float: right;
     opacity: 1;
 }
+.designer .section.img-text .activity .mod-content .fullcontent-summary {
+    display: none;
+}
 
-/* .designer .section .content .section li.activity .restricted .action-html-card {
-    display: block;
-} */
-
-@media (min-width: 1200px) {
-    .designer .section .content .section.card-layout li.activity,
-    .designer .section .content.show .section.card-layout li.activity {
-        width: 48%;
+@media (max-width: 991px) {
+    ul.designer .section.img-text.list-layout .card.card-list {
+        min-height: 230px;
+    }
+    .designer .section.img-text.list-layout .activity .activityinstance {
+        padding-right: 0;
     }
 }
 
 @media (min-width: 768px) {
     .designer .section .content .section.card-layout li.activity .card.card-list {
-        min-height: 200px;
+        min-height: 260px;
     }
     .designer .section .content .section.card-layout li.activity .completion-html-card {
-        margin-bottom: 40px;
+        margin-bottom: 10px;
     }
     .designer .section .content .section.card-layout li.activity .editing_move {
         top: 100px;
@@ -727,12 +678,4 @@ ul.designer .togglecompletion .btn img {
         left: 20px;
         z-index: 1;
     }
-}
-
-.section li.activity {
-    position: relative;
-}
-
-.designer .section.img-text .activity .mod-content .fullcontent-summary {
-    display: none;
 }

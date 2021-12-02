@@ -56,7 +56,14 @@ class section extends section_base {
             'summary' => $summary->export_for_template($output),
             'availability' => $availability->export_for_template($output),
         ];
-
+        $restrictsection = false;
+        // Check restrict the section.
+        if (!$thissection->uservisible) {
+            if ($thissection->availableinfo) {
+                $restrictsection = true;
+            }
+        }
+        $data->restrictsection = $restrictsection;
         // Check if it is a stealth sections (orphaned).
         if ($thissection->section > $format->get_last_section_number()) {
             $data->isstealth = true;
