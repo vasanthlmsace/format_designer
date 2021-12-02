@@ -22,9 +22,6 @@ ul.designer .card.card-list .card-body .mod-indent-outer .completion-info {
 ul.designer .card-layout .card.card-list .card-body .mod-indent-outer .completion-info {
     text-align: left;
 }
-ul.designer .card-layout .card.card-list .card-body .mod-indent-outer {
-    width: auto !important;
-}
 ul.designer .card-layout .card.card-list .card-body {
     padding: 10px;
     position: relative;
@@ -251,6 +248,13 @@ ul.designer .togglecompletion .btn img {
     vertical-align: middle;
 }
 
+.course-content ul.designer li.section > .heading-section-block a.btn-icon {
+    display: inline-block;
+}
+.course-content ul.designer li.section > .heading-section-block h3.sectionname {
+    display: inline-block;
+}
+
 @media (min-width: 992px) {
     ul.designer .list-layout .card.card-list .row .col-lg-7 {
         flex: 0 0 50%;
@@ -273,15 +277,7 @@ ul.designer .togglecompletion .btn img {
 }
 
 @media (max-width: 767px) {
-    .course-content ul.designer li.section > .d-flex {
-        display: block !important;
-    }
-    .course-content ul.designer li.section > .d-flex a.btn-icon {
-        display: inline-block;
-    }
-    .course-content ul.designer li.section h3.sectionname {
-        display: inline-block;
-    }
+    
     .course-content ul.designer li.section .restricted-section-block {
         text-align: right;
         display: block;
@@ -426,9 +422,9 @@ ul.designer .togglecompletion .btn img {
     border: 0;
     background: none;
     padding: 0.25rem 5px 0.25rem;
-    margin-top: 10px;
+    margin-top: 0;
     margin-right: 15px;
-    margin-bottom: 0 !important;
+    margin-bottom: 0;
     display: inline-block;
     vertical-align: top;
 }
@@ -447,7 +443,7 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity {
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: 15px !important;
+    margin-bottom: 0;
     border: 0;
     position: relative;
 }

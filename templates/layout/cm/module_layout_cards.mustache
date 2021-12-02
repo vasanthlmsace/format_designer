@@ -31,62 +31,59 @@
 
     }
 }}
-{{<format_designer/layout/cm/cards_module_contents}}
-    {{$modulecontent}}
-        {{#.}}
-            {{#cmitem}}
-                <li
-                class="activity {{module}} modtype_{{module}} {{extraclasses}} {{#hasinfo}}hasinfo{{/hasinfo}}
-                {{#isrestricted}}restricted{{/isrestricted}} position-relative my-1"
-                id="module-{{id}}"
-                data-for="cmitem"
-                data-id="{{id}}">
-                    <div class="card card-list {{colorclass}}" data-action="go-to-url" data-url="{{url}}" style="cursor: pointer">
-                        <div class="card-body">
-                            <div class="mod-indent-outer w-100">
-                                {{{movehtml}}}
-                                <div class="mod-indent {{#indent}}mod-indent-{{indent}}{{/indent}} {{#hugeindent}}mod-indent-huge{{/hugeindent}}"></div>
-                                <div class="activityinstance">
-                                    <div class="activity-type">
-                                        <p>{{modtype}}</p>
-                                    </div>
-                                    {{#cmname}} {{> core/inplace_editable }} {{/cmname}}
-                                    {{{beforecontent}}}
-                                    {{{afterlink}}}
-                                </div>
 
-                                {{#modcontent}}
-                                    <div class="mod-content">
-                                        {{{modcontent}}}
-                                    </div>
-                                {{/modcontent}}
-
-                                {{#cmcompletionhtml}}
-                                    <div class="completion-html-card">
-                                        {{{cmcompletionhtml}}}
-                                    </div>
-                                {{/cmcompletionhtml}}
-
-                                {{#modvisits}}
-                                <div class="mod-visits-block text-muted">
-                                    <p>{{modvisits}}</p>
-                                </div>
-                                {{/modvisits}}
-
-                                <div class="action-html-card">
-                                    {{{calltoactionhtml}}}
-                                </div>
+{{#.}}
+    {{#cmitem}}
+        <li
+        class="activity {{module}} modtype_{{module}} {{extraclasses}} {{#hasinfo}}hasinfo{{/hasinfo}}
+        {{#isrestricted}}restricted{{/isrestricted}} position-relative"
+        id="module-{{id}}"
+        data-for="cmitem"
+        data-id="{{id}}">
+            <div class="card card-list {{colorclass}}" data-action="go-to-url" data-url="{{url}}" style="cursor: pointer">
+                <div class="card-body">
+                    <div class="mod-indent-outer">
+                        {{{movehtml}}}
+                        <div class="mod-indent {{#indent}}mod-indent-{{indent}}{{/indent}} {{#hugeindent}}mod-indent-huge{{/hugeindent}}"></div>
+                        <div class="activityinstance">
+                            <div class="activity-type">
+                                <p>{{modtype}}</p>
                             </div>
+                            {{#cmname}} {{> core/inplace_editable }} {{/cmname}}
+                            {{{beforecontent}}}
+                            {{{afterlink}}}
                         </div>
-                        {{#modicons}}
-                        <div class="actions">
-                            {{{modicons}}}
+
+                        {{#modcontent}}
+                            <div class="mod-content">
+                                {{{modcontent}}}
+                            </div>
+                        {{/modcontent}}
+
+                        {{#cmcompletionhtml}}
+                            <div class="completion-html-card">
+                                {{{cmcompletionhtml}}}
+                            </div>
+                        {{/cmcompletionhtml}}
+
+                        {{#modvisits}}
+                        <div class="mod-visits-block text-muted">
+                            <p>{{modvisits}}</p>
                         </div>
-                        {{/modicons}}
-                        {{{aftercontent}}}
+                        {{/modvisits}}
+
+                        <div class="action-html-card">
+                            {{{calltoactionhtml}}}
+                        </div>
                     </div>
-                </li>
-            {{/cmitem}}
-        {{/.}}
-    {{/modulecontent}}
-{{/format_designer/layout/cm/cards_module_contents}}
+                </div>
+                {{#modicons}}
+                <div class="actions">
+                    {{{modicons}}}
+                </div>
+                {{/modicons}}
+                {{{aftercontent}}}
+            </div>
+        </li>
+    {{/cmitem}}
+{{/.}}
