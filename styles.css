@@ -172,6 +172,12 @@ ul.designer .togglecompletion .btn img {
     padding-right: 0;
 }
 
+@media (max-width: 767px) {
+    ul.designer .section .content .section.card-layout li.activity .mod-content {
+        padding-bottom: 40px;
+    }
+}
+
 @media (max-width: 575px) {
     .editing ul.designer .section .activity .contentwithoutlink,
     .editing ul.designer .section .activity .activityinstance {
