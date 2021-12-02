@@ -277,7 +277,7 @@ ul.designer .togglecompletion .btn img {
     }
 }
 
-@media (max-width: 767px) {    
+@media (max-width: 767px) {
     .course-content ul.designer li.section .restricted-section-block {
         text-align: right;
         display: block;
@@ -570,7 +570,6 @@ ul.designer .togglecompletion .btn img {
     text-overflow: ellipsis;
     -webkit-line-clamp: 3;
     display: block;
-    display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
     position: relative;
