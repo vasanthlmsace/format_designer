@@ -132,7 +132,6 @@
     DesignerSection.prototype.modcontentHandler = function(event) {
         var THIS = $(event.currentTarget);
         var fullContent = $(THIS).parent();
-        console.log(fullContent);
         if (fullContent.hasClass('hide')) {
             fullContent.removeClass('hide');
             $(THIS).text("Less");
