@@ -225,15 +225,13 @@ class cmlist extends cmlist_base {
             if (!empty($cmtextcontent)) {
                 if (strlen($cmtextcontent) >= 160) {
                     $modcontenthtml = '';
-                    $modcontenthtml .= html_writer::start_tag('div', array('class' => 'trim-summary'));
-                    $modcontenthtml .= format_designer_modcontent_trim_char($cmtextcontent, 150);
-                    $modcontenthtml .= html_writer::end_tag('div');
-                    $modcontenthtml .= html_writer::start_tag('div', array('class' => 'fullcontent-summary'));
+                    $modcontenthtml .= html_writer::start_tag('div', array('class' => 'fullcontent-summary hide'));
                     $modcontenthtml .= $cmtextcontent;
-                    $modcontenthtml .= html_writer::end_tag('div');
                     $modurl = \html_writer::link('javascript:void(0)', get_string('more'),
                         array('class' => 'mod-description-action'));
-                    $modcontent = $modcontenthtml . ' ' . $modurl;
+                    $modcontenthtml .= $modurl;
+                    $modcontenthtml .= html_writer::end_tag('div');
+                    $modcontent = $modcontenthtml;
                 } else {
                     $modcontent = html_writer::tag('p', $cmtextcontent);;
                 }

@@ -131,12 +131,15 @@
 
     DesignerSection.prototype.modcontentHandler = function(event) {
         var THIS = $(event.currentTarget);
-        var fullContent = $(THIS).prevAll('.fullcontent-summary');
-        var trimContent = $(THIS).prevAll('.trim-summary');
-        var moreLessTxt = fullContent.is(':visible') ? 'More' : 'Less';
-        $(THIS).text(moreLessTxt);
-        fullContent.slideToggle(200);
-        trimContent.slideToggle(200);
+        var fullContent = $(THIS).parent();
+        console.log(fullContent);
+        if (fullContent.hasClass('hide')) {
+            fullContent.removeClass('hide');
+            $(THIS).text("Less");
+        } else {
+            fullContent.addClass('hide');
+            $(THIS).text("More");
+        }
     };
 
 

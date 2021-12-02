@@ -124,7 +124,8 @@ ul.designer li.activity > .card:hover .show-on-hover .col a {
 ul.designer li.activity > .card .show-on-hover .col .font-weight-bold {
     display: none;
 }
-ul.designer li.activity:hover > .card .show-on-hover .col .font-weight-bold {
+ul.designer li.activity:hover > .card .show-on-hover .col .font-weight-bold,
+ul.designer li.activity > .card.restricted .show-on-hover .col .font-weight-bold {
     display: inline-block;
 }
 ul.designer li.activity > .card .show-on-hover .col .restricted a,
@@ -276,8 +277,7 @@ ul.designer .togglecompletion .btn img {
     }
 }
 
-@media (max-width: 767px) {
-    
+@media (max-width: 767px) {    
     .course-content ul.designer li.section .restricted-section-block {
         text-align: right;
         display: block;
@@ -565,6 +565,42 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity .restricted .mod-content {
     opacity: .5;
 }
+.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide {
+    height: 70px;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    display: block;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+}
+.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide:before {
+    content: '...';
+    position: absolute;
+    right: 80px;
+    bottom: 0;
+    z-index: 2;
+}
+.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary a.mod-description-action {
+    margin-left: 10px;
+}
+.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide a.mod-description-action {
+    position: absolute;
+    bottom: 0;
+    right: 40px;
+    z-index: 2;
+}
+.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide:after {
+    width: 90px;
+    content: '';
+    height: 23px;
+    background: #fff;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+}
 .designer .section .content .section li.activity .restricted .mod-content p {
     color: #6a737b;
 }
@@ -637,9 +673,9 @@ ul.designer .togglecompletion .btn img {
     float: right;
     opacity: 1;
 }
-.designer .section.img-text .activity .mod-content .fullcontent-summary {
+/* .designer .section.img-text .activity .mod-content .fullcontent-summary {
     display: none;
-}
+} */
 
 @media (max-width: 991px) {
     ul.designer .section.img-text.list-layout .card.card-list {
