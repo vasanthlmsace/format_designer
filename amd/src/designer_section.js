@@ -20,8 +20,8 @@
  * @copyright  2021 bdecent gmbh <https://bdecent.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- define(['jquery', 'core/ajax', 'core/loadingicon', 'core_courseformat/courseeditor', 'core_course/actions', 'core/reactive'],
- function($, Ajax, Loadingicon, editor, Actions, React) {
+ define(['jquery', 'core/ajax', 'core/loadingicon', 'core_courseformat/courseeditor', 'core_course/actions'],
+ function($, Ajax, Loadingicon, editor, Actions) {
 
     /**
      * Control designer format action
@@ -33,7 +33,6 @@
         self.courseeditor = editor.getCurrentCourseEditor();
         self.courseId = courseId;
         self.contextId = contextId;
-
         $('body').delegate(self.SectionController, 'click', self.sectionLayoutaction.bind(this));
         $('body').delegate(self.sectionRestricted, "click", this.sectionRestrictHandler.bind(this));
         $('body').delegate(self.moduleBlock, "click", self.moduleHandler.bind(this));
@@ -75,13 +74,6 @@
         }
     };
 
-    var SELECTOR = {
-        ACTIVITYLI: 'li.activity',
-        SECTIONLI: 'li.section',
-        SECTIONACTIONMENU: '.section_action_menu',
-        ACTIVITYACTION: 'a.cm-edit-action',
-    };
-
     /**
      * Implementaion swith the section layout.
      * @param {object} event
@@ -90,7 +82,6 @@
         var self = this;
         let sectionId = event.target.closest('li.section').getAttribute('id');
         let dataid = event.target.closest('li.section').getAttribute('data-id');
-        let datasectionid = event.target.closest('li.section').getAttribute('data-sectionid');
         var layout = $(event.currentTarget).data('value');
         var layouttext = $(event.currentTarget).text();
         $(event.target).parents(".dropdown").find(".btn").html(layouttext);
@@ -103,25 +94,23 @@
         if (cms) {
 
             var iconBlock = "#" + sectionId + " " + self.loadingElement;
-            let sectionnumber = event.target.closest('li.section').getAttribute('data-sectionid');
             var args = {
                 courseid: self.courseId,
                 sectionid: dataid,
-                options: [{ name: $(event.currentTarget).data('option'), value: layout }]
+                options: [{name: $(event.currentTarget).data('option'), value: layout}]
             };
             var promises = Ajax.call([{
                 methodname: 'format_designer_set_section_options',
                 args: args
             }], true);
             $.when.apply($, promises)
-            .done(function(dataencoded) {
-                const sectionpromise = Actions.refreshSection('#'+sectionId , dataid, 0);
+            .done(function() {
+                const sectionpromise = Actions.refreshSection('#' + sectionId, dataid, 0);
                 sectionpromise.then(() => {
                    return '';
                 }).catch();
             });
             Loadingicon.addIconToContainerRemoveOnCompletion(iconBlock, promises);
-
         }
     };
 

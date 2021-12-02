@@ -297,7 +297,7 @@ ul.designer .togglecompletion .btn img {
 }
 
 @media (max-width: 991px) {
-    .designer .section.img-text .activity .row>div .pull-right {
+    .designer .section.img-text .activity .row > div .pull-right {
         margin-top: 10px;
     }
 }
@@ -343,13 +343,9 @@ ul.designer .togglecompletion .btn img {
     text-align: center;
     float: none;
 }
-.designer .list-layout .section.img-text .activity .row > div .pull-right {
-    
-}
 .designer .list-layout .section .content .section li.activity .mod-visits-block {
     display: block;
 }
-
 .designer .section.img-text .activity .restrict-block .info-content-block .availabilityinfo.isrestricted {
     font-size: 12px;
     color: #000;
@@ -458,7 +454,6 @@ ul.designer .togglecompletion .btn img {
     display: block;
     padding-left: 0;
 }
-
 .designer .section .content .section.card-layout li.activity {
     width: 48%;
     min-height: 150px;
@@ -469,7 +464,7 @@ ul.designer .togglecompletion .btn img {
     margin-right: 15px;
     margin-bottom: 0 !important;
     display: inline-block;
-    vertical-align: top;    
+    vertical-align: top;
 }
 .designer .section .content.collapse .section.card-layout li.activity,
 .designer .section .content.collapsing .section.card-layout li.activity,
@@ -486,15 +481,12 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity {
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: 15px !important;
+    margin-bottom: 15px;
     border: 0;
 }
 .designer .section .content .section li.activity.has-info {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
-}
-.designer .section .content .section.link-layout li.activity {
-    margin-bottom: 0;
 }
 .designer .section .content .section.link-layout li.activity .mod-indent-outer > i.icon {
     position: absolute;

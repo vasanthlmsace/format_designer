@@ -344,7 +344,7 @@ class format_designer extends core_courseformat\base {
 
         return $elements;
     }
-    
+
     /**
      * Definitions of the additional options that this course format uses for section
      *
