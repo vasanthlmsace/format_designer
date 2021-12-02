@@ -84,8 +84,7 @@ class behat_format_designer extends behat_base {
 
         // If it is already opened we do nothing.
         $xpath = "//li[@id='section-" . $sectionnumber . "']";
-        $xpath .= "/descendant::div[contains(@id,'section-designer-action')]
-        /descendant::button[contains(@data-toggle, 'dropdown')]";
+        $xpath .= "/descendant::div[contains(@id,'section-designer-action')]/descendant::button[contains(@data-toggle, 'dropdown')]";
         $exception = new ExpectationException('Section "' . $sectionnumber . '" was not found', $this->getSession());
         $menu = $this->find('xpath', $xpath, $exception);
         $menu->click();

@@ -98,20 +98,20 @@ class controlmenu extends controlmenu_base {
             [
                 'type' => 'default',
                 'name' => get_string('link', 'format_designer'),
-                'active' => empty($this->format->get_section_option($section->section, 'sectiontype'))
-                    || $this->format->get_section_option($section->section, 'sectiontype') == 'default',
+                'active' => empty($this->format->get_section_option($section->id, 'sectiontype'))
+                    || $this->format->get_section_option($section->id, 'sectiontype') == 'default',
                 'url' => new moodle_url('/course/view.php', ['id' => $this->course->id], 'section-' . $section->section)
             ],
             [
                 'type' => 'list',
                 'name' => get_string('list', 'format_designer'),
-                'active' => $this->format->get_section_option($section->section, 'sectiontype') == 'list',
+                'active' => $this->format->get_section_option($section->id, 'sectiontype') == 'list',
                 'url' => new moodle_url('/course/view.php', ['id' => $this->course->id], 'section-' . $section->section)
             ],
             [
                 'type' => 'cards',
                 'name' => get_string('cards', 'format_designer'),
-                'active' => $this->format->get_section_option($section->section, 'sectiontype') == 'cards',
+                'active' => $this->format->get_section_option($section->id, 'sectiontype') == 'cards',
                 'url' => new moodle_url('/course/view.php', ['id' => $this->course->id], 'section-' . $section->section)
             ],
         ];

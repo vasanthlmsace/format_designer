@@ -17,6 +17,9 @@
 namespace format_designer\output;
 
 use core_courseformat\output\section_renderer;
+use core_courseformat\base as course_format;
+use cm_info;
+use section_info;
 
 /**
  * Basic renderer for designer format.
@@ -57,5 +60,63 @@ class renderer extends section_renderer {
      */
     public function section_title_without_link($section, $course) {
         return $this->render(course_get_format($course)->inplace_editable_render_section_name($section, false));
+    }
+
+    /**
+     * Get the updated rendered version of a cm list item.
+     *
+     * This method is used when an activity is duplicated or copied in on the client side without refreshing the page.
+     * It replaces the course renderer course_section_cm_list_item method but it's scope is different.
+     * Note that the previous method is used every time an activity is rendered, independent of it is the initial page
+     * loading or an Ajax update. In this case, course_section_updated_cm_item will only be used when the course editor
+     * requires to get an updated cm item HTML to perform partial page refresh. It will be used for suporting the course
+     * editor webservices.
+     *
+     * By default, the template used for update a cm_item is the same as when it renders initially, but format plugins are
+     * free to override this methos to provide extra affects or so.
+     *
+     * @param course_format $format the course format
+     * @param section_info $section the section info
+     * @param cm_info $cm the course module ionfo
+     * @param array $displayoptions optional extra display options
+     * @return string the rendered element
+     */
+    public function course_section_updated_cm_item(
+        course_format $format,
+        section_info $section,
+        cm_info $cm,
+        array $displayoptions = []
+    ) {
+        $cmlistclass = $format->get_output_classname('content\\section\\cmlist');
+        $cmlist = new $cmlistclass($format, $section, $displayoptions);
+        $output = $this->page->get_renderer('format_designer');
+        $cmlistdata = $cmlist->render_course_module($output, $cm);
+        $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: 'default';
+        $templatename = 'format_designer/layout/cm/module_layout_' . $sectiontype;
+        return $this->render_from_template($templatename, $cmlistdata);
+    }
+
+    /**
+     * Get the updated rendered version of a section.
+     *
+     * This method will only be used when the course editor requires to get an updated cm item HTML
+     * to perform partial page refresh. It will be used for supporting the course editor webservices.
+     *
+     * By default, the template used for update a section is the same as when it renders initially,
+     * but format plugins are free to override this method to provide extra effects or so.
+     *
+     * @param course_format $format the course format
+     * @param section_info $section the section info
+     * @return string the rendered element
+     */
+    public function course_section_updated(
+        course_format $format,
+        section_info $section
+    ): string {
+        $output = $this->page->get_renderer('format_designer');
+        $sectionclass = $format->get_output_classname('content\\section');
+        $sectionobj = new $sectionclass($format, $section);
+        return $this->render_from_template('format_designer/section_info',
+            $sectionobj->export_for_template($output));
     }
 }

@@ -20,8 +20,9 @@
  * @copyright  2021 bdecent gmbh <https://bdecent.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- define(['jquery', 'core/fragment', 'core/templates', 'core/loadingicon'],
- function($, Fragment, Templates, Loadingicon) {
+ define(['jquery', 'core/ajax', 'core/loadingicon', 'core_courseformat/courseeditor', 'core_course/actions', 'core/reactive'],
+ function($, Ajax, Loadingicon, editor, Actions, React) {
+
     /**
      * Control designer format action
      * @param {int} courseId
@@ -29,25 +30,105 @@
      */
     let DesignerSection = function(courseId, contextId) {
         var self = this;
+        self.courseeditor = editor.getCurrentCourseEditor();
         self.courseId = courseId;
         self.contextId = contextId;
-        var designerSelectorSections = document.querySelectorAll(this.SectionController + " .dropdown-menu a");
-         if (designerSelectorSections) {
-            designerSelectorSections.forEach(function(item) {
-                item.addEventListener('click', self.sectionLayoutaction.bind(self));
-            });
-        }
-        $(self.moduleBlock).on("click", "li .card-body", this.moduleHandler.bind(this));
+
+        $('body').delegate(self.SectionController, 'click', self.sectionLayoutaction.bind(this));
+        $('body').delegate(self.sectionRestricted, "click", this.sectionRestrictHandler.bind(this));
+        $('body').delegate(self.moduleBlock, "click", self.moduleHandler.bind(this));
+        $('body').delegate(self.moduleDescription, "click", self.modcontentHandler.bind(this));
     };
 
-    DesignerSection.prototype.moduleHandler = function(event) {
-        event.preventDefault();
-        if ($(event.target).parents(".call-action-block").length == 0) {
-            var modUrl = $(event.currentTarget).closest('.card').attr('data-url');
-            if (modUrl) {
-                window.open(modUrl, '_self');
+        /**
+         * Selector section controller.
+         */
+         DesignerSection.prototype.SectionController = ".designer #section-designer-action .dropdown-menu a";
+
+         DesignerSection.prototype.SectionLayoutController = ".designer #section-designer-action .dropdown-menu a";
+
+         DesignerSection.prototype.RestrictInfo = ".designer #designer-section-content .call-action-block";
+
+         DesignerSection.prototype.loadingElement = ".icon-loader-block";
+
+         DesignerSection.prototype.sectionRestricted = ".designer .restricted-section-block .section-restricted-action";
+
+         DesignerSection.prototype.activityli = "li.activity";
+
+         DesignerSection.prototype.ulclasses = {
+             'cards': 'card-deck card-layout',
+             'list': 'list-layout',
+             'default': ''
+         };
+
+        DesignerSection.prototype.moduleBlock = ".designer #designer-section-content li.activity";
+        DesignerSection.prototype.moduleDescription = ".designer #designer-section-content li .mod-description-action";
+
+    DesignerSection.prototype.sectionRestrictHandler = function(event) {
+        var sectionRestrictInfo = $(event.currentTarget).parent();
+        if (sectionRestrictInfo) {
+            if (!sectionRestrictInfo.hasClass('show')) {
+                sectionRestrictInfo.addClass('show');
+            } else {
+                sectionRestrictInfo.removeClass('show');
             }
-        } else {
+        }
+    };
+
+    var SELECTOR = {
+        ACTIVITYLI: 'li.activity',
+        SECTIONLI: 'li.section',
+        SECTIONACTIONMENU: '.section_action_menu',
+        ACTIVITYACTION: 'a.cm-edit-action',
+    };
+
+    /**
+     * Implementaion swith the section layout.
+     * @param {object} event
+     */
+    DesignerSection.prototype.sectionLayoutaction = function(event) {
+        var self = this;
+        let sectionId = event.target.closest('li.section').getAttribute('id');
+        let dataid = event.target.closest('li.section').getAttribute('data-id');
+        let datasectionid = event.target.closest('li.section').getAttribute('data-sectionid');
+        var layout = $(event.currentTarget).data('value');
+        var layouttext = $(event.currentTarget).text();
+        $(event.target).parents(".dropdown").find(".btn").html(layouttext);
+        $(event.target).parents(".dropdown").find(".btn").val(layout);
+        $(event.target).parent().find("a.dropdown-item").each(function() {
+            $(this).removeClass('active');
+        });
+        $(event.target).addClass('active');
+        let cms = $("#" + sectionId).find('ul#designer-section-content li').length;
+        if (cms) {
+
+            var iconBlock = "#" + sectionId + " " + self.loadingElement;
+            let sectionnumber = event.target.closest('li.section').getAttribute('data-sectionid');
+            var args = {
+                courseid: self.courseId,
+                sectionid: dataid,
+                options: [{ name: $(event.currentTarget).data('option'), value: layout }]
+            };
+            var promises = Ajax.call([{
+                methodname: 'format_designer_set_section_options',
+                args: args
+            }], true);
+            $.when.apply($, promises)
+            .done(function(dataencoded) {
+                const sectionpromise = Actions.refreshSection('#'+sectionId , dataid, 0);
+                sectionpromise.then(() => {
+                   return '';
+                }).catch();
+            });
+            Loadingicon.addIconToContainerRemoveOnCompletion(iconBlock, promises);
+
+        }
+    };
+
+
+    DesignerSection.prototype.moduleHandler = function(event) {
+        if ($(event.target).hasClass('fa-lock')) {
+            event.preventDefault();
             var restrictBlock = $(event.currentTarget).find(".restrict-block");
             if (restrictBlock) {
                 if (!restrictBlock.hasClass('show')) {
@@ -59,50 +140,16 @@
         }
     };
 
-    /**
-     * Implementaion swith the section layout.
-     * @param {object} event
-     */
-    DesignerSection.prototype.sectionLayoutaction = function(event) {
-        var self = this;
-        let sectionId = event.target.closest('li.section').getAttribute('id');
-        var iconBlock = "#" + sectionId + " " + self.loadingElement;
-        Loadingicon.addIconToContainerWithPromise(iconBlock);
-        var layout = $(event.currentTarget).data('value');
-        var layouttext = $(event.currentTarget).text();
-        $(event.target).parents(".dropdown").find(".btn").html(layouttext);
-        $(event.target).parents(".dropdown").find(".btn").val(layout);
-        $(event.target).parent().find("a.dropdown-item").each(function() {
-            $(this).removeClass('active');
-        });
-        $(event.target).addClass('active');
-        let sectionnumber = event.target.closest('li.section').getAttribute('data-sectionid');
-        var args = {
-            courseid: self.courseId,
-            sectionnumber: sectionnumber,
-            sectioncol: $(event.currentTarget).data('option'),
-            sectioncolvalue: layout
-        };
-        Fragment.loadFragment('format_designer', 'get_section_modules', self.contextId, args).done((html, js) => {
-            if (html) {
-                var updateId = `.course-content .designer #section-${sectionnumber} #designer-section-content`;
-                Templates.replaceNode(updateId, html, js);
-                $(iconBlock).empty();
-                $(self.moduleBlock).on("click", "li .card-body", self.moduleHandler.bind(this));
-            }
-        });
+    DesignerSection.prototype.modcontentHandler = function(event) {
+        var THIS = $(event.currentTarget);
+        var fullContent = $(THIS).prevAll('.fullcontent-summary');
+        var trimContent = $(THIS).prevAll('.trim-summary');
+        var moreLessTxt = fullContent.is(':visible') ? 'More' : 'Less';
+        $(THIS).text(moreLessTxt);
+        fullContent.slideToggle(200);
+        trimContent.slideToggle(200);
     };
 
-    /**
-     * Selector section controller.
-     */
-    DesignerSection.prototype.SectionController = ".designer #section-designer-action";
-
-    DesignerSection.prototype.RestrictInfo = ".designer #designer-section-content .call-action-block";
-
-    DesignerSection.prototype.moduleBlock = ".designer #designer-section-content";
-
-    DesignerSection.prototype.loadingElement = ".icon-loader-block";
 
     return {
         init: function(courseId, contextId) {

@@ -1,0 +1,52 @@
+{{#.}}
+    {{#cmitem}}
+        <li
+        class="activity {{module}} modtype_{{module}} {{extraclasses}} {{#hasinfo}}hasinfo{{/hasinfo}}"
+        id="module-{{id}}"
+        data-for="cmitem"
+        data-id="{{id}}"
+        >
+            <div class="card-block {{colorclass}}">
+                <div class="mod-indent-outer w-100">
+                    {{{movehtml}}}
+                    <div class="mod-indent {{#indent}}mod-indent-{{indent}}{{/indent}} {{#hugeindent}}mod-indent-huge{{/hugeindent}}"></div>
+                    <div>
+                        {{#hasname}}
+                        <div class="activityinstance">
+                            {{#cmname}} {{> core/inplace_editable }} {{/cmname}}
+                            {{{beforecontent}}}
+                            {{{groupinglabel}}}
+                            {{{afterlink}}}
+                        </div>
+                        {{/hasname}}
+
+                        <div class="center-reports-block">
+                            <div class="row h-100 pull-right">
+                                <div class="col align-self-center">
+                                    {{{cmcompletionhtml}}}
+                                    {{#modvisits}}
+                                    <div class="mod-visits-block text-muted">
+                                        <p>{{modvisits}}</p>
+                                    </div>
+                                    {{/modvisits}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-html-card">
+                            {{{calltoactionhtml}}}
+                        </div>
+
+                        {{#modicons}}
+                            <div class="actions">
+                                {{{modicons}}}
+                            </div>
+                        {{/modicons}}
+
+                        {{{aftercontent}}}
+                    </div>
+                </div>
+            </div>
+        </li>
+        {{/cmitem}}
+{{/.}}

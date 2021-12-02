@@ -38,40 +38,7 @@ data-sectionlayout="{{sectionlayoutclass}}" data-for="cmlist">
         {{/showmovehere}}
 
         {{#cms}}
-            {{#.}}
-                {{#cmitem}}
-                    <li
-                        class="activity {{module}} modtype_{{module}} {{extraclasses}} {{#hasinfo}}hasinfo{{/hasinfo}}"
-                        id="module-{{id}}"
-                        data-for="cmitem"
-                        data-id="{{id}}"
-                    >
-                        {{{movehtml}}}
-                        <div class="mod-indent-outer w-100">
-                            <div class="mod-indent {{#indent}}mod-indent-{{indent}}{{/indent}} {{#hugeindent}}mod-indent-huge{{/hugeindent}}"></div>
-                            <div>
-                                {{#hasname}}
-                                <div class="activityinstance">
-                                    {{#cmname}} {{> core/inplace_editable }} {{/cmname}}
-                                    {{{beforecontent}}}
-                                    {{{groupinglabel}}}
-                                    {{{afterlink}}}
-                                </div>
-                                {{{availabilityrestrict}}}
-                                {{/hasname}}
-
-                                {{#modicons}}
-                                    <div class="actions">
-                                        {{{modicons}}}
-                                    </div>
-                                {{/modicons}}
-
-                                {{{aftercontent}}}
-                            </div>
-                        </div>
-                    </li>
-                {{/cmitem}}
-            {{/.}}
+            {{> format_designer/layout/cm/module_layout_default}}
         {{/cms}}
     {{/hascms}}
     {{#showmovehere}}

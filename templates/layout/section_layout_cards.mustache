@@ -40,58 +40,7 @@ data-sectionlayout="{{sectionlayoutclass}}" data-for="cmlist">
         {{/showmovehere}}
 
         {{#cms}}
-            {{#.}}
-                {{#cmitem}}
-                    <li
-                    class="activity {{module}} modtype_{{module}} {{extraclasses}} {{#hasinfo}}hasinfo{{/hasinfo}}
-                    {{#isrestricted}}restricted{{/isrestricted}} position-relative my-1"
-                    id="module-{{id}}"
-                    data-for="cmitem"
-                    data-id="{{id}}">
-                        {{{movehtml}}}
-                        <div class="card card-list {{colorclass}}" data-action="go-to-url" data-url="{{url}}" style="cursor: pointer">
-                            <div class="card-body">
-                                <div class="activityinstance">
-                                    <div class="activity-type">
-                                        <p>{{modtype}}</p>
-                                    </div>
-                                    {{#cmname}} {{> core/inplace_editable }} {{/cmname}}
-                                    {{{beforecontent}}}
-                                    {{{afterlink}}}
-                                </div>
-
-                                {{#modcontent}}
-                                    <div class="mod-content">
-                                        <p>{{{modcontent}}}</p>
-                                    </div>
-                                {{/modcontent}}
-
-                                {{#cmcompletionhtml}}
-                                    <div class="completion-html-card">
-                                        {{{cmcompletionhtml}}}
-                                    </div>
-                                {{/cmcompletionhtml}}
-
-                                {{#modvisits}}
-                                <div class="mod-visits-block">
-                                    <p>{{modvisits}}</p>
-                                </div>
-                                {{/modvisits}}
-
-                                <div class="action-html-card">
-                                    {{{calltoactionhtml}}}
-                                </div>
-                            </div>
-                            {{#modicons}}
-                            <div class="actions">
-                                {{{modicons}}}
-                            </div>
-                            {{/modicons}}
-                            {{{aftercontent}}}
-                        </div>
-                    </li>
-                {{/cmitem}}
-            {{/.}}
+            {{> format_designer/layout/cm/module_layout_cards}}
         {{/cms}}
 
     {{/hascms}}
