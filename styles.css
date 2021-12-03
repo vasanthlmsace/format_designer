@@ -565,7 +565,7 @@ ul.designer .togglecompletion .btn img {
 .designer .section .content .section li.activity .restricted .mod-content {
     opacity: .5;
 }
-.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide {
+.designer .section .content .section li.activity .mod-content .fullcontent-summary.summary-hide {
     height: 70px;
     text-overflow: ellipsis;
     -webkit-line-clamp: 3;
@@ -574,23 +574,23 @@ ul.designer .togglecompletion .btn img {
     overflow: hidden;
     position: relative;
 }
-.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide:before {
+.designer .section .content .section li.activity .mod-content .fullcontent-summary.summary-hide:before {
     content: '...';
     position: absolute;
     right: 80px;
     bottom: 0;
     z-index: 2;
 }
-.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary a.mod-description-action {
+.designer .section .content .section li.activity .mod-content .fullcontent-summary a.mod-description-action {
     margin-left: 10px;
 }
-.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide a.mod-description-action {
+.designer .section .content .section li.activity .mod-content .fullcontent-summary.summary-hide a.mod-description-action {
     position: absolute;
     bottom: 0;
     right: 40px;
     z-index: 2;
 }
-.designer .section .content .section li.activity .restricted .mod-content .fullcontent-summary.hide:after {
+.designer .section .content .section li.activity .mod-content .fullcontent-summary.summary-hide:after {
     width: 90px;
     content: '';
     height: 23px;
