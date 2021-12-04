@@ -600,6 +600,12 @@ ul.designer .togglecompletion .btn img {
     right: 0;
     z-index: 1;
 }
+.designer .section .content .section li.activity .danger .mod-content .fullcontent-summary.summary-hide:after {
+    background: #ffe6e8;
+}
+.designer .section .content .section li.activity .warning .mod-content .fullcontent-summary.summary-hide:after {
+    background: #ffe4cf;
+}
 .designer .section .content .section li.activity .restricted .mod-content p {
     color: #6a737b;
 }
