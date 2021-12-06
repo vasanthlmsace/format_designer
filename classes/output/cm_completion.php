@@ -99,11 +99,8 @@ class cm_completion implements renderable, templatable {
                 return false;
             }
         }
-        if (!isloggedin() || isguestuser() || $this->get_completion_mode() == COMPLETION_TRACKING_NONE) {
-            return false;
-        }
 
-        if ($this->get_completion_state() == COMPLETION_INCOMPLETE && !$this->get_completion_expected()) {
+        if (!isloggedin() || isguestuser() || $this->get_completion_mode() == COMPLETION_TRACKING_NONE) {
             return false;
         }
 
@@ -379,7 +376,7 @@ class cm_completion implements renderable, templatable {
                 } else if ($this->is_overdue()) {
                     return 'danger';
                 } else {
-                    return 'purple';
+                    return 'notstarted';
                 }
             }
 
@@ -421,6 +418,7 @@ class cm_completion implements renderable, templatable {
             'duetoday' => $this->is_due_today(),
             'colorclass' => $this->get_color_class(),
             'completioncheckbox' => $this->get_completion_checkbox(),
+            'completionexpected' => ($this->get_completion_expected()) ? true : false,
             'completiontrackingmanual' => $this->get_completion_mode() == COMPLETION_TRACKING_MANUAL,
             'completiontrackingautomatic' => $this->get_completion_mode() == COMPLETION_TRACKING_AUTOMATIC,
             'completionincomplete' => $this->get_completion_state() == COMPLETION_INCOMPLETE,
