@@ -49,7 +49,13 @@ ul.designer .card.card-list:hover .card-body .mod-indent-outer .mod-indent .row 
     margin-bottom: 10px;
 }
 .course-content ul.designer li.section h3.sectionname {
+    width: 90%;
     margin-bottom: 20px;
+    display: inline-block;
+}
+.course-content ul.designer li.section.section-summary h3 {
+    width: 90%;
+    display: inline-block;
 }
 ul.designer .card.card-list.notstarted {
     border-left-color: var(--primary);
@@ -205,9 +211,6 @@ ul.designer .togglecompletion .btn img {
 }
 .course-content ul.designer li.section.main.restricted {
     opacity: .4;
-}
-.course-content ul.designer li.section .restricted-section-block .availability-info {
-    margin-top: 10px;
 }
 .course-content ul.designer li.section .restricted-section-block .availability-info .restricted-info {
     font-size: 12px;

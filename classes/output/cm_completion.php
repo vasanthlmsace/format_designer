@@ -306,6 +306,10 @@ class cm_completion implements renderable, templatable {
         // conditional activities system, we need to turn
         // off the JS.
         $extraclass = '';
+        $buttonclass = 'btn btn-link';
+        if ($this->is_restricted()) {
+            $buttonclass .= ' disabled';
+        }
         if (!empty($CFG->enableavailability) &&
             info::completion_value_used($this->cm->get_course(), $this->cm->id)) {
             $extraclass = ' preventjs';
@@ -324,7 +328,7 @@ class cm_completion implements renderable, templatable {
             'type' => 'hidden', 'name' => 'completionstate', 'value' => $newstate));
         $output .= html_writer::tag('button',
             $OUTPUT->pix_icon('i/completion-' . $completionicon, $imgalt),
-            array('class' => 'btn btn-link', 'aria-live' => 'assertive'));
+            array('class' => $buttonclass, 'aria-live' => 'assertive'));
         $output .= html_writer::end_tag('div');
         $output .= html_writer::end_tag('form');
         return $output;
