@@ -49,12 +49,12 @@ ul.designer .card.card-list:hover .card-body .mod-indent-outer .mod-indent .row 
     margin-bottom: 10px;
 }
 .course-content ul.designer li.section h3.sectionname {
-    width: 90%;
+    max-width: 90%;
     margin-bottom: 20px;
     display: inline-block;
 }
 .course-content ul.designer li.section.section-summary h3 {
-    width: 90%;
+    max-width: 90%;
     display: inline-block;
 }
 ul.designer .card.card-list.notstarted {
