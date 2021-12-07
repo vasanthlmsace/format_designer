@@ -316,7 +316,7 @@ ul.designer .togglecompletion .btn img {
     align-items: center;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 767px) {
     body:not(.editing) .course-content ul.designer li.section .left,
     body:not(.editing) .course-content ul.designer li.section .right {
         display: none;
@@ -678,6 +678,15 @@ ul.designer .togglecompletion .btn img {
         top: 10px;
         left: 20px;
         z-index: 1;
+    }
+}
+
+@media (max-width: 574px) {
+    .designer .section .content .section.link-layout li.activity .activityinstance .aalink .instancename {
+        width: auto;
+    }
+    .designer .section .content .section.link-layout li.activity .activityinstance .aalink.quickeditlink {
+        float: none;
     }
 }
 
