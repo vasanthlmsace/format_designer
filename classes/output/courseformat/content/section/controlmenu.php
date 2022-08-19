@@ -23,6 +23,7 @@
  */
 
 namespace format_designer\output\courseformat\content\section;
+
 use core_courseformat\output\local\content\section\controlmenu as controlmenu_base;
 use section_info;
 use core_courseformat\base as course_format;
@@ -116,13 +117,20 @@ class controlmenu extends controlmenu_base {
             ],
         ];
 
+        if (format_designer_has_pro()) {
+            $prosectiontypes = \local_designer\info::get_layout_menu($this->format, $section, $this->course);
+            $sectiontypes = array_merge($sectiontypes, $prosectiontypes);
+        }
+
         $data = (object)[
             'menu' => $output->render($menu),
             'hasmenu' => true,
             'id' => $section->id,
-            'seciontypes' => $sectiontypes
+            'seciontypes' => $sectiontypes,
+            'hassectiontypes' => ($this->course->coursetype != DESIGNER_TYPE_FLOW),
         ];
 
         return $data;
     }
+
 }

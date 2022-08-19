@@ -15,33 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for Designer course format.
+ * Define event observers.
  *
  * @package   format_designer
  * @copyright 2021 bdecent gmbh <https://bdecent.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace format_designer\privacy;
-
-use core_privacy\local\metadata\null_provider;
 
 /**
- * Privacy Subsystem for Designer course format implementing null_provider.
- *
- * @package   format_designer
- * @copyright 2021 bdecent gmbh <https://bdecent.de>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Need to define list of events that plugin will go to observe.
  */
-class provider implements null_provider {
 
-    /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
-     *
-     * @return  string
-     */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
-    }
-}
+defined('MOODLE_INTERNAL') || die();
+
+$observers = [
+    array(
+        'eventname' => 'core\event\course_section_created',
+        'callback' => '\format_designer\events::course_section_created',
+    ),
+];

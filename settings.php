@@ -24,11 +24,18 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/course/format/designer/lib.php');
+
 if ($ADMIN->fulltree) {
-    $settings->add(new admin_setting_configselect('format_designer/dateformat',
-            new lang_string('dateformat', 'format_designer'),
-            new lang_string('dateformat_help', 'format_designer'),
-            'monthandday', [
+    $settingspage = new theme_boost_admin_settingspage_tabs('formatsettingdesigner', get_string('configtitle', 'format_designer'));
+
+    $settings = new admin_settingpage('format_designer_general', get_string('general', 'format_designer'));
+
+    $settings->add(
+        new admin_setting_configselect('format_designer/dateformat',
+        new lang_string('dateformat', 'format_designer'),
+        new lang_string('dateformat_help', 'format_designer'),
+        'monthandday', [
             'usstandarddate' => userdate(time(), get_string('usstandarddate', 'format_designer')),
             'monthandday' => userdate(time(), get_string('monthandday', 'format_designer')),
             'strftimedate' => userdate(time(), get_string('strftimedate')),
@@ -43,5 +50,23 @@ if ($ADMIN->fulltree) {
             'strftimemonthyear' => userdate(time(), get_string('strftimemonthyear')),
             'strftimerecent' => userdate(time(), get_string('strftimerecent')),
             'strftimerecentfull' => userdate(time(), get_string('strftimerecentfull')),
-        ]));
+        ]
+    ));
+
+    $settings->add(
+        new admin_setting_configtext('format_designer/flowanimationduration',
+        new lang_string('flowanimationduration', 'format_designer'),
+        new lang_string('flowanimationduration_help', 'format_designer'),
+        '0.5', PARAM_FLOAT
+        )
+    );
+
+    $settingspage->add($settings);
+
+    if (format_designer_has_pro()
+         && file_exists($CFG->dirroot.'/local/designer/setting.php')) {
+        require_once($CFG->dirroot.'/local/designer/setting.php');
+    }
+
+    $settings = $settingspage;
 }
