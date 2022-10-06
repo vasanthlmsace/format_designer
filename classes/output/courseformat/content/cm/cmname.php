@@ -106,7 +106,6 @@ class cmname extends \core_courseformat\output\local\content\cm\cmname {
         // Get on-click attribute value if specified and decode the onclick - it
         // has already been encoded for display (puke).
         $data->onclick = htmlspecialchars_decode($mod->onclick, ENT_QUOTES);
-
         return (array) $data;
     }
 }

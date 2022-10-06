@@ -68,6 +68,48 @@ class behat_format_designer extends behat_base {
     }
 
     /**
+     * Check that heroactivity position.
+     *
+     * @Given /^I check heroactivity position "(?P<name>(?:[^"]|\\")*)" "(?P<pos>(?:[^"]|\\")*)"$/
+     * @param string $name
+     * @param string $pos
+     * @throws ExpectationException
+     */
+    public function i_check_heroactivity_position($name, $pos): void {
+        $script = "
+            return (function() {
+                var val = document.querySelector('.secondary-navigation .moremenu ul li:nth-child($pos) a.nav-link').innerHTML;
+                return val.trim();
+            })();
+        ";
+        $config = $this->evaluate_script($script);
+        if (strpos($config, $name) === false) {
+            throw new ExpectationException("Doesn't working correct $config", $this->getSession());
+        }
+    }
+
+    /**
+     * Check that heroactivity position.
+     *
+     * @Given /^I check heroactivity not in the position "(?P<name>(?:[^"]|\\")*)" "(?P<pos>(?:[^"]|\\")*)"$/
+     * @param string $name
+     * @param string $pos
+     * @throws ExpectationException
+     */
+    public function i_check_heroactivity_not_in_the_position($name, $pos): void {
+        $script = "
+            return (function() {
+                var val = document.querySelector('.secondary-navigation .moremenu ul li:nth-child($pos) a.nav-link').innerHTML;
+                return val.trim();
+            })();
+        ";
+        $config = $this->evaluate_script($script);
+        if (strpos($config, $name) !== false) {
+            throw new ExpectationException("Doesn't working correct $config", $this->getSession());
+        }
+    }
+
+    /**
      * Opens a section edit menu if it is not already opened.
      *
      * @Given /^I open section layout "(?P<section_number>\d+)" edit menu$/
@@ -177,7 +219,7 @@ class behat_format_designer extends behat_base {
     public function i_check_section_collapsed($sectionnumber) {
         $xpath = "//li[@id='section-" . $sectionnumber . "']";
         $xpath .= "/descendant::div[contains(@class, 'section-header-content')
-            and contains(@class, 'collapse') and contains(@data-toggle, 'collapse')]";
+        and contains(@class, 'collapse') and contains(@data-toggle, 'collapse')]";
         $exception = "";
         $this->find('xpath', $xpath, $exception);
     }
