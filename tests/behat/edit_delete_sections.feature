@@ -21,8 +21,7 @@ Feature: Sections can be edited and deleted in designer format
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn block editing mode on
+    And I am on "Course 1" course homepage with editing mode on
 
   Scenario: View the default name of the general section in designer format
     When I edit the section "0"
