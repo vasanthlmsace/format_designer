@@ -25,15 +25,16 @@ Feature: Activities can be check hero activity in designer format
 
   Scenario: Check the hero activity to see everywhere
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Course 1" course homepage
+    And I turn block editing mode on
     Then I am on the "Test assignment name" "assign activity" page
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I follow "Expand all"
     And I set the field "Show as tab" to "Everywhere"
     And I set the field "Order" to "1"
     And I press "Save and return to course"
     Then I am on the "Test assignment name1" "assign activity" page
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I follow "Expand all"
     And I set the field "Show as tab" to "Everywhere"
     And I set the field "Order" to "-1"
@@ -55,15 +56,16 @@ Feature: Activities can be check hero activity in designer format
 
   Scenario: Check the hero activity to see coursepage
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Course 1" course homepage
+    And I turn block editing mode on
     Then I am on the "Test assignment name" "assign activity" page
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I follow "Expand all"
     And I set the field "Show as tab" to "Only on course main page"
     And I set the field "Order" to "1"
     And I press "Save and return to course"
     Then I am on the "Test assignment name1" "assign activity" page
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I follow "Expand all"
     And I set the field "Show as tab" to "Only on course main page"
     And I set the field "Order" to "-1"
@@ -83,9 +85,10 @@ Feature: Activities can be check hero activity in designer format
 
   Scenario: Check the hero activity workflow.
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Course 1" course homepage
+    And I turn block editing mode on
     And I am on the "Test assignment name" "assign activity" page
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I follow "Expand all"
     And I set the field "Show as tab" to "Only on course main page"
     And I set the field "Order" to "-1"

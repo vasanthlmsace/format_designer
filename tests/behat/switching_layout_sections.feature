@@ -21,7 +21,8 @@ Feature: Sections can be switch the layouts in designer format
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Course 1" course homepage
+    And I turn block editing mode on
 
   Scenario: View the able to change the section layout
     Given "#section-0" "css_element" should be visible

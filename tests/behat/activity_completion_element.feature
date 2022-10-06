@@ -23,10 +23,11 @@ Feature: Sections can be check activity completion element in designer format
       | teacher1 | C1     | editingteacher |
       | student1 | C1     | student        |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
+    And I am on "Course 1" course homepage
+    And I turn block editing mode on
     And I edit the section "0" to layout "list"
     Then I check the section "0" to layout "list"
-    And I navigate to "Settings" in current page administration
+    And I click on "Settings" "link"
     And I set the following fields to these values:
       | Enable completion tracking | Yes |
     And I press "Save and display"
@@ -60,7 +61,7 @@ Feature: Sections can be check activity completion element in designer format
   #   And I am on "Course 1" course homepage
   #   #And I click on activity "assign2"
   #   And I am on the "Test assignment name 1" "assign activity" page
-  #   And I navigate to "Settings" in current page administration
+  #   And I click on "Settings" "link"
   #   And I set the following fields to these values:
   #     | Completion tracking           | Show activity as complete when conditions are met |
   #     | completionview                | 1    |
