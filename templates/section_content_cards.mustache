@@ -15,17 +15,23 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_designer/courseformat/content/section/cmlist
+    @template format_designer/section_content_cards
 
-    Displays the course module list inside a course section.
+    Displays the course module card layout
 
     Example context (json):
     {
-        "cmscontent" : "course module content html"
-
+        "reactionurl_dislike": "http://moodleurl/course/format/designer/renderer.php",
+        "prosectionstyle": "min-height:100px;"
     }
 }}
-
-{{#cmscontent}}
-    {{{cmscontent}}}
-{{/cmscontent}}
+<ul class="section img-text card-deck card-layout {{sectioncontentlayout}} designer-section-content" data-sectionlayout="{{sectionlayoutclass}}"
+    style="{{#sectioncontentwidth}} {{sectioncontentwidth}} {{/sectioncontentwidth}}">
+    {{#cmlist}}
+        {{#modstatus}}
+        <li id="{{id}}" class="{{modclasses}} {{#isrestricted}}restricted{{/isrestricted}} card" style="{{{modstyle}}}">
+            {{> format_designer/cm/module_layout_cards}}
+        </li>
+        {{/modstatus}}
+    {{/cmlist}}
+</ul>
