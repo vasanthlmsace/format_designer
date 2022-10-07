@@ -1634,11 +1634,11 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                     });
                 }
                 if ($designerpro) {
-                    /* var prerequisites = document.querySelectorAll('.prerequisites-course');
-                    var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu a');
+                    var prerequisites = document.querySelectorAll('.prerequisites-course');
+                    /* var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu a');
                     if (moremenu) {
                         moremenu.classList.remove('active');
-                    }
+                    } */
                     if (prerequisites) {
                         prerequisites.forEach((e) => {
                             e.classList.remove('dropdown-item');
@@ -1660,7 +1660,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                             parent.setAttribute('data-forceintomoremenu', 'false');
                             secondarynav.insertBefore(parent, secondarynav.children[0]);
                         });
-                    } */
+                    }
                 }
                 MenuMore(secondarynav);
             };
