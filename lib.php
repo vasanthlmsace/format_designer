@@ -1586,13 +1586,13 @@ function format_designer_extend_navigation_course($navigation, $course, $context
         }
     }
 
-/*     $designerpro = false;
-    $prerequisitebnewtab = false;
+    $designerpro = 0;
+    $prerequisitebnewtab = 0;
     if (format_designer_has_pro()) {
         $course = course_get_format($course->id)->get_course();
         $prerequisitebnewtab = $course->prerequisitesnewtab;
         $designerpro = true;
-    } */
+    }
 
     $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {
@@ -1633,10 +1633,10 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         i = nodes.indexOf(baseHandler);
                     });
                 }
-                //if ($designerpro) {
+                if ($designerpro) {
                     var prerequisites = document.querySelectorAll('.prerequisites-course');
                     var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu a');
-                    /* if (moremenu) {
+                    if (moremenu) {
                         moremenu.classList.remove('active');
                     }
                     if (prerequisites) {
@@ -1660,8 +1660,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                             parent.setAttribute('data-forceintomoremenu', 'false');
                             secondarynav.insertBefore(parent, secondarynav.children[0]);
                         });
-                    } */
-                //}
+                    }
+                }
                 MenuMore(secondarynav);
             };
         });
