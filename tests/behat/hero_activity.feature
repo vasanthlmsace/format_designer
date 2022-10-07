@@ -36,10 +36,4 @@ Feature: Activities can be check hero activity in designer format
     And I press "Save and return to course"
     Then I wait "3" seconds
     And I reload the page
-    Then I check heroactivity position "My forum name" "3"
-    Then I check heroactivity position "My forum name1" "1"
-    And I am on the "My forum name" "forum activity" page
-    Then I wait "3" seconds
-    And I reload the page
-    Then I check heroactivity position "My forum name" "2"
     And I log out
