@@ -686,7 +686,6 @@ class renderer extends \core_courseformat\output\section_renderer {
         if ($course->coursedisplay && !$onsectionpage) {
             $sectioncollapse = false;
         }
-
         // Set list width for kanban board sections.
         $sectionstylerules = ($course->coursetype == DESIGNER_TYPE_KANBAN)
             ? (isset($course->listwidth) && $section->section != 0
@@ -708,7 +707,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'sectioncontentwidth' => $sectioncontentwidth,
             'sectiondesignwhole' => $sectiondesignwhole,
             'showprerequisites' => ($section->section == 0) ? true : false,
-            'prerequisitesnewtab' => $course->prerequisitesnewtab,
+            'prerequisitesnewtab' => isset($course->prerequisitesnewtab) ? $course->prerequisitesnewtab : false,
             'sectiondesignheader' => $sectiondesignheader,
             'sectiondesigntextcolor' => $sectiondesigntextcolor,
             'sectioncontainerlayout' => $sectioncontainerlayout,
