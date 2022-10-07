@@ -1522,7 +1522,7 @@ function format_designer_popup_installed() {
  * @param stdClass $course The course to object for the report
  * @param stdClass $context The context of the course
  */
-/* function format_designer_extend_navigation_course($navigation, $course, $context) {
+function format_designer_extend_navigation_course($navigation, $course, $context) {
     global $DB, $PAGE;
     if ($course->format != 'designer') {
         return;
@@ -1594,7 +1594,7 @@ function format_designer_popup_installed() {
         $designerpro = true;
     }
 
-    $PAGE->requires->js_amd_inline("
+   /*  $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {
             window.onload = (event) => {
                 if ('$modulecontent') {
@@ -1665,8 +1665,8 @@ function format_designer_popup_installed() {
                 MenuMore(secondarynav);
             };
         });
-    ");
-} */
+    "); */
+}
 
 /**
  * Set the section zero to hero activties.
