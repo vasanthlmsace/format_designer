@@ -43,15 +43,6 @@
 }}
 {{<format_designer/courseformat/content}}
     {{$content}}
-
-    {{#showprerequisites}}
-       {{#prerequisites}}
-            {{$ local_designer/prerequisites }}
-                {{> local_designer/prerequisites }}
-            {{/ local_designer/prerequisites }}
-       {{/prerequisites}}
-    {{/showprerequisites}}
-    {{^hidesection}}
     <li id="section-{{num}}"
         class="section course-section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
                 {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}} current {{/iscurrent}}
@@ -69,6 +60,5 @@
         {{/ format_designer/section_layout }}
 
     </li>
-    {{/hidesection}}
     {{/content}}
 {{/format_designer/courseformat/content}}

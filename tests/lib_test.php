@@ -336,4 +336,3 @@ class lib_test extends \advanced_testcase {
         }
     }
 }
-
