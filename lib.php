@@ -1633,7 +1633,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         i = nodes.indexOf(baseHandler);
                     });
                 }
-               /*  if ($designerpro) {
+                /* if ($designerpro) {
                     var prerequisites = document.querySelectorAll('.prerequisites-course');
                     var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu a');
                     if (moremenu) {
@@ -1661,8 +1661,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                             secondarynav.insertBefore(parent, secondarynav.children[0]);
                         });
                     }
-                }
-                MenuMore(secondarynav); */
+                } */
+                MenuMore(secondarynav);
             };
         });
     ");
