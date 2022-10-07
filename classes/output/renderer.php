@@ -708,6 +708,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'sectioncontentwidth' => $sectioncontentwidth,
             'sectiondesignwhole' => $sectiondesignwhole,
             'showprerequisites' => ($section->section == 0) ? true : false,
+            'prerequisitesnewtab' => $course->prerequisitesnewtab,
             'sectiondesignheader' => $sectiondesignheader,
             'sectiondesigntextcolor' => $sectiondesigntextcolor,
             'sectioncontainerlayout' => $sectioncontainerlayout,

@@ -859,7 +859,7 @@ ul li {
     text-align: right;
     display: inline-block;
     background: none;
-    padding: 5px 0;
+    padding: 0 0 5px 0;
 }
 .format-designer .designer .section.img-text .activity .activityinstance .img-block img {
     width: 20px;
@@ -1088,8 +1088,11 @@ ul li {
     padding-top: 0;
 }
 .format-designer .designer .section .content .section.link-layout li.activity .mod-indent-outer .activityinstance .activitytitle {
-    align-items: end;
+    /* align-items: end; */
     z-index: 0;
+}
+.format-designer .designer .section .content .section.link-layout li.activity .mod-indent-outer .activityinstance .activitytitle .img-element {
+    margin-top: 22px;
 }
 .format-designer.editing .designer .section .content .section.link-layout li.activity .mod-indent-outer {
     padding: 30px;
