@@ -65,7 +65,6 @@ Feature: Activities can be check hero activity in designer format
     And I press "Save and return to course"
     And I am on "Course 1" course homepage
     And I wait until the page is ready
-    And I reload the page
     Then I check heroactivity position "Test assignment name" "3"
     Then I check heroactivity position "Test assignment name1" "1"
     And I am on the "Test assignment name" "assign activity" page
