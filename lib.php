@@ -1594,7 +1594,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
         $designerpro = true;
     }
 
-   /*  $PAGE->requires->js_amd_inline("
+    $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {
             window.onload = (event) => {
                 if ('$modulecontent') {
@@ -1633,7 +1633,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         i = nodes.indexOf(baseHandler);
                     });
                 }
-                if ($designerpro) {
+               /*  if ($designerpro) {
                     var prerequisites = document.querySelectorAll('.prerequisites-course');
                     var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu a');
                     if (moremenu) {
@@ -1662,10 +1662,10 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         });
                     }
                 }
-                MenuMore(secondarynav);
+                MenuMore(secondarynav); */
             };
         });
-    "); */
+    ");
 }
 
 /**
