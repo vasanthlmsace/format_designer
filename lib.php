@@ -1586,13 +1586,13 @@ function format_designer_extend_navigation_course($navigation, $course, $context
         }
     }
 
-    $designerpro = false;
+/*     $designerpro = false;
     $prerequisitebnewtab = false;
     if (format_designer_has_pro()) {
         $course = course_get_format($course->id)->get_course();
         $prerequisitebnewtab = $course->prerequisitesnewtab;
         $designerpro = true;
-    }
+    } */
 
     $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {

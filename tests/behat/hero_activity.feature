@@ -39,13 +39,13 @@ Feature: Activities can be check hero activity in designer format
     And I set the field "Order" to "-1"
     And I press "Save and return to course"
     And I am on "Course 1" course homepage
-    # And I wait until the page is ready
-    # Then I check heroactivity position "Test assignment name" "3"
-    # Then I check heroactivity position "Test assignment name1" "1"
-    # And I am on the "Test assignment name" "assign activity" page
-    # And I wait until the page is ready
-    # Then I check heroactivity position "Test assignment name" "3"
-    # Then I check heroactivity position "Test assignment name1" "1"
+    And I wait until the page is ready
+    Then I check heroactivity position "Test assignment name" "3"
+    Then I check heroactivity position "Test assignment name1" "1"
+    And I am on the "Test assignment name" "assign activity" page
+    And I wait until the page is ready
+    Then I check heroactivity position "Test assignment name" "3"
+    Then I check heroactivity position "Test assignment name1" "1"
     And I log out
 
   Scenario: Check the hero activity to see coursepage
@@ -65,16 +65,16 @@ Feature: Activities can be check hero activity in designer format
     And I press "Save and return to course"
     And I am on "Course 1" course homepage
     And I wait until the page is ready
-    # Then I check heroactivity position "Test assignment name" "3"
-    # Then I check heroactivity position "Test assignment name1" "1"
-    # And I am on the "Test assignment name" "assign activity" page
-    # And I wait until the page is ready
-    # Then I check heroactivity not in the position "Test assignment name" "3"
-    # Then I check heroactivity not in the position "Test assignment name1" "1"
-    # And I am on the "Test assignment name1" "assign activity" page
-    # And I wait until the page is ready
-    # Then I check heroactivity not in the position "Test assignment name" "3"
-    # Then I check heroactivity not in the position "Test assignment name1" "1"
+    Then I check heroactivity position "Test assignment name" "3"
+    Then I check heroactivity position "Test assignment name1" "1"
+    And I am on the "Test assignment name" "assign activity" page
+    And I wait until the page is ready
+    Then I check heroactivity not in the position "Test assignment name" "3"
+    Then I check heroactivity not in the position "Test assignment name1" "1"
+    And I am on the "Test assignment name1" "assign activity" page
+    And I wait until the page is ready
+    Then I check heroactivity not in the position "Test assignment name" "3"
+    Then I check heroactivity not in the position "Test assignment name1" "1"
     And I log out
 
   Scenario: Check the hero activity workflow.
@@ -88,7 +88,7 @@ Feature: Activities can be check hero activity in designer format
     Then I press "Save and return to course"
     And I am on "Course 1" course homepage
     And I wait until the page is ready
-    # Then I check heroactivity position "Test assignment name" "1"
-    # And I am on the "Test assignment name" "assign activity" page
-    # And I wait until the page is ready
-    # Then I check heroactivity not in the position "Test assignment name1" "1"
+    Then I check heroactivity position "Test assignment name" "1"
+    And I am on the "Test assignment name" "assign activity" page
+    And I wait until the page is ready
+    Then I check heroactivity not in the position "Test assignment name1" "1"
