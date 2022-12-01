@@ -336,7 +336,7 @@ class lib_test extends \advanced_testcase {
         }
     }
 
-     /**
+    /**
      * Test the Staffs for the course header.
      * @covers ::format_designer_show_staffs_header
      * @return void
