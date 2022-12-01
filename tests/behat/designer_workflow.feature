@@ -34,4 +34,3 @@ Feature: Check other workflow actions in designer format
     Then I am on "Course 1" course homepage
     And I should see "Student First" in the "#courseStaffinfoControls .carousel-item .title-block h4" "css_element"
     And I should see "student1@example.com" in the "#courseStaffinfoControls .carousel-item .title-block h4 span" "css_element"
-

@@ -1443,7 +1443,11 @@ function format_designer_popup_installed() {
 
 }
 
-
+/**
+ * Get the course header staffs.
+ * @param object $course
+ * @return array data
+ */
 function format_designer_show_staffs_header($course) {
     global $PAGE;
     $staffroleid = $course->coursestaff;
