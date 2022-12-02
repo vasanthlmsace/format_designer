@@ -248,10 +248,10 @@ class format_designer extends format_base {
      * @param bool $foreditform
      * @return array of options
      */
-    public function course_format_options($foreditform = false) {
+    public function designer_course_format_options($foreditform = false) {
+        global $PAGE, $COURSE;
         static $courseformatoptions = false;
         $courseformatoptions = self::course_format_options_list($foreditform);
-
         if ($foreditform) {
             $courseformatoptions['coursecompletiondate'] = [
                 'label' => new lang_string('coursecompletiondate', 'format_designer'),
@@ -291,8 +291,21 @@ class format_designer extends format_base {
                 }
             }
         }
-
         return $courseformatoptions;
+    }
+
+    /**
+     * Definitions of the additional options that this course format uses for course.
+     *
+     * Designer format uses the following options:
+     * - coursedisplay
+     * - hiddensections
+     *
+     * @param bool $foreditform
+     * @return array of options
+     */
+    public function course_format_options($foreditform = false) {
+        return $this->designer_course_format_options($foreditform);
     }
 
     /**
@@ -382,7 +395,7 @@ class format_designer extends format_base {
                 ],
                 'coursestaff' => [
                     'default' => $teacher->id,
-                    'type' => PARAM_INT
+                    'type' => PARAM_TEXT
                 ]
             ];
         }
@@ -604,8 +617,8 @@ class format_designer extends format_base {
             $coursestaffroles = get_default_enrol_roles(context_system::instance());
             $courseformatoptionsedit['coursestaff'] = [
                 'label' => new lang_string('displayheaderroleusers', 'format_designer'),
-                'element_type' => 'select',
-                'element_attributes' => [$coursestaffroles],
+                'element_type' => 'autocomplete',
+                'element_attributes' => [$coursestaffroles, ['multiple' => true]],
                 'help' => 'displayheaderroleusers',
                 'help_component' => 'format_designer',
             ];
@@ -666,8 +679,9 @@ class format_designer extends format_base {
         if ($forsection) {
             $options = $this->section_format_options(true);
         } else {
-            $options = $this->course_format_options(true);
+            $options = $this->designer_course_format_options(true);
         }
+        $design = \format_designer\options::get_default_options();
         foreach ($options as $optionname => $option) {
 
             if (isset($option['disabledif'])) {
@@ -689,6 +703,11 @@ class format_designer extends format_base {
 
             if (isset($option['adv'])) {
                 $mform->setAdvanced($optionname);
+            }
+
+            if ($optionname == 'coursestaff') {
+                $select = $mform->getElement($optionname);
+                $select->setSelected($design->{$optionname});
             }
         }
         if ($forsection) {
@@ -882,7 +901,7 @@ class format_designer extends format_base {
         unset($data['courseheader']);
         unset($data['popupactivitiesinfo']);
         unset($data['courseprerequisites']);
-
+        $data['coursestaff'] = implode(",", $data['coursestaff']);
         return $this->update_format_options($data);
     }
 
@@ -1450,28 +1469,46 @@ function format_designer_popup_installed() {
  */
 function format_designer_show_staffs_header($course) {
     global $PAGE;
-    $staffroleid = $course->coursestaff;
-    $enrolusers = enrol_get_course_users_roles($course->id);
     $staffs = [];
     $i = 1;
-    if (!empty($enrolusers)) {
-        foreach ($enrolusers as $userid => $roles) {
-            if (isset($roles[$staffroleid])) {
-                $user = \core_user::get_user($userid);
-                $list = new stdClass();
-                $list->userid = $userid;
-                $list->email = $user->email;
-                $list->fullname = fullname($user);
-                $list->profileurl = new \moodle_url('/user/profile.php', ['id' => $userid]);
-                $list->contacturl = new \moodle_url('/message/index.php', ['id' => $userid]);
-                $userpicture = new \user_picture($user);
-                $userpicture->size = 1; // Size f1.
-                $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
-                $list->active = ($i == 1) ? true : false;
-                $staffs[] = $list;
-                $i++;
-            }
+    $staffids = format_designer_get_staffs_users($course);
+    if (!empty($staffids)) {
+        foreach ($staffids as $userid) {
+            $user = \core_user::get_user($userid);
+            $list = new stdClass();
+            $list->userid = $userid;
+            $list->email = $user->email;
+            $list->fullname = fullname($user);
+            $list->profileurl = new \moodle_url('/user/profile.php', ['id' => $userid]);
+            $list->contacturl = new \moodle_url('/message/index.php', ['id' => $userid]);
+            $userpicture = new \user_picture($user);
+            $userpicture->size = 1; // Size f1.
+            $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
+            $list->active = ($i == 1) ? true : false;
+            $staffs[] = $list;
+            $i++;
         }
     }
     return $staffs;
+}
+
+/**
+ * Get course staff users.
+ * @param object $course
+ * @return array userids
+ */
+function format_designer_get_staffs_users($course) {
+    $staffids = [];
+    $staffroleids = explode(",", $course->coursestaff);
+    $enrolusers = enrol_get_course_users_roles($course->id);
+    if (!empty($enrolusers)) {
+        foreach ($enrolusers as $userid => $roles) {
+            foreach ($staffroleids as $staffid) {
+                if (isset($roles[$staffid])) {
+                    $staffids[] = $userid;
+                }
+            }
+        }
+    }
+    return array_unique($staffids);
 }
