@@ -1493,7 +1493,7 @@ function format_designer_show_staffs_header($course) {
             }
         }
     }
-    return array_unique($staffids);
+    return $staffs;
 }
 
 /**
