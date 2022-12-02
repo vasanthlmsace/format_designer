@@ -784,7 +784,7 @@ class format_designer extends \core_courseformat\base {
                 $mform->setAdvanced($optionname);
             }
 
-            if ($optionname == 'coursestaff') {
+            if ($optionname == 'coursestaff' && isset($design->coursestaff)) {
                 $select = $mform->getElement($optionname);
                 $select->setSelected($design->{$optionname});
             }
