@@ -980,7 +980,9 @@ class format_designer extends \core_courseformat\base {
         unset($data['courseheader']);
         unset($data['popupactivitiesinfo']);
         unset($data['courseprerequisites']);
-        $data['coursestaff'] = implode(",", $data['coursestaff']);
+        if (isset($data['coursestaff'])) {
+            $data['coursestaff'] = implode(",", $data['coursestaff']);
+        }
         return $this->update_format_options($data);
     }
 
@@ -1730,22 +1732,24 @@ function format_designer_show_staffs_header($course) {
     global $PAGE;
     $staffs = [];
     $i = 1;
-    $staffids = format_designer_get_staffs_users($course);
-    if (!empty($staffids)) {
-        foreach ($staffids as $userid) {
-            $user = \core_user::get_user($userid);
-            $list = new stdClass();
-            $list->userid = $userid;
-            $list->email = $user->email;
-            $list->fullname = fullname($user);
-            $list->profileurl = new \moodle_url('/user/profile.php', ['id' => $userid]);
-            $list->contacturl = new \moodle_url('/message/index.php', ['id' => $userid]);
-            $userpicture = new \user_picture($user);
-            $userpicture->size = 1; // Size f1.
-            $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
-            $list->active = ($i == 1) ? true : false;
-            $staffs[] = $list;
-            $i++;
+    if (isset($course->coursestaff)) {
+        $staffids = format_designer_get_staffs_users($course);
+        if (!empty($staffids)) {
+            foreach ($staffids as $userid) {
+                $user = \core_user::get_user($userid);
+                $list = new stdClass();
+                $list->userid = $userid;
+                $list->email = $user->email;
+                $list->fullname = fullname($user);
+                $list->profileurl = new \moodle_url('/user/profile.php', ['id' => $userid]);
+                $list->contacturl = new \moodle_url('/message/index.php', ['id' => $userid]);
+                $userpicture = new \user_picture($user);
+                $userpicture->size = 1; // Size f1.
+                $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
+                $list->active = ($i == 1) ? true : false;
+                $staffs[] = $list;
+                $i++;
+            }
         }
     }
     return $staffs;
