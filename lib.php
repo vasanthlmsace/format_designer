@@ -1729,7 +1729,7 @@ function format_designer_section_zero_tomake_hero($reports, $course) {
  * @return array data
  */
 function format_designer_show_staffs_header($course) {
-    global $PAGE;
+    global $PAGE, $DB;
     $staffs = [];
     $i = 1;
     $coursecontext = \context_course::instance($course->id);
@@ -1739,7 +1739,11 @@ function format_designer_show_staffs_header($course) {
             foreach ($staffids as $userid) {
                 $user = \core_user::get_user($userid);
                 $roles = get_user_roles($coursecontext, $userid, false);
-                $roles = implode(",", array_column($roles, 'shortname'));
+                array_map(function($role) {
+                    $role->name = role_get_name($role);
+                    return $role;
+                }, $roles);
+                $roles = implode(", ", array_column($roles, 'name'));
                 $list = new stdClass();
                 $list->userid = $userid;
                 $list->email = $user->email;

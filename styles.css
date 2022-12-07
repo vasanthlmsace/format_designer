@@ -2235,6 +2235,7 @@ body.format-designer.editing .designer .section .content .section.card-layout li
     padding-left: 100px;
 }
 .format-designer .course-info-block .carousel .contact-element .contact-block .content-block .title-block h4 span + span {
+    font-size: 14px;
     margin-top: 10px;
 }
 .format-designer .course-info-block .carousel .contact-element .contact-block .content-block .title-block > a {
