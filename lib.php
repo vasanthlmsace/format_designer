@@ -1732,11 +1732,14 @@ function format_designer_show_staffs_header($course) {
     global $PAGE;
     $staffs = [];
     $i = 1;
+    $coursecontext = \context_course::instance($course->id);
     if (isset($course->coursestaff)) {
         $staffids = format_designer_get_staffs_users($course);
         if (!empty($staffids)) {
             foreach ($staffids as $userid) {
                 $user = \core_user::get_user($userid);
+                $roles = get_user_roles($coursecontext, $userid, false);
+                $roles = implode(",", array_column($roles, 'shortname'));
                 $list = new stdClass();
                 $list->userid = $userid;
                 $list->email = $user->email;
@@ -1747,6 +1750,7 @@ function format_designer_show_staffs_header($course) {
                 $userpicture->size = 1; // Size f1.
                 $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
                 $list->active = ($i == 1) ? true : false;
+                $list->role = $roles;
                 $staffs[] = $list;
                 $i++;
             }
