@@ -1470,7 +1470,7 @@ function format_designer_popup_installed() {
  * @return array data
  */
 function format_designer_show_staffs_header($course) {
-    global $PAGE, $DB;
+    global $PAGE, $DB, $USER;
     $staffs = [];
     $i = 1;
     $coursecontext = \context_course::instance($course->id);
