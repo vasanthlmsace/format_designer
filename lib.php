@@ -1496,6 +1496,11 @@ function format_designer_show_staffs_header($course) {
                 $list->profileimageurl = $userpicture->get_url($PAGE)->out(false);
                 $list->active = ($i == 1) ? true : false;
                 $list->role = $roles;
+                $list->showaddtocontacts = ($USER->id != $user->id) ? true : false;
+                $iscontact = \core_message\api::is_contact($USER->id, $user->id);
+                $list->iscontact = $iscontact;
+                $list->contacttitle = $iscontact ? get_string('removefromyourcontacts', 'message') :
+                    get_string('addtoyourcontacts', 'message');
                 $staffs[] = $list;
                 $i++;
             }
