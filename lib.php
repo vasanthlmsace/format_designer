@@ -1648,6 +1648,9 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                 var heroActivity = document.querySelectorAll('.secondary-navigation .designer-hero-activity');
                 var i = 0;
                 var baseTab = document.querySelectorAll('.secondary-navigation ul.nav-tabs li')[0];
+                if (baseTab) {
+                    var baseDataElement = baseTab.getAttribute('data-key');
+                }
                 var dropdownmenu = document.querySelectorAll('.secondary-navigation .dropdownmoremenu .nav-item');
                 var morebutton = document.querySelector('.secondary-navigation .nav li[data-region=morebutton]');
                 // Remove the dropdown menu and push to the all elements in the outer nav item.
