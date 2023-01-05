@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot. '/course/format/lib.php');
+require_once($CFG->dirroot . '/user/profile/lib.php');
 
 use core\output\inplace_editable;
 
