@@ -1773,18 +1773,20 @@ function format_designer_extend_navigation_course($navigation, $course, $context
  * @return array reports
  */
 function format_designer_section_zero_tomake_hero($reports, $course) {
-    global $PAGE;
+    global $PAGE, $DB;
     $zerotohero = get_config('format_designer', 'sectionzeroactivities');
     if ($zerotohero) {
         $modinfo = get_fast_modinfo($course);
         foreach ($modinfo->sections[0] as $modnumber) {
-            if (isset($reports[$modnumber])) {
-                $reports[$modnumber]['heroactivity'] = 1;
-                $reports[$modnumber]['heroactivitypos'] = get_config('format_designer', 'heroactivitypos');
-            } else {
-                $reports[$modnumber]['heroactivity'] = 1;
-                $reports[$modnumber]['heroactivitypos'] = get_config('format_designer', 'heroactivitypos');;
-                $reports[$modnumber]['cmid'] = $modnumber;
+            if ($DB->record_exists('course_modules', array('deletioninprogress' => 0, 'id' => $modnumber))) {
+                if (isset($reports[$modnumber])) {
+                    $reports[$modnumber]['heroactivity'] = 1;
+                    $reports[$modnumber]['heroactivitypos'] = get_config('format_designer', 'heroactivitypos');
+                } else {
+                    $reports[$modnumber]['heroactivity'] = 1;
+                    $reports[$modnumber]['heroactivitypos'] = get_config('format_designer', 'heroactivitypos');;
+                    $reports[$modnumber]['cmid'] = $modnumber;
+                }
             }
         }
     }
