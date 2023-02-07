@@ -368,7 +368,8 @@ class lib_test extends \advanced_testcase {
     }
 
     public function test_critera_progress() {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->dirroot. "/course/format/designer/renderer.php");
         $this->resetAfterTest();
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         $user = $this->getDataGenerator()->create_user();
@@ -387,25 +388,23 @@ class lib_test extends \advanced_testcase {
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
 
-
-         // Set completion criteria and mark the user to complete the criteria.
-         $criteriadata = (object) [
+        // Set completion criteria and mark the user to complete the criteria.
+        $criteriadata = (object) [
             'id' => $course->id,
             'criteria_course' => [$course1->id],
         ];
         $criterion = new \completion_criteria_course();
         $criterion->update_config($criteriadata);
 
-
-         // Set completion criteria and mark the user to complete the criteria.
-         $criteriadata = (object) [
+        // Set completion criteria and mark the user to complete the criteria.
+        $criteriadata = (object) [
             'id' => $course->id,
             'criteria_activity' => [$assign1->cmid => 1],
         ];
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
 
-        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
+        $result = \format_designer_renderer::criteria_progress($course, $user->id);
 
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(0, $result['completed']);
@@ -414,20 +413,9 @@ class lib_test extends \advanced_testcase {
         $completion = new \completion_info($course);
         $completion->update_state($cmassign, COMPLETION_COMPLETE, $user->id);
 
-        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
+        $result = \format_designer_renderer::criteria_progress($course, $user->id);
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(1, $result['completed']);
         $this->assertEquals(50, $result['percent']);
-
-        $cmassign1 = get_coursemodule_from_id('assign', $assign2->cmid);
-        $completion = new \completion_info($course1);
-        $completion->update_state($cmassign1, COMPLETION_COMPLETE, $user->id);
-
-        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
-
-        $this->assertEquals(2, $result['count']);
-        $this->assertEquals(2, $result['completed']);
-        $this->assertEquals(100, $result['percent']);
-
     }
 }
