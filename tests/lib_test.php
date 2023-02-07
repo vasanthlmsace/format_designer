@@ -366,6 +366,11 @@ class lib_test extends \advanced_testcase {
         $this->assertEquals($user->id, $result[0]->userid);
     }
 
+    /**
+     * Test the Critera progress function.
+     * @covers ::critera_progress
+     * @return void
+     */
     public function test_critera_progress() {
         global $DB;
         $this->resetAfterTest();
@@ -377,7 +382,7 @@ class lib_test extends \advanced_testcase {
         $assign2 = $this->getDataGenerator()->create_module('assign', ['course' => $course1->id], ['completion' => 1]);
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $studentrole->id);
         $this->getDataGenerator()->enrol_user($user->id, $course1->id, $studentrole->id);
-   
+
         // Set completion criteria and mark the user to complete the criteria.
         $criteriadata = (object) [
             'id' => $course1->id,
@@ -386,24 +391,21 @@ class lib_test extends \advanced_testcase {
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
 
-
-         // Set completion criteria and mark the user to complete the criteria.
-         $criteriadata = (object) [
+        // Set completion criteria and mark the user to complete the criteria.
+        $criteriadata = (object) [
             'id' => $course->id,
             'criteria_course' => [$course1->id],
         ];
         $criterion = new \completion_criteria_course();
         $criterion->update_config($criteriadata);
 
-
-         // Set completion criteria and mark the user to complete the criteria.
-         $criteriadata = (object) [
+        // Set completion criteria and mark the user to complete the criteria.
+        $criteriadata = (object) [
             'id' => $course->id,
             'criteria_activity' => [$assign1->cmid => 1],
         ];
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
-
         $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
 
         $this->assertEquals(2, $result['count']);

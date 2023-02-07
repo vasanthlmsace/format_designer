@@ -100,7 +100,7 @@ if ($ADMIN->fulltree) {
     $setting = new admin_setting_configselect_with_advanced($name, $title, $desc, $default, $posrange);
     $settings->add($setting);
 
-    // Avoid duplicate entries
+    // Avoid duplicate entries.
     $name = 'format_designer/avoidduplicate_heromodentry';
     $title = get_string('stravoidduplicateentry', 'format_designer');
     $desc = '';

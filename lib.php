@@ -485,11 +485,11 @@ class format_designer extends \core_courseformat\base {
                 }
             }
 
-            $courseformatoptions['courseheroactivityheader'] =  [
+            $courseformatoptions['courseheroactivityheader'] = [
                 'default' => get_string('heroactivity', 'format_designer'),
                 'type' => PARAM_TEXT,
             ];
-            $courseformatoptions['sectionzeroactivities'] =  [
+            $courseformatoptions['sectionzeroactivities'] = [
                 'default' => 0,
                 'type' => PARAM_INT,
             ];
@@ -759,8 +759,7 @@ class format_designer extends \core_courseformat\base {
                 'element_type' => 'header',
             ];
 
-
-            $courseformatoptionsedit['sectionzeroactivities'] =  [
+            $courseformatoptionsedit['sectionzeroactivities'] = [
                 'label' => new lang_string('sectionzeroactivities', 'format_designer'),
                 'element_type' => 'select',
                 'element_attributes' => [
@@ -774,7 +773,7 @@ class format_designer extends \core_courseformat\base {
                 'help_component' => 'format_designer',
             ];
 
-            $courseformatoptionsedit['heroactivity'] =  [
+            $courseformatoptionsedit['heroactivity'] = [
                 'label' => new lang_string('showastab', 'format_designer'),
                 'element_type' => 'select',
                 'element_attributes' => [
@@ -788,7 +787,7 @@ class format_designer extends \core_courseformat\base {
                 'help_component' => 'format_designer',
             ];
             $posrange = array_combine(range(-10, 10), range(-10, 10));
-            $courseformatoptionsedit['heroactivitypos'] =  [
+            $courseformatoptionsedit['heroactivitypos'] = [
                 'label' => new lang_string('order'),
                 'element_type' => 'select',
                 'element_attributes' => [$posrange],
@@ -1553,8 +1552,8 @@ function format_designer_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->hideIf('designer_secondarycustomtitle', 'designer_secondarytype', 'eq', 'activitytitle');
         $mform->hideIf('designer_secondarycustomtitle', 'designer_secondarytype', 'eq', 'activitytype');
 
-
-        $mform->addElement('advcheckbox', 'designer_customtitleusecourseindex', get_string('customnameincourseindex', 'format_designer'));
+        $mform->addElement('advcheckbox', 'designer_customtitleusecourseindex',
+            get_string('customnameincourseindex', 'format_designer'));
         $mform->setType('designer_customtitleusecourseindex', PARAM_INT);
         if (isset($design->customtitleusecourseindex)) {
             $mform->setDefault('designer_customtitleusecourseindex', $design->customtitleusecourseindex);
@@ -1562,7 +1561,8 @@ function format_designer_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->hideIf('designer_customtitleusecourseindex', 'designer_secondarytype', 'eq', 'activitytitle');
         $mform->hideIf('designer_customtitleusecourseindex', 'designer_secondarytype', 'eq', 'activitytype');
 
-        $mform->addElement('advcheckbox', 'designer_customtitleuseactivityitem', get_string('customnameinactivityitem', 'format_designer'));
+        $mform->addElement('advcheckbox', 'designer_customtitleuseactivityitem',
+            get_string('customnameinactivityitem', 'format_designer'));
         $mform->setType('designer_customtitleuseactivityitem', PARAM_INT);
         if (isset($design->customtitleuseactivityitem)) {
             $mform->setDefault('designer_customtitleuseactivityitem', $design->customtitleuseactivityitem);
@@ -1736,13 +1736,12 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     // Add the course menu opition for all course pages.
     $secondarymenutocoursecontent = '';
     if ($course->secondarymenutocourse) {
-        $secondarymenutocoursecontent .= html_writer::start_tag("li", array("data-key" => 'designercoursehome', "class" => "nav-item",
-        "role" => "none", "data-forceintomoremenu" => "true"));
-        $secondarymenutocoursecontent .= html_writer::link(new moodle_url('/course/view.php', ['id' => $course->id]), get_string('course'),
-            array('role' => 'menuitem', 'class' => 'designercoursehome', "tabindex" => "-1"));
+        $secondarymenutocoursecontent .= html_writer::start_tag("li", array("data-key" => 'designercoursehome',
+        "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "true"));
+        $secondarymenutocoursecontent .= html_writer::link(new moodle_url('/course/view.php', ['id' => $course->id]),
+        get_string('course'), array('role' => 'menuitem', 'class' => 'designercoursehome', "tabindex" => "-1"));
         $secondarymenutocoursecontent .= html_writer::end_tag("li");
     }
-
 
     $sql = "SELECT fd.* FROM
         {format_designer_options} fd
@@ -1777,7 +1776,6 @@ function format_designer_extend_navigation_course($navigation, $course, $context
             return $a['heroactivitypos'] - $b['heroactivitypos'];
         });
     }
-
 
     $content = '';
     $modulecontent = false;
@@ -1990,12 +1988,12 @@ function format_designer_section_zero_tomake_hero($reports, $course) {
         foreach ($modinfo->sections[0] as $modnumber) {
             if ($DB->record_exists('course_modules', array('deletioninprogress' => 0, 'id' => $modnumber))) {
                 if (isset($reports[$modnumber]) && !$reports[$modnumber]['heroactivity']) {
-                    $reports[$modnumber]['heroactivity'] = ($course->heroactivity == DESIGNER_HERO_ACTVITIY_COURSEPAGE && isset($PAGE->cm->id)) ? 0
-                            : ($course->heroactivity == true);
+                    $reports[$modnumber]['heroactivity'] = ($course->heroactivity == DESIGNER_HERO_ACTVITIY_COURSEPAGE
+                        && isset($PAGE->cm->id)) ? 0 : ($course->heroactivity == true);
                     $reports[$modnumber]['heroactivitypos'] = $course->heroactivitypos;
                 } else if (!isset($reports[$modnumber])) {
-                    $reports[$modnumber]['heroactivity'] = ($course->heroactivity == DESIGNER_HERO_ACTVITIY_COURSEPAGE && isset($PAGE->cm->id)) ? 0
-                    : ($course->heroactivity == true);
+                    $reports[$modnumber]['heroactivity'] = ($course->heroactivity == DESIGNER_HERO_ACTVITIY_COURSEPAGE
+                        && isset($PAGE->cm->id)) ? 0 : ($course->heroactivity == true);
                     $reports[$modnumber]['heroactivitypos'] = $course->heroactivitypos;
                     $reports[$modnumber]['cmid'] = $modnumber;
                 }

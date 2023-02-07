@@ -88,6 +88,3 @@ Feature: Users can choose different course types.
     Then I should see "Course" in the ".secondary-navigation" "css_element"
     And I navigate to "Advanced grading" in current page administration
     Then I should see "Course" in the ".secondary-navigation" "css_element"
-
-
-

@@ -27,7 +27,6 @@ Feature: Activities can be check hero activity in designer format
       | assign        | Demo assign 4         | Test assignment4 description  | C2     | assign4     | 0       |   1        |
       | assign        | Demo assign 5         | Test assignment5 description  | C2     | assign5     | 1       |   1        |
 
-
   Scenario: Check the hero activity to see everywhere
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -166,7 +165,8 @@ Feature: Activities can be check hero activity in designer format
     And I am on "Course 1" course homepage
     And I should see "Demo Assign Test" in the ".secondary-navigation" "css_element"
     And I should see "Demo Assign Test" in the "li.activity:nth-child(1)" "css_element"
-    Then I click on ".drawer-toggler.drawer-left-toggle" "css_element"
+    And I should see "Demo Assign Test" in the "#courseindex-content" "css_element"
+    Then I am on the "Demo assign 1" "assign activity" page
     And I should see "Demo Assign Test" in the "#courseindex-content" "css_element"
 
   Scenario: Check the section zero activities.
@@ -220,10 +220,3 @@ Feature: Activities can be check hero activity in designer format
     Then I press "Save and display"
     And I should not see "Demo assign 1" in the ".secondary-navigation" "css_element"
     And I should not see "Demo assign 2" in the ".secondary-navigation" "css_element"
-
-
-
-
-
-
-
