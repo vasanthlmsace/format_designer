@@ -58,6 +58,12 @@ class title extends \core_courseformat\output\local\content\cm\title {
             'linkclasses' => $this->displayoptions['linkclasses'],
         ];
 
+
+        $useactivityitemcustom = \format_designer\options::get_option($mod->id, 'customtitleuseactivityitem');
+        if ($useactivityitemcustom) {
+            $data->designercmname = $this->format->get_cm_secondary_title($mod);
+        }
+
         // File type after name, for alphabetic lists (screen reader).
         if (strpos(
             \core_text::strtolower($data->instancename),
