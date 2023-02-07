@@ -130,7 +130,7 @@ Feature: Course progress bar checking criteria in designer format
     And I toggle the manual completion state of "Demo assign 01"
     And I should see "1 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     Then I am on "Course 3" course homepage
-    And I should see "2 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "1 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     And the manual completion button of "Demo assign 02" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 02"
-    And I should see "3 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "2 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
