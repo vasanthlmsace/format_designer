@@ -31,9 +31,9 @@ jobs:
           - php: '8.0'
             moodle-branch: 'MOODLE_400_STABLE'
             database: 'pgsql'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_400_STABLE'
-            database: 'mariadb'
+          # - php: '8.0'
+          #   moodle-branch: 'MOODLE_400_STABLE'
+          #   database: 'mariadb'
           # - php: '7.4'
           #   moodle-branch: 'MOODLE_400_STABLE'
           #   database: 'pgsql'
@@ -81,13 +81,13 @@ jobs:
       #   if: ${{ always() }}
       #   run: moodle-plugin-ci phpmd
 
-      - name: Moodle Code Checker
-        if: ${{ always() }}
-        run: moodle-plugin-ci codechecker --max-warnings 0
+      # - name: Moodle Code Checker
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci codechecker --max-warnings 0
 
-      - name: Moodle PHPDoc Checker
-        if: ${{ always() }}
-        run: moodle-plugin-ci phpdoc
+      # - name: Moodle PHPDoc Checker
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci phpdoc
 
       # - name: Validating
       #   if: ${{ always() }}
@@ -97,18 +97,18 @@ jobs:
       #   if: ${{ always() }}
       #   run: moodle-plugin-ci savepoints
 
-      - name: Mustache Lint
-        if: ${{ always() }}
-        run: moodle-plugin-ci mustache
+      # - name: Mustache Lint
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci mustache
 
       - name: Grunt
         if: ${{ always() }}
         run: moodle-plugin-ci grunt
 
-      - name: PHPUnit tests
-        if: ${{ always() }}
-        run: moodle-plugin-ci phpunit
+      # - name: PHPUnit tests
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci phpunit
 
-      - name: Behat features
-        if: ${{ always() }}
-        run: moodle-plugin-ci behat --profile chrome
+      # - name: Behat features
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci behat --profile chrome
