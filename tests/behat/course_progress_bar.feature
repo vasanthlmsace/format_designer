@@ -84,13 +84,25 @@ Feature: Course progress bar checking criteria in designer format
     And the manual completion button of "Demo assign 01" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 01"
     And I should see "1 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    Then I log out
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I wait "1" seconds
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I log in as "student1"
+    Then I am on "Course 1" course homepage
+    And I should see "1 of 2 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     Then I am on "Course 5" course homepage
     And I should see "0 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     And the manual completion button of "Demo assign 01" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 01"
     And I should see "1 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
-    #Then I am on "Course 1" course homepage
-    #And I should see "2 of 2 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    Then I log out
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I wait "1" seconds
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I log in as "student1"
+    Then I am on "Course 1" course homepage
+    And I should see "2 of 2 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     # Check the activity criteria completion.
     Then I am on "Course 2" course homepage
     And ".progress-block .activity-completed-block" "css_element" should exist
@@ -119,18 +131,28 @@ Feature: Course progress bar checking criteria in designer format
     And the manual completion button of "Demo assign 01" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 01"
     And I should see "1 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    Then I log out
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I wait "1" seconds
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I log in as "student1"
     Then I am on "Course 3" course homepage
-    And I should see "0 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "1 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     And the manual completion button of "Demo assign 01" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 01"
-    And I should see "1 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "2 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     Then I am on "Course 5" course homepage
     And I should see "0 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     And the manual completion button of "Demo assign 01" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 01"
     And I should see "1 of 1 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    Then I log out
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I wait "1" seconds
+    And I run the scheduled task "core\task\completion_regular_task"
+    And I log in as "student1"
     Then I am on "Course 3" course homepage
-    And I should see "1 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "3 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
     And the manual completion button of "Demo assign 02" is displayed as "Mark as done"
     And I toggle the manual completion state of "Demo assign 02"
-    And I should see "2 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
+    And I should see "4 of 4 criteria completed" in the ".progress-block .activity-completed-block" "css_element"
