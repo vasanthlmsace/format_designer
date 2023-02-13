@@ -379,7 +379,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      * @return string
      */
     public function timemanagement_details(stdclass $course): string {
-        global $USER, $CFG, $DB, $OUTPUT;
+        global $USER, $CFG, $DB;
         require_once($CFG->dirroot.'/enrol/locallib.php');
 
         $context = context_course::instance($course->id);
@@ -405,7 +405,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         ];
         $courseprogress = self::criteria_progress($course, $USER->id);
         $data['courseprogress'] = ($course->activityprogress) ? $courseprogress : '';
-        $data['progresshelpicon'] = $OUTPUT->help_icon('criteriaprogressinfo', 'format_designer');
+        $data['progresshelpicon'] = $this->output->help_icon('criteriaprogressinfo', 'format_designer');
         if ($courseprogress != null) {
             $sql = "SELECT * FROM {course_completions}
                 WHERE course = :course AND userid = :userid AND timecompleted IS NOT NULL";
@@ -492,9 +492,12 @@ class renderer extends \core_courseformat\output\section_renderer {
 
                 if (isset($modules[$cmid])) {
                     $data = $completion->get_data($modules[$cmid], true, $userid);
-                    $completed += ($data->completionstate == COMPLETION_COMPLETE || $data->completionstate == COMPLETION_COMPLETE_PASS) ? 1 : 0;
-                    $modtooltiplink = html_writer::link($modules[$cmid]->url, get_string('stractivity', 'format_designer') . " ". $modules[$cmid]->name);
-                    if ($data->completionstate == COMPLETION_COMPLETE || $data->completionstate == COMPLETION_COMPLETE_PASS) {
+                    $completed += ($data->completionstate == COMPLETION_COMPLETE ||
+                        $data->completionstate == COMPLETION_COMPLETE_PASS) ? 1 : 0;
+                    $modtooltiplink = html_writer::link($modules[$cmid]->url,
+                        get_string('stractivity', 'format_designer') . " ". $modules[$cmid]->name);
+                    if ($data->completionstate == COMPLETION_COMPLETE ||
+                            $data->completionstate == COMPLETION_COMPLETE_PASS) {
                         $completedcriteria[] = $modtooltiplink;
                     } else {
                         $uncompletedcriteria[] = $modtooltiplink;
@@ -508,7 +511,8 @@ class renderer extends \core_courseformat\output\section_renderer {
                 $courseid = $coursecriteria->courseinstance;
                 $course = get_course($courseid);
                 $completion = new \completion_info($course);
-                $coursetooltiplink = html_writer::link(new moodle_url('/course/view.php', ['id' => $course->id]), $course->fullname);
+                $coursetooltiplink = html_writer::link(new moodle_url('/course/view.php',
+                    ['id' => $course->id]), $course->fullname);
                 if ($completion->is_course_complete($userid)) {
                     $completed += 1;
                     $completedcriteria[] = $coursetooltiplink;
