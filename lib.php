@@ -1089,7 +1089,7 @@ class format_designer extends \core_courseformat\base {
         unset($data['courseheader']);
         unset($data['popupactivitiesinfo']);
         unset($data['courseprerequisites']);
-        if (isset($data['coursestaff'])) {
+        if (isset($data['coursestaff']) && is_array($data['coursestaff'])) {
             $data['coursestaff'] = implode(",", $data['coursestaff']);
         }
         return $this->update_format_options($data);
@@ -1717,6 +1717,22 @@ function format_designer_popup_installed() {
     return !empty($plugininfo) ? true : false;
 }
 
+/**
+ * Check course has heroactivity condition or not.
+ * @param object $course
+ * @return bool
+ */
+function format_designer_course_has_heroactivity($course) {
+    global $DB;
+    $iscourseheroactivity = ($course->sectionzeroactivities &&
+        $course->heroactivity == DESIGNER_HERO_ACTVITIY_EVERYWHERE) ? true : false;
+    $sql = "SELECT fd.value FROM {format_designer_options} fd
+        WHERE fd.courseid = :courseid AND fd.name = :optionname AND fd.value = :optionvalue";
+    $iscoursemodheroactivity = $DB->record_exists_sql($sql, ['optionname' => 'heroactivity',
+        'optionvalue' => 1, 'courseid' => $course->id]);
+    return ($iscourseheroactivity || $iscoursemodheroactivity) ? true : false;
+}
+
 
 /**
  * This function extends the navigation with the hero activities items
@@ -1731,9 +1747,22 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     if ($course->format != 'designer') {
         return;
     }
-
     $format = course_get_format($COURSE);
     $course = $format->get_course();
+
+    if (($navigation->children->count() <= 1 && $PAGE->context->contextlevel == CONTEXT_MODULE)) {
+        if ($course->secondarymenutocourse || format_designer_course_has_heroactivity($course)) {
+            // Active the secondary navigation.
+            $modulenode = $navigation->add(get_string('pluginadministration', $PAGE->activityname), null,
+                navigation_node::TYPE_SETTING, null, 'modulesettings');
+            $modulenode->nodetype = navigation_node::NODETYPE_BRANCH;
+            $modulenode->force_open();
+            $url = new moodle_url('/course/modedit.php', array('update' => $PAGE->cm->id, 'return' => 1));
+            $node = $modulenode->add(get_string('course'), $url, navigation_node::TYPE_SETTING, null,
+                'modedit', new pix_icon('i/settings', ''));
+            $node->add_class('d-none');
+        }
+    }
 
     // Add the course menu opition for all course pages.
     $secondarymenutocoursecontent = '';
@@ -2077,4 +2106,18 @@ function format_designer_get_staffs_users($course) {
         }
     }
     return array_unique($staffids);
+}
+
+/**
+ * Get course type.
+ * @return array coursetypes.
+ */
+function format_designer_get_coursetypes() {
+    $coursetypes = [
+        0 => get_string('normal'),
+        DESIGNER_TYPE_KANBAN => get_string('kanbanboard', 'format_designer'),
+        DESIGNER_TYPE_COLLAPSIBLE => get_string('collapsiblesections', 'format_designer'),
+        DESIGNER_TYPE_FLOW => get_string('type_flow', 'format_designer')
+    ];
+    return $coursetypes;
 }
