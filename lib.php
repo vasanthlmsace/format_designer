@@ -1723,13 +1723,13 @@ function format_designer_popup_installed() {
  * @return bool
  */
 function format_designer_course_has_heroactivity($course) {
-    global $DB;
+    global $DB, $PAGE;
     $iscourseheroactivity = ($course->sectionzeroactivities &&
         $course->heroactivity == DESIGNER_HERO_ACTVITIY_EVERYWHERE) ? true : false;
     $sql = "SELECT fd.value FROM {format_designer_options} fd
-        WHERE fd.courseid = :courseid AND fd.name = :optionname AND fd.value = :optionvalue";
+        WHERE fd.courseid = :courseid AND fd.name = :optionname AND fd.value = :optionvalue AND fd.cmid != :currentcm";
     $iscoursemodheroactivity = $DB->record_exists_sql($sql, ['optionname' => 'heroactivity',
-        'optionvalue' => 1, 'courseid' => $course->id]);
+        'optionvalue' => 1, 'courseid' => $course->id, 'currentcm' => $PAGE->cm->id]);
     return ($iscourseheroactivity || $iscoursemodheroactivity) ? true : false;
 }
 
@@ -1749,20 +1749,31 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     }
     $format = course_get_format($COURSE);
     $course = $format->get_course();
-
-    if (($navigation->children->count() <= 1 && $PAGE->context->contextlevel == CONTEXT_MODULE)) {
-        if ($course->secondarymenutocourse || format_designer_course_has_heroactivity($course)) {
-            // Active the secondary navigation.
-            $modulenode = $navigation->add(get_string('pluginadministration', $PAGE->activityname), null,
-                navigation_node::TYPE_SETTING, null, 'modulesettings');
-            $modulenode->nodetype = navigation_node::NODETYPE_BRANCH;
-            $modulenode->force_open();
-            $url = new moodle_url('/course/modedit.php', array('update' => $PAGE->cm->id, 'return' => 1));
-            $node = $modulenode->add(get_string('course'), $url, navigation_node::TYPE_SETTING, null,
-                'modedit', new pix_icon('i/settings', ''));
-            $node->add_class('d-none');
-        }
-    }
+    $isaddsecondary = ($navigation->children->count() <= 1 && $PAGE->context->contextlevel == CONTEXT_MODULE) &&
+        (format_designer_course_has_heroactivity($course) || $course->secondarymenutocourse);
+    $currentmodname = isset($PAGE->cm->modname) ? get_string('modulename', $PAGE->cm->modname) : '';
+    $curentmodurl = isset($PAGE->cm->id) ? new moodle_url("/mod/{$PAGE->cm->modname}/view.php", ['id' => $PAGE->cm->id]) : '';
+    $secondarycontent = html_writer::start_div('secondary-navigation d-print-none');
+    $secondarycontent .= html_writer::start_tag('nav', array('class' => 'moremenu navigation observed'));
+    $secondarycontent .= html_writer::start_tag('ul', array('id' => 'moremenu-63f8473d27694-nav-tabs',
+        'class' => 'nav more-nav nav-tabs', 'role' => 'menubar'));
+        $secondarycontent .= html_writer::start_tag('li', array('data-key' => 'modulepage', 'class' => 'nav-item', 'role' => 'none',
+            'data-forceintomoremenu' => 'false'));
+        $secondarycontent .= html_writer::link($curentmodurl, $currentmodname, ['role' => 'menuitem',
+            'class' => 'nav-link active active_tree_node', 'aria-current' => 'true']);
+        $secondarycontent .= html_writer::end_tag('li');
+        $secondarycontent .= html_writer::start_tag('li', array('role' => 'none',
+            'class' => 'nav-item dropdown dropdownmoremenu d-none', 'data-region' => 'morebutton'));
+            $secondarycontent .= html_writer::link('#', get_string('moremenu'), ['class' => 'dropdown-toggle nav-link',
+                'id' => 'moremenu-dropdown-63f8639161cce', 'role' => 'menuitem', 'data-toggle' => 'dropdown',
+                'aria-haspopup' => 'true', 'aria-expanded' => 'false', 'tabindex' => -1]);
+            $secondarycontent .= html_writer::start_tag('ul', array('class' => 'dropdown-menu dropdown-menu-left',
+                'data-region' => 'moredropdown', 'aria-labelledby' => 'moremenu-dropdown-63f8639161cce', 'role' => 'menu'));
+            $secondarycontent .= html_writer::end_tag('ul');
+        $secondarycontent .= html_writer::end_tag('li');
+    $secondarycontent .= html_writer::end_tag('ul');
+    $secondarycontent .= html_writer::end_tag('nav');
+    $secondarycontent .= html_writer::end_div('');
 
     // Add the course menu opition for all course pages.
     $secondarymenutocoursecontent = '';
@@ -1811,7 +1822,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $content = '';
     $modulecontent = false;
     $ishidecurrentcmid = false;
-    $heroactivityduplicate = get_config("format_designer", "avoidduplicate_heromodentry");
+    $heroactivityduplicate = get_config("format_designer", "avoidduplicate_heromodentry") == 1 ? true : false;
+
     if ($reports) {
         $reports = array_merge($neg, $pos);
 
@@ -1856,14 +1868,20 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $currentcmid = ($PAGE->context->contextlevel == CONTEXT_MODULE) ? $PAGE->cm->id : 0;
     $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {
-            var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu ul');
             $(document).ready(function() {
-
+                // Added the secondary navigation when menu is empty.
+                if ('$isaddsecondary') {
+                    $('$secondarycontent').insertAfter('#page-header');
+                }
+                var moremenu = document.querySelector('.secondary-navigation ul.nav-tabs .dropdownmoremenu ul');
+                // Added the hero activities on the module page.
                 if ('$modulecontent') {
                     if (moremenu) {
                         $(moremenu).append('$content');
                     }
                 }
+
+                // Added the course menu on the module page.
                 var coursehome = document.querySelectorAll('nav.moremenu li[data-key=coursehome]')[0];
                 if ('$secondarymenutocoursecontent' && !coursehome) {
                     if (moremenu) {
@@ -1871,7 +1889,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                     }
                 }
                 var secondarynav = document.querySelector('.secondary-navigation ul.nav-tabs');
-				// Return false when the secondary nav is empty.
+                // Return false when the secondary nav is empty.
                 if (secondarynav == undefined) {
                     return false;
                 }
@@ -1930,7 +1948,11 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         } else {
                             pos += i;
                         }
-                        pos = checkPosition(secondarynav.children[pos], pos);
+                        let poselement = secondarynav.children[pos];
+                        if (secondarynav.children[pos] == null) {
+                            poselement = secondarynav.children[0];
+                        }
+                        pos = checkPosition(poselement, pos);
                         // Insert the heroactivity to current position.
                         if (secondarynav.children[pos] !== undefined) {
                             secondarynav.insertBefore(parent, secondarynav.children[pos]);
@@ -1952,7 +1974,6 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                     let moduleurlparams = new URLSearchParams(paramString);
                     let cmid = moduleurlparams.get('id');
                     if (cmid == '$currentcmid' && '$ishidecurrentcmid') {
-                        console.log('inner');
                         isActive = modulepage.children[0].classList.contains('active');
                         modulepage.remove();
                         var currentdesignermod = document.querySelectorAll('$currentmodclass')[0];
