@@ -279,4 +279,25 @@ class behat_format_designer extends behat_base {
         return $xpath;
     }
 
+    /**
+     * Turns block editing mode on.
+     * @Given I switch block editing mode on
+     * @Given I turn block editing mode on
+     */
+    public function i_turn_block_editing_mode_on() {
+        global $CFG;
+
+        if ($CFG->branch >= "400") {
+            $this->execute('behat_forms::i_set_the_field_to', [get_string('editmode'), 1]);
+            if (!$this->running_javascript()) {
+                $this->execute('behat_general::i_click_on', [
+                    get_string('setmode', 'core'),
+                    'button',
+                ]);
+            }
+        } else {
+            $this->execute('behat_general::i_click_on', ['Blocks editing on', 'button']);
+        }
+    }
+
 }
