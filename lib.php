@@ -928,7 +928,7 @@ class format_designer extends format_base {
             $data['coursestaff'] = implode(",", $data['coursestaff']);
         }
         if (isset($data['prerequisiteinfo']) && is_array($data['prerequisiteinfo'])) {
-            $editoroptions = array('maxfiles' => -1, 'maxbytes'=> $CFG->maxbytes, 'trusttext' => false,
+            $editoroptions = array('maxfiles' => -1, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false,
                 'noclean' => true);
             $context = context_course::instance($this->courseid, MUST_EXIST);
             // Setup the editor to save areafiles. hack.
@@ -961,7 +961,7 @@ class format_designer extends format_base {
         $course = parent::get_course();
         if (isset($course->prerequisiteinfo) && is_string($course->prerequisiteinfo)) {
             $coursecontext = context_course::instance($course->id);
-            $editoroptions = array('maxfiles' => -1, 'maxbytes'=> $CFG->maxbytes,
+            $editoroptions = array('maxfiles' => -1, 'maxbytes' => $CFG->maxbytes,
                 'trusttext' => false, 'noclean' => true);
             $editoroptions['context'] = $coursecontext;
             $editoroptions['subdirs'] = file_area_contains_subdirs($coursecontext, 'local_designer', 'prerequisiteinfo', 0);
