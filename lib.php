@@ -891,8 +891,6 @@ class format_designer extends \core_courseformat\base {
                 })
             ');
         }
-
-
         return $elements;
     }
 
@@ -1083,7 +1081,7 @@ class format_designer extends \core_courseformat\base {
             $data['coursestaff'] = implode(",", $data['coursestaff']);
         }
         if (isset($data['prerequisiteinfo']) && is_array($data['prerequisiteinfo'])) {
-            $editoroptions = array('maxfiles' => -1, 'maxbytes'=> $CFG->maxbytes, 'trusttext' => false,
+            $editoroptions = array('maxfiles' => -1, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false,
                 'noclean' => true);
             $context = context_course::instance($this->courseid, MUST_EXIST);
             // Setup the editor to save areafiles. hack.
@@ -1346,7 +1344,7 @@ class format_designer extends \core_courseformat\base {
         $course = parent::get_course();
         if (isset($course->prerequisiteinfo) && is_string($course->prerequisiteinfo)) {
             $coursecontext = context_course::instance($course->id);
-            $editoroptions = array('maxfiles' => -1, 'maxbytes'=> $CFG->maxbytes, 'trusttext' => false,
+            $editoroptions = array('maxfiles' => -1, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false,
                 'noclean' => true);
             $editoroptions['context'] = $coursecontext;
             $editoroptions['subdirs'] = file_area_contains_subdirs($coursecontext, 'local_designer', 'prerequisiteinfo', 0);
@@ -1826,7 +1824,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
             $modbacktomain .= html_writer::start_tag("li", array("data-key" => 'backtomaincourse',
             "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "false"));
             $modbacktomain .= html_writer::link(new moodle_url('/course/view.php', ['id' => $maincourse->id]),
-            get_string('backtomaincourse', 'format_designer'), array('role' => 'menuitem', 'class' => 'backmain-course', "tabindex" => "-1"));
+            get_string('backtomaincourse', 'format_designer'), array('role' => 'menuitem',
+                'class' => 'backmain-course', "tabindex" => "-1"));
             $modbacktomain .= html_writer::end_tag("li");
         }
     }
