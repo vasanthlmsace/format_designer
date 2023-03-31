@@ -358,6 +358,7 @@
                     $('#' + sectionId).find('ul.section').removeClass(ULClasses.list);
                     $('#' + sectionId).find('ul.section').removeClass(ULClasses.default);
                     $('#' + sectionId).find('ul.section').removeClass(ULClasses.circles);
+                    $('#' + sectionId).find('ul.section').removeClass(ULClasses.horizontal_circles);
                     $('#' + sectionId).find('ul.section').addClass(ULClasses[layout]);
                 }
             });
