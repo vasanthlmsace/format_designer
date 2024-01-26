@@ -446,3 +446,21 @@ $string['donottrim'] = 'Do not trim';
 // Flow size.
 $string['flowsize'] = 'Flow size';
 $string['flowsize_help'] = 'Flow size is a setting that allows you to customize the width and height of sections and activities within your course.<br><b>Small</b>: This option sets the width and height of sections and activities to 320 pixels by 320 pixels.<br><b>Medium</b>: Select this option to increase the width and height to 360 pixels by 360 pixels.<br><b>Large</b>: If you prefer a spacious layout, choose this option to set the width and height of sections and activities to 400 pixels by 400 pixels. ';
+
+$string['displayunavailableactivities'] = "Display unavailable activities";
+$string['displayunavailableactivities_help'] = "Display unavailable activities";
+$string['activitydisplaymode'] = "Activity display mode";
+$string['activitydisplaymode_help'] = "Activity display mode";
+$string['bytype'] = "By type";
+$string['bypurpose'] = "By purpose";
+
+$string['sectioncardheader'] = "Section card contents";
+$string['sectioncardtitle'] = "Section title";
+$string['sectioncardsummary'] = "Section summary";
+$string['sectioncardcta'] = "Not available CTA";
+$string['sectioncardredirect'] = "Redirect to external URL";
+$string['sectioncardtab'] = "Redirect to external URL";
+
+$string['displayoncourseandsectionpage'] = "Display on course and section page";
+$string['displayoncoursepage'] = "Display on course page";
+$string['displayonsectionpageonly'] = "Display on section page only";
