@@ -27,7 +27,7 @@
 }}
 
 <div class="section-content-wrapper {{#sectionprogresscomp}} section-progress-info-completed {{/sectionprogresscomp}}" {{#sectionsingle}} data-action="go-to-section-url"
-data-target="{{#sectioncardcontentdirect}}_blank{{/sectioncardcontentdirect}}" data-url="{{{sectionurl}}}" {{/sectionsingle}}>
+data-target="{{#sectioncardcontentdirect}}_blank{{/sectioncardcontentdirect}}" data-url="{{#sectionvisible}} {{{sectionurl}}} {{/sectionvisible}}" {{/sectionsingle}}>
 {{#sectiondesignwhole}}
     <div class="section-background-style section-design-whole" style="{{#sectionbackgroundstyle}} {{sectionbackgroundstyle}} {{/sectionbackgroundstyle}}">
         {{#maskinner}}

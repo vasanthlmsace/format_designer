@@ -736,7 +736,8 @@ class renderer extends \core_courseformat\output\section_renderer {
 
         $sectionrestrict = (!$section->uservisible && $section->availableinfo) ? true : false;
 
-        if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && $sectionheader && $section->section > 0) {
+        if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && $sectionheader && $section->section > 0
+			&& $format->is_section_visible($section, false)) {
             $gotosection = true;
         }
 
@@ -803,6 +804,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             ? sprintf('width: %s;', $course->listwidth) : '') : '';
         $templatecontext = [
             'section' => $section,
+            'sectionvisible' => $format->is_section_visible($section, false),
             'sectiontype' => $sectiontype,
             'sectionlayoutclass' => $sectionlayoutclass,
             'sectionstyle' => $sectionstyle,
@@ -828,7 +830,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'issectioncompletion' => $issectioncompletion,
             'gotosection' => (isset($gotosection) ? $gotosection : false),
             'sectionurl' => $sectionurl,
-            'sectioncardcontentdirect' => format_designer_has_pro() ? $section->sectioncardtab : '',
+            'sectioncardcontentdirect' => (format_designer_has_pro() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE)  ? $section->sectioncardtab : '',
             'sectioncollapse' => isset($sectioncollapse) ? $sectioncollapse : false,
             'sectionshow' => $sectioncollapsestatus,
             'sectionaccordion' => isset($course->accordion) && !$this->page->user_is_editing() ? $course->accordion : false,
@@ -849,15 +851,6 @@ class renderer extends \core_courseformat\output\section_renderer {
             $cmids = $modinfo->sections[$section->section] ?? [];
             foreach ($cmids as $cmid) {
                 $thismod = $modinfo->cms[$cmid];
-				if (format_designer_has_pro() && isset($course->displayunavailableactivities)) {
-	                if (!$course->displayunavailableactivities && !$thismod->is_visible_on_course_page()) {
-	                    continue;
-	                }
-
-	                if ($course->displayunavailableactivities && $thismod->get_course_module_record()->deletioninprogress) {
-	                    continue;
-	                }
-				}
 
                 if (isset($mods[$thismod->modname])) {
                     $mods[$thismod->modname]['name'] = $thismod->modplural;
