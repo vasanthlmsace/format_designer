@@ -448,10 +448,10 @@ $string['flowsize'] = 'Flow size';
 $string['flowsize_help'] = 'Flow size is a setting that allows you to customize the width and height of sections and activities within your course.<br><b>Small</b>: This option sets the width and height of sections and activities to 320 pixels by 320 pixels.<br><b>Medium</b>: Select this option to increase the width and height to 360 pixels by 360 pixels.<br><b>Large</b>: If you prefer a spacious layout, choose this option to set the width and height of sections and activities to 400 pixels by 400 pixels. ';
 
 $string['displayunavailableactivities'] = "Display unavailable activities";
-$string['displayunavailableactivities_help'] = '
-"Hide" — activities are not displayed if the current user has no access to the section.
-"Show" — activities are displayed, even if the current user cannot access them as long as they are visible.
-';
+$string['displayunavailableactivities_help'] = "
+<b> Hide </b — activities are not displayed if the current user has no access to the section.
+<b> Show </b> — activities are displayed, even if the current user cannot access them as long as they are visible.
+";
 
 $string['activitydisplaymode'] = "Activity display mode";
 $string['activitydisplaymode_help'] = "Activity display mode";
