@@ -499,9 +499,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         if ($dataonly) {
             return $data;
         }
-
         $html = $this->output->render_from_template('format_designer/course_time_management', $data);
-
         return $html;
     }
 
@@ -613,6 +611,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             }
         }
 
+
         if (!$count) {
             return null;
         }
@@ -634,6 +633,22 @@ class renderer extends \core_courseformat\output\section_renderer {
                     } else {
                         $uncompletedcriteria[] = $modtooltiplink;
                     }
+                }
+            }
+        }
+
+        if ($complteioncourses && !isset($course->calcourseprogress)) {
+            foreach ($complteioncourses as $coursecriteria) {
+                $courseid = $coursecriteria->courseinstance;
+                $course = get_course($courseid);
+                $completion = new \completion_info($course);
+                $coursetooltiplink = html_writer::link(new moodle_url('/course/view.php',
+                ['id' => $course->id]), $course->fullname);
+                if ($completion->is_course_complete($userid)) {
+                    $completed += 1;
+                    $completedcriteria[] = $coursetooltiplink;
+                } else {
+                    $uncompletedcriteria[] = $coursetooltiplink;
                 }
             }
         }
@@ -660,22 +675,6 @@ class renderer extends \core_courseformat\output\section_renderer {
                                 $uncompletedcriteria[] = $sectiontooltiplink;
                             }
                         }
-                    }
-                }
-            }
-
-            if ($complteioncourses && $course->calcourseprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) {
-                foreach ($complteioncourses as $coursecriteria) {
-                    $courseid = $coursecriteria->courseinstance;
-                    $course = get_course($courseid);
-                    $completion = new \completion_info($course);
-                    $coursetooltiplink = html_writer::link(new moodle_url('/course/view.php',
-                    ['id' => $course->id]), $course->fullname);
-                    if ($completion->is_course_complete($userid)) {
-                        $completed += 1;
-                        $completedcriteria[] = $coursetooltiplink;
-                    } else {
-                        $uncompletedcriteria[] = $coursetooltiplink;
                     }
                 }
             }

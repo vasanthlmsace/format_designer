@@ -72,7 +72,7 @@ class editsection_form extends moodleform {
         $mform->_registerCancelButton('cancel');
     }
 
-     /**
+    /**
      * Definition of the after form submitted.
      */
     public function definition_after_data() {
