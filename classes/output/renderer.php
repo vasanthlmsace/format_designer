@@ -610,8 +610,6 @@ class renderer extends \core_courseformat\output\section_renderer {
                 $count = self::get_count_sections_incourse($course);
             }
         }
-
-
         if (!$count) {
             return null;
         }
