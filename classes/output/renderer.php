@@ -1026,8 +1026,9 @@ class renderer extends \core_courseformat\output\section_renderer {
             );
         }
         if (format_designer_has_pro()) {
+            $sectionbackgroundcolor = isset($section->sectiondesignerbackgroundcolor) ? $section->sectiondesignerbackgroundcolor : '';
             $templatecontext += \local_designer\courseheader::create($format)
-                ->section_progress_type(round($sectionprogress), $sectionprogresscomp);
+                ->section_progress_type(round($sectionprogress), $sectionprogresscomp, $sectionbackgroundcolor);
         }
         if ($sectioncontent) {
             $contenttemplatename = 'format_designer/section_content_' . $sectiontype;
