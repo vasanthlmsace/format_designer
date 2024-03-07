@@ -30,8 +30,8 @@ Feature: Sections can be switch the layouts in designer format
   Scenario: Check the switch the section layout
     Given "#section-0" "css_element" should be visible
     And I edit the section "0" to layout "list"
-    Then I check the section "0" to layout "list"
+    Then "#section-0.section-type-list" "css_element" should exist
     And I edit the section "0" to layout "cards"
-    Then I check the section "0" to layout "card"
+    Then "#section-0.section-type-cards" "css_element" should exist
     And I edit the section "0" to layout "link"
-    Then I check the section "0" to layout "link"
+    Then "#section-0.section-type-default" "css_element" should exist
