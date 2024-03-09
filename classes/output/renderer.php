@@ -100,13 +100,16 @@ class renderer extends \core_courseformat\output\section_renderer {
             $startclass[] = 'kanban-board';
             $data->kanbanmode = true;
         }
-        $data->startclass = implode(' ', $startclass);
         $data->startid = $startid;
         $data->issectionpageclass = ($data->initialsection->sectionreturnid != 0) ? 'section-page-layout' : '';
-
+        
         if (!format_designer_has_pro()) {
             $data->headermetadata = $this->course_header_metadata_details($course);
         }
+        if (format_designer_has_pro()) {
+            $startclass[] = ($course->activitydisplaymode == 'bypurpose') ? 'activity-purpose-mode' : 'activity-default-mode';
+        }
+        $data->startclass = implode(' ', $startclass);
         return $this->render_from_template('format_designer/courseformat/content/section', $data);
     }
 
