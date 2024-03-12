@@ -119,6 +119,22 @@ class behat_format_designer extends behat_base {
     }
 
     /**
+     * I set the completion expected.
+     *
+     * @Given /^I set the designer completion expected "(?P<value>(?:[^"]|\\")*)"$/
+     * @throws DriverException The step is not available when Javascript is disabled
+     * @param string $selector
+     */
+    public function i_set_completion_expected($value) {
+        global $CFG;
+        if ($CFG->version < 2023092300) {
+            $this->execute("behat_forms::i_set_the_field_to", ['Expect completed on', $value]);
+        } else {
+            $this->execute("behat_forms::i_set_the_field_to", ['Set reminder in Timeline', $value]);
+        }
+    }
+
+    /**
      * Opens a section edit menu if it is not already opened.
      *
      * @Given /^I open section layout "(?P<section_number>\d+)" edit menu$/
