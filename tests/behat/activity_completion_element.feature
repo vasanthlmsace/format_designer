@@ -43,15 +43,13 @@ Feature: Sections can be check activity completion element in designer format
   Scenario: Check the manual mark completion the activity
     Given I am on the "Test assignment name" "assign activity editing" page logged in as teacher1
     And I expand all fieldsets
-    And I set the following fields to these values:
-      | completion | 1 |
+    And I set the field "Students must manually mark the activity as done" to "1"
     And I press "Save and return to course"
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
     And I check the activity "assign1" to element "/descendant::div[contains(@class, 'notstarted')]"
     And I am on "Course 1" course homepage
-    #When I toggle assignment manual completion designer "Test assignment name" "assign1"
     And the manual completion button of "Test assignment name" is displayed as "Mark as done"
     And I toggle the manual completion state of "Test assignment name"
     And I am on "Course 1" course homepage
