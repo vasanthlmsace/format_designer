@@ -24,9 +24,7 @@ Feature: Sections can be check activity completion element in designer format
       | student1 | C1     | student        |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    When I open section "0" edit menu
-    And I choose "Section Layout > List" in the open action menu
-    Then I reload the page
+    And I edit the section "0" to layout "list"
     Then "#section-0.section-type-list" "css_element" should exist
     And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
