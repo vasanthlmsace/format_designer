@@ -146,20 +146,20 @@ Feature: Course progress bar checking criteria in designer format
         And I press "Save and display"
         And I am on "Course 1" course homepage
         And I turn block editing mode on
-        And I am on the "Test page4" "page activity" page
+        And I am on the "Test assignment name" "assign activity" page
         And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
         And I expand all fieldsets
         And I set the following fields to these values:
             | id_completionexpected_enabled | 1 |
-            | Set reminder in Timeline      | ##1 Feb 2024 08:00## |
+        Then I set the designer completion expected "##1 Feb 2024 08:00##"
         And I press "Save and display"
         And I log out
         And I am on the "Course 1" course page logged in as student1
-        And I am on the "Test page5" "page activity" page
+        And I am on the "Test assignment name 1" "assign activity" page
         And I press "Mark as done"
         And I am on "Course 1" course homepage
         Then ".completion-info .badge-success" "css_element" should exist
-        And I am on the "Test page4" "page activity" page
+        And I am on the "Test assignment name" "assign activity" page
         And I press "Mark as done"
         And I am on "Course 1" course homepage
         Then ".completion-info  .badge-due-success" "css_element" should exist
