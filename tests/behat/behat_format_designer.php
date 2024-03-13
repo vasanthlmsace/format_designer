@@ -63,7 +63,8 @@ class behat_format_designer extends behat_base {
                 $strlayout = get_string('link', 'format_designer');
             }
             $xpath = $this->execute("behat_course::section_exists", $sectionnumber);
-            $xpath .= "/descendant::div[contains(@id, 'section-designer-action')]/descendant::div[contains(@class, 'dropdown-menu')]";
+            $xpath .= "/descendant::div[contains(@id, 'section-designer-action')]/descendant::
+                div[contains(@class, 'dropdown-menu')]";
             // Click on layout link.
             $this->execute('behat_general::i_click_on_in_the',
             [$strlayout, "link", $this->escape($xpath), "xpath_element"]
@@ -123,7 +124,6 @@ class behat_format_designer extends behat_base {
      *
      * @Given /^I set the designer manual completion$/
      * @throws DriverException The step is not available when Javascript is disabled
-     * @param string $selector
      */
     public function i_set_the_manual_completion() {
         global $CFG;
@@ -139,7 +139,7 @@ class behat_format_designer extends behat_base {
      *
      * @Given /^I set the designer completion expected "(?P<value>(?:[^"]|\\")*)"$/
      * @throws DriverException The step is not available when Javascript is disabled
-     * @param string $selector
+     * @param string $value
      */
     public function i_set_completion_expected($value) {
         global $CFG;

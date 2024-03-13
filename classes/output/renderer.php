@@ -102,7 +102,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         }
         $data->startid = $startid;
         $data->issectionpageclass = ($data->initialsection->sectionreturnid != 0) ? 'section-page-layout' : '';
-        
+
         if (!format_designer_has_pro()) {
             $data->headermetadata = $this->course_header_metadata_details($course);
         }

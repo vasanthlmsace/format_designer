@@ -1993,7 +1993,8 @@ function format_designer_editsetting_style($page) {
          .dropdown-menu {';
         $style .= 'right: 100% !important;';
         $style .= '}';
-        $style .= '.format-designer .course-content ul.designer.kanban-board li.section#section-1 .right .dropdown .dropdown-menu .dropdown-subpanel .dropdown-menu {';
+        $style .= '.format-designer .course-content ul.designer.kanban-board li.section#section-1 .right .dropdown
+         .dropdown-menu .dropdown-subpanel .dropdown-menu {';
         $style .= 'right: 40px !important;';
         $style .= '}';
         echo html_writer::tag('style', $style, []);
