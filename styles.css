@@ -2529,7 +2529,6 @@ body.format-designer.editing .designer .section .content .section.card-layout li
     height: 50px;
 }
 .format-designer .designer .section.img-text.card-layout .activity.videotime.preview_mode .activity-block
-
 .img-element .bg-overlay .img-block {
     width: 50px;
     height: 50px;
@@ -2810,7 +2809,6 @@ body.format-designer.editing .designer .section .content .section.card-layout li
     }
     .format-designer .designer .section .content .section.img-text.card-layout li.activity .action-html-card,
     .format-designer .designer .section.img-text.card-layout .activity.videotime.preview_mode
-
     .activity-block .badge.video-duration {
         float: right;
         position: static;
