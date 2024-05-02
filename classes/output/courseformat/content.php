@@ -124,7 +124,7 @@ class content extends content_base {
      * @return section_info[] an array of section_info to display
      */
     private function get_sections_to_display(course_modinfo $modinfo): array {
-        $singlesection = $this->format->get_section_number();
+        $singlesection = $this->format->get_sectionnum();
         if ($singlesection) {
             return [
                 $modinfo->get_section_info(0),

@@ -151,7 +151,7 @@ class cm_completion implements renderable, templatable {
      * @return int
      */
     final public function get_completion_state(): int {
-        return $this->get_completion_data()->completionstate;
+        return !is_null($this->get_completion_data()->completionstate) ? $this->get_completion_data()->completionstate : 0;
     }
 
     /**
@@ -211,7 +211,7 @@ class cm_completion implements renderable, templatable {
      * @return int
      */
     final public function get_completion_date(): int {
-        return $this->get_completion_data()->timemodified;
+        return !is_null($this->get_completion_data()->timemodified) ? $this->get_completion_data()->timemodified : 0;
     }
 
     /**
@@ -465,9 +465,8 @@ class cm_completion implements renderable, templatable {
         $now = new \DateTime();
         $ago = new \DateTime('@' . $timestamp);
         $diff = $now->diff($ago);
-
-        $diff->w = floor($diff->d / 7);
-        $diff->d -= $diff->w * 7;
+        $weeks = floor($diff->d / 7);
+        $diff->d -= $weeks * 7;
 
         $string = [
             'y' => get_string('timeagoyear', 'format_designer'),
@@ -479,7 +478,7 @@ class cm_completion implements renderable, templatable {
             's' => get_string('timeagosecond', 'format_designer'),
         ];
         foreach ($string as $k => &$v) {
-            if ($diff->$k) {
+            if ($weeks) {
                 $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
             } else {
                 unset($string[$k]);

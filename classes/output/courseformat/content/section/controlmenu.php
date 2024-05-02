@@ -51,6 +51,8 @@ class controlmenu extends controlmenu_base {
     /** @var section_info the course section class */
     protected $section;
 
+    protected $course;
+
     /**
      * Constructor.
      *
@@ -74,7 +76,7 @@ class controlmenu extends controlmenu_base {
         $section = $this->section;
 
         $hassectiontypes = true;
-        if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$this->format->get_section_number())
+        if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$this->format->get_sectionnum())
             || $this->course->coursetype == DESIGNER_TYPE_FLOW)  {
            $hassectiontypes = false;
         }
@@ -167,7 +169,7 @@ class controlmenu extends controlmenu_base {
         $format = $this->format;
         $section = $this->section;
         $course = $format->get_course();
-        $sectionreturn = $format->get_section_number();
+        $sectionreturn = $format->get_sectionnum();
         $user = $USER;
 
         $usecomponents = $format->supports_components();
@@ -197,7 +199,7 @@ class controlmenu extends controlmenu_base {
             ];
 
             $hassectiontypes = true;
-            if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$this->format->get_section_number())
+            if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$this->format->get_sectionnum())
                 || $this->course->coursetype == DESIGNER_TYPE_FLOW)  {
                 $hassectiontypes = false;
             }

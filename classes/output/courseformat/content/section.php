@@ -64,11 +64,11 @@ class section extends \core_courseformat\output\local\content\section {
         }
 
         $renderer = $this->format->get_renderer($PAGE);
-        if ($data->iscoursedisplaymultipage && !$format->get_section_number()) {
+        if ($data->iscoursedisplaymultipage && !$format->get_sectionnum()) {
             $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
         } else {
             $formatdata = (array) $renderer->render_section_data(
-                $this->section, $this->format->get_course(), $format->get_section_number()
+                $this->section, $this->format->get_course(), $format->get_sectionnum()
             );
         }
         $data = (object) array_merge((array) $data, $formatdata);
