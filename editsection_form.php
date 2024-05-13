@@ -47,16 +47,34 @@ class editsection_form extends moodleform {
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
 
-        $mform->addElement('defaultcustom', 'name', get_string('sectionname'), [
-            'defaultvalue' => $this->_customdata['defaultsectionname'],
-            'customvalue' => $sectioninfo->name,
-        ], ['size' => 30, 'maxlength' => 255]);
-        $mform->setDefault('name', false);
-        $mform->addGroupRule('name', ['name' => [[get_string('maximumchars', '', 255), 'maxlength', 255]]]);
+        if ($CFG->branch < 404) {
+
+            $mform->addElement('defaultcustom', 'name', get_string('sectionname'), [
+                'defaultvalue' => $this->_customdata['defaultsectionname'],
+                'customvalue' => $sectioninfo->name,
+            ], ['size' => 30, 'maxlength' => 255]);
+            $mform->setDefault('name', false);
+            $mform->addGroupRule('name', ['name' => [[get_string('maximumchars', '', 255), 'maxlength', 255]]]);
+
+        } else {
+
+            $mform->addElement(
+                'text',
+                'name',
+                get_string('sectionname'),
+                [
+                    'placeholder' => $this->_customdata['defaultsectionname'],
+                    'size' => 30,
+                    'maxlength' => 255,
+                ],
+            );
+            $mform->setType('name', PARAM_RAW);
+            $mform->setDefault('name', $sectioninfo->name);
+            $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        }
 
         // Prepare course and the editor.
         $mform->addElement('editor', 'summary_editor', get_string('summary'), null, $this->_customdata['editoroptions']);
-        $mform->addHelpButton('summary_editor', 'summary');
         $mform->setType('summary_editor', PARAM_RAW);
 
         $mform->addElement('hidden', 'id');
@@ -129,6 +147,7 @@ class editsection_form extends moodleform {
      * @param stdClass|array $defaultvalues object or array of default values
      */
     public function set_data($defaultvalues) {
+        global $CFG;
         if (!is_object($defaultvalues)) {
             // We need object for file_prepare_standard_editor.
             $defaultvalues = (object)$defaultvalues;
@@ -143,9 +162,10 @@ class editsection_form extends moodleform {
             $defaultvalues = \local_designer\options::prepare_sectioncardcta_editor_files($defaultvalues,
                 $this->_customdata['course']);
         }
-
-        if (strval($defaultvalues->name) === '') {
-            $defaultvalues->name = false;
+        if ($CFG->branch < 404) {
+            if (strval($defaultvalues->name) === '') {
+                $defaultvalues->name = false;
+            }
         }
         parent::set_data($defaultvalues);
     }

@@ -102,7 +102,13 @@ class header extends \core_courseformat\output\local\content\section\header {
 
         $bodyclasses = explode(" ", $PAGE->bodyclasses);
 
-        if ((!$format->get_sectionnum() || !in_array('format-designer-single-section', $bodyclasses))
+        if (method_exists($format, 'get_sectionnum')) {
+            $sectionreturn = $format->get_sectionnum();
+        } else {
+            $sectionreturn = $format->get_section_number();
+        }
+
+        if ((!$sectionreturn || !in_array('format-designer-single-section', $bodyclasses))
             && class_exists('core_courseformat\output\local\content\bulkedittoggler')) {
             $data->sectionbulk = true;
         }

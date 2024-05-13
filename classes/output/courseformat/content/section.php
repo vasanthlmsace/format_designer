@@ -26,6 +26,7 @@ namespace format_designer\output\courseformat\content;
 
 use renderer_base;
 use stdClass;
+use context_course;
 
 /**
  * Base class to render a course section.
@@ -35,6 +36,51 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class section extends \core_courseformat\output\local\content\section {
+
+
+    /**
+     * Export this data so it can be used as the context for a mustache template.
+     *
+     * @param renderer_base $output typically, the renderer that's calling this function
+     * @return stdClass data context for a mustache template
+     */
+    public function export_for_template(renderer_base $output): stdClass {
+        return parent::export_for_template($output);
+    }
+
+
+    /**
+     * Add the section editor attributes to the data structure.
+     *
+     * @param stdClass $data the current cm data reference
+     * @param renderer_base $output typically, the renderer that's calling this function
+     * @return bool if the cm has name data
+     */
+    protected function add_editor_data(stdClass &$data, renderer_base $output): bool {
+        $course = $this->format->get_course();
+        $coursecontext = context_course::instance($course->id);
+        $editcaps = [];
+        if (has_capability('moodle/course:sectionvisibility', $coursecontext)) {
+            $editcaps = ['moodle/course:sectionvisibility'];
+        }
+        if (!$this->format->show_editor($editcaps)) {
+            return false;
+        }
+
+        // In a single section page the control menu is located in the page header.
+        if (empty($this->hidecontrols)) {
+            $controlmenu = new $this->controlmenuclass($this->format, $this->section);
+            $data->controlmenu = $controlmenu->export_for_template($output);
+        }
+        if (!$this->isstealth) {
+            $data->cmcontrols = $output->course_section_add_cm_control(
+                $course,
+                $this->section->section,
+                $this->format->get_sectionnum()
+            );
+        }
+        return true;
+    }
 
     /**
      * Add the section format attributes to the data structure.
@@ -64,11 +110,17 @@ class section extends \core_courseformat\output\local\content\section {
         }
 
         $renderer = $this->format->get_renderer($PAGE);
-        if ($data->iscoursedisplaymultipage && !$format->get_sectionnum()) {
+        if (method_exists($format, 'get_sectionnum')) {
+            $sectionnum = $format->get_sectionnum();
+        } else {
+            $sectionnum = $format->get_section_number();
+        }
+
+        if ($data->iscoursedisplaymultipage && !$sectionnum) {
             $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
         } else {
             $formatdata = (array) $renderer->render_section_data(
-                $this->section, $this->format->get_course(), $format->get_sectionnum()
+                $this->section, $this->format->get_course(), $sectionnum
             );
         }
         $data = (object) array_merge((array) $data, $formatdata);

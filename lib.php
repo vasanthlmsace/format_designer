@@ -1833,7 +1833,7 @@ function format_designer_coursemodule_standard_elements($formwrapper, $mform) {
             $mform->addElement('select', $name, $title, $choice);
             $mform->setType($name, PARAM_INT);
             $mform->setDefault($name, $defalut);
-            if (isset($design->activityelements[$element]) && !empty($design->activityelements[$element])) {
+            if (isset($design->activityelements[$element])) {
                 $mform->setDefault($name, $design->activityelements[$element]);
             }
             $adv = 'activityelements_'.$element.'_adv';
