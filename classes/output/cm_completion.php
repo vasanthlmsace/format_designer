@@ -466,9 +466,8 @@ class cm_completion implements renderable, templatable {
         $ago = new \DateTime('@' . $timestamp);
         $diff = $now->diff($ago);
 
-		$weeks = floor($diff->d / 7);
+        $weeks = floor($diff->d / 7);
         $diff->d -= $weeks * 7;
-
 
         $string = [
             'y' => get_string('timeagoyear', 'format_designer'),
@@ -480,7 +479,7 @@ class cm_completion implements renderable, templatable {
             's' => get_string('timeagosecond', 'format_designer'),
         ];
         foreach ($string as $k => &$v) {
-            $value = ($k == 'w') ? $weeks: $diff->$k;
+            $value = ($k == 'w') ? $weeks : $diff->$k;
             if ($value) {
                 $v = $value . ' ' . $v . ($value > 1 ? 's' : '');
             } else {

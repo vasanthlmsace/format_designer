@@ -124,8 +124,8 @@ class controlmenu extends controlmenu_base {
         }
 
         if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$sectionnum)
-            || $this->course->coursetype == DESIGNER_TYPE_FLOW)  {
-           $hassectiontypes = false;
+            || $this->course->coursetype == DESIGNER_TYPE_FLOW) {
+            $hassectiontypes = false;
         }
 
         $controls = $this->section_control_items();
@@ -233,7 +233,6 @@ class controlmenu extends controlmenu_base {
         $baseurl = course_get_url($course, $sectionreturn);
         $baseurl->param('sesskey', sesskey());
 
-
         $controls = [];
 
         // Only show the view link if we are not already in the section view page.
@@ -248,13 +247,8 @@ class controlmenu extends controlmenu_base {
         }
 
         if (!$isstealth && has_capability('moodle/course:update', $coursecontext, $user)) {
-            if ($section->section > 0
-                && get_string_manager()->string_exists('editsection', 'format_'.$format->get_format())) {
-                $streditsection = get_string('editsection', 'format_'.$format->get_format());
-            } else {
-                $streditsection = get_string('editsection');
-            }
 
+            $streditsection = get_string('editsection', 'format_'.$format->get_format());
             $controls['edit'] = [
                 'url'   => new moodle_url('/course/editsection.php', ['id' => $section->id, 'sr' => $sectionreturn]),
                 'icon' => 'i/settings',
@@ -265,7 +259,7 @@ class controlmenu extends controlmenu_base {
 
             $hassectiontypes = true;
             if (($this->course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$sectionreturn)
-                || $this->course->coursetype == DESIGNER_TYPE_FLOW)  {
+                || $this->course->coursetype == DESIGNER_TYPE_FLOW) {
                 $hassectiontypes = false;
             }
 

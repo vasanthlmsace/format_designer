@@ -1094,7 +1094,6 @@ class renderer extends \core_courseformat\output\section_renderer {
         $modclasses = 'activity ' . $mod->modname . ' modtype_' . $mod->modname . ' ' . $mod->extraclasses;
 
         // Add course type flow animation class.
-        // TODO: check the animation settings.
         if ($course->coursetype == DESIGNER_TYPE_FLOW && !$this->page->user_is_editing()) {
             if ((isset($course->showanimation) && $course->showanimation)) {
                 $modclasses .= ' flow-animation ';

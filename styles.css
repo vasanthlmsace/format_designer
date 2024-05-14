@@ -995,8 +995,8 @@ span.section-collapse-icon:before {
     padding: 0 0 5px 0;
 }
 .format-designer .designer .section.img-text .activity .activityinstance .img-block img {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
     margin: 0 auto;
 }
 .format-designer .designer .section.img-text .activity .activityinstance .inplaceeditable {
@@ -1282,8 +1282,8 @@ span.section-collapse-icon:before {
 .format-designer.editing .designer .section .content .section li.activity .mod-indent-outer > .icon {
     position: absolute;
 }
-.format-designer.editing .activity-item:hover {
-    background: none;
+.format-designer .activity-item {
+    background-color: transparent;
 }
 .format-designer .designer .section .content .section li.activity .badge-restricted {
     background: #ced4da;

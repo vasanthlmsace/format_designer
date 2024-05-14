@@ -39,17 +39,6 @@ class section extends \core_courseformat\output\local\content\section {
 
 
     /**
-     * Export this data so it can be used as the context for a mustache template.
-     *
-     * @param renderer_base $output typically, the renderer that's calling this function
-     * @return stdClass data context for a mustache template
-     */
-    public function export_for_template(renderer_base $output): stdClass {
-        return parent::export_for_template($output);
-    }
-
-
-    /**
      * Add the section editor attributes to the data structure.
      *
      * @param stdClass $data the current cm data reference
