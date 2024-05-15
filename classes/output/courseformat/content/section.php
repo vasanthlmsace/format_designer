@@ -61,11 +61,18 @@ class section extends \core_courseformat\output\local\content\section {
             $controlmenu = new $this->controlmenuclass($this->format, $this->section);
             $data->controlmenu = $controlmenu->export_for_template($output);
         }
+
+        if (method_exists($this->format, 'get_sectionnum')) {
+            $singlesection = $this->format->get_sectionnum();
+        } else {
+            $singlesection = $this->format->get_section_number();
+        }
+
         if (!$this->isstealth) {
             $data->cmcontrols = $output->course_section_add_cm_control(
                 $course,
                 $this->section->section,
-                $this->format->get_sectionnum()
+                $singlesection
             );
         }
         return true;
