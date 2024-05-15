@@ -35,6 +35,7 @@ class section extends \core_courseformat\output\local\state\section {
      * @return array data context for a mustache template
      */
     public function export_for_template(\renderer_base $output): stdClass {
+        global $CFG;
         $format = $this->format;
         $course = $format->get_course();
         $section = $this->section;
@@ -57,7 +58,7 @@ class section extends \core_courseformat\output\local\state\section {
         if ($sectionurlinfo instanceof moodle_url) {
             $sectionurl = $sectionurlinfo->out(false);
         }
-        $data = (object)[
+        $data = [
             'id' => $section->id,
             'section' => $section->section,
             'number' => $section->section,
@@ -71,10 +72,18 @@ class section extends \core_courseformat\output\local\state\section {
             'indexcollapsed' => $indexcollapsed,
             'contentcollapsed' => $contentcollapsed,
             'hasrestrictions' => $this->get_has_restrictions(),
-            'bulkeditable' => $this->is_bulk_editable(),
-            'component' => $section->component,
-            'itemid' => $section->itemid,
         ];
+
+        if ($CFG->branch > 401) {
+            $data['bulkeditable'] = $this->is_bulk_editable();
+        }
+
+        if ($CFG->branch > 403) {
+            $data['component'] = $section->component;
+            $data['itemid'] =  $section->itemid;
+        }
+
+        $data = (object) $data;
 
         if (empty($modinfo->sections[$section->section])) {
             return $data;

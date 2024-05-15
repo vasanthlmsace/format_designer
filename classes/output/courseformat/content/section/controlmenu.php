@@ -211,7 +211,7 @@ class controlmenu extends controlmenu_base {
      * @return array of edit control items
      */
     public function section_control_items() {
-        global $USER, $PAGE;
+        global $USER, $PAGE, $CFG;
 
         $format = $this->format;
         $section = $this->section;
@@ -236,7 +236,7 @@ class controlmenu extends controlmenu_base {
         $controls = [];
 
         // Only show the view link if we are not already in the section view page.
-        if ($PAGE->pagetype !== 'section-view-' . $course->format) {
+        if ($PAGE->pagetype !== 'section-view-' . $course->format && $CFG->branch >= 404) {
             $controls['view'] = [
                 'url'   => new moodle_url('/course/section.php', ['id' => $section->id]),
                 'icon' => 'i/viewsection',
@@ -247,8 +247,17 @@ class controlmenu extends controlmenu_base {
         }
 
         if (!$isstealth && has_capability('moodle/course:update', $coursecontext, $user)) {
+            if ($CFG->branch < 404) {
+                if ($section->section > 0
+                    && get_string_manager()->string_exists('editsection', 'format_'.$format->get_format())) {
+                    $streditsection = get_string('editsection', 'format_'.$format->get_format());
+                } else {
+                    $streditsection = get_string('editsection');
+                }
+            } else {
+                $streditsection = get_string('editsection', 'format_'.$format->get_format());
+            }
 
-            $streditsection = get_string('editsection', 'format_'.$format->get_format());
             $controls['edit'] = [
                 'url'   => new moodle_url('/course/editsection.php', ['id' => $section->id, 'sr' => $sectionreturn]),
                 'icon' => 'i/settings',
