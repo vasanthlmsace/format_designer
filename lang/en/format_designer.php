@@ -551,3 +551,4 @@ $string['purposeclass'] = "Custom class for styling";
 $string['sectionlink'] = 'Permalink';
 $string['courseindicator'] = "Course status: ";
 $string['strsectionlayout'] = "Section Layout";
+$string['completioncriteria'] = "Completion criteria";
