@@ -935,10 +935,9 @@ class format_designer extends \core_courseformat\base {
         global $COURSE, $PAGE, $CFG;
 
         $elements = parent::create_edit_form_elements($mform, $forsection);
-
         if (format_designer_has_pro()) {
             // Update the pro fields course values strucuture, Prepare files.
-            local_designer\options::load_course_prepare_file($this->course, $mform);
+            local_designer\options::load_course_prepare_file($COURSE, $mform);
         }
 
 
