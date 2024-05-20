@@ -25,13 +25,27 @@
         "prosectionstyle": "min-height:100px;"
     }
 }}
+
+{{#showmovehere}}
+<p>{{movingstr}} (<a href="{{{cancelcopyurl}}}">{{#str}} cancel {{/str}}</a>)</p>
+{{/showmovehere}}
 <ul class="section img-text card-deck card-layout {{sectioncontentlayout}} designer-section-content" data-sectionlayout="{{sectionlayoutclass}}"
-    style="{{#sectioncontentwidth}} {{sectioncontentwidth}} {{/sectioncontentwidth}}">
-    {{#cmlist}}
-        {{#modstatus}}
-        <li id="{{id}}" class="{{modclasses}} {{#isrestricted}}restricted{{/isrestricted}} card" style="{{{modstyle}}}">
-            {{> format_designer/cm/module_layout_cards}}
+    style="{{#sectioncontentwidth}} {{sectioncontentwidth}} {{/sectioncontentwidth}}" data-for="cmlist">
+    {{#cms}}
+        {{#showmovehere}}
+        <li class="movehere">
+            <a href="{{{moveurl}}}" title="{{strmovefull}}" class="movehere"></a>
         </li>
-        {{/modstatus}}
-    {{/cmlist}}
+        {{/showmovehere}}
+        {{#.}}
+        {{#cmitem}}
+            {{> format_designer/cm/module_layout_cards}}
+        {{/cmitem}}
+        {{/.}}
+    {{/cms}}
+    {{#showmovehere}}
+    <li class="movehere">
+        <a href="{{{movetosectionurl}}}" title="{{strmovefull}}" class="movehere"></a>
+    </li>
+    {{/showmovehere}}
 </ul>

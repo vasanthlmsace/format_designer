@@ -49,22 +49,106 @@ class behat_format_designer extends behat_base {
      */
     public function i_edit_the_section_layout($sectionnumber, $layouttype) {
         // If javascript is on, link is inside a menu.
-        if ($this->running_javascript()) {
-            $this->i_open_section_layout_edit_menu($sectionnumber);
-        }
+        global $CFG;
+        // Lower 4.3.
+        if ($CFG->version < 2023092300) {
+            if ($this->running_javascript()) {
+                $this->i_open_section_layout_edit_menu($sectionnumber);
+            }
 
-        // We need to know the course format as the text strings depends on them.
-        if (get_string_manager()->string_exists($layouttype, 'format_designer')) {
-            $strlayout = get_string($layouttype, 'format_designer');
+            // We need to know the course format as the text strings depends on them.
+            if (get_string_manager()->string_exists($layouttype, 'format_designer')) {
+                $strlayout = get_string($layouttype, 'format_designer');
+            } else {
+                $strlayout = get_string('link', 'format_designer');
+            }
+            $xpath = $this->execute("behat_course::section_exists", $sectionnumber);
+            $xpath .= "/descendant::div[contains(@id, 'section-designer-action')]/descendant::
+                div[contains(@class, 'dropdown-menu')]";
+            // Click on layout link.
+            $this->execute('behat_general::i_click_on_in_the',
+            [$strlayout, "link", $this->escape($xpath), "xpath_element"]
+            );
         } else {
-            $strlayout = get_string('link', 'format_designer');
+            $this->execute('behat_course::i_open_section_edit_menu', [$sectionnumber]);
+            $actionmenu = "Section Layout > ". get_string($layouttype, 'format_designer');
+            $this->execute('behat_action_menu::i_choose_in_the_open_action_menu', [$actionmenu]);
+            $this->execute('behat_general::reload', []);
         }
-        $xpath = $this->execute("behat_course::section_exists", $sectionnumber);
-        $xpath .= "/descendant::div[contains(@id, 'section-designer-action')]/descendant::div[contains(@class, 'dropdown-menu')]";
-        // Click on layout link.
-        $this->execute('behat_general::i_click_on_in_the',
-            array($strlayout, "link", $this->escape($xpath), "xpath_element")
-        );
+    }
+
+    /**
+     * Check that heroactivity position.
+     *
+     * @Given /^I check heroactivity position "(?P<name>(?:[^"]|\\")*)" "(?P<pos>(?:[^"]|\\")*)"$/
+     * @param string $name
+     * @param string $pos
+     * @throws ExpectationException
+     */
+    public function i_check_heroactivity_position($name, $pos): void {
+        $script = "
+            return (function() {
+                var val = document.querySelector('.secondary-navigation .moremenu ul li:nth-child($pos) a.nav-link').innerHTML;
+                return val.trim();
+            })();
+        ";
+        $config = $this->evaluate_script($script);
+        if (strpos($config, $name) === false) {
+            throw new ExpectationException("Doesn't working correct $config", $this->getSession());
+        }
+    }
+
+    /**
+     * Check that heroactivity position.
+     *
+     * @Given /^I check heroactivity not in the position "(?P<name>(?:[^"]|\\")*)" "(?P<pos>(?:[^"]|\\")*)"$/
+     * @param string $name
+     * @param string $pos
+     * @throws ExpectationException
+     */
+    public function i_check_heroactivity_not_in_the_position($name, $pos): void {
+        $script = "
+            return (function() {
+                var val = document.querySelector('.secondary-navigation .moremenu ul li:nth-child($pos) a.nav-link').innerHTML;
+                return val.trim();
+            })();
+        ";
+        $config = $this->evaluate_script($script);
+        if (strpos($config, $name) !== false) {
+            throw new ExpectationException("Doesn't working correct $config", $this->getSession());
+        }
+    }
+
+    /**
+     * I set the completion.
+     *
+     * @Given /^I set the designer manual completion$/
+     * @throws DriverException The step is not available when Javascript is disabled
+     * @param string $selector
+     */
+    public function i_set_the_manual_completion() {
+        global $CFG;
+        if ($CFG->version < 2023092300) {
+            $this->execute("behat_forms::i_set_the_field_to", ['completion', 1]);
+        } else {
+            $this->execute("behat_forms::i_set_the_field_to", ['Students must manually mark the activity as done', 1]);
+        }
+    }
+
+    /**
+     * I set the completion expected.
+     *
+     * @Given /^I set the designer completion expected "(?P<value>(?:[^"]|\\")*)"$/
+     * @throws DriverException The step is not available when Javascript is disabled
+     * @param string $selector
+     */
+    public function i_set_completion_expected($value) {
+        global $CFG;
+        if ($CFG->version < 2023092300) {
+            $this->execute("behat_forms::i_set_the_field_to", ['Expect completed on', $value]);
+        } else {
+            $this->execute("behat_forms::i_set_the_field_to", ['Set reminder in Timeline', $value]);
+        }
     }
 
     /**
@@ -177,7 +261,7 @@ class behat_format_designer extends behat_base {
     public function i_check_section_collapsed($sectionnumber) {
         $xpath = "//li[@id='section-" . $sectionnumber . "']";
         $xpath .= "/descendant::div[contains(@class, 'section-header-content')
-            and contains(@class, 'collapse') and contains(@data-toggle, 'collapse')]";
+        and contains(@class, 'collapse') and contains(@data-toggle, 'collapse')]";
         $exception = "";
         $this->find('xpath', $xpath, $exception);
     }
@@ -212,25 +296,10 @@ class behat_format_designer extends behat_base {
      */
     public function i_toggle_assignment_manual_completion_designer($activityname, $activityidendifier) {
         global $CFG;
-        if (round($CFG->version) > 2020111000) {
             // Moodle-3.11 and above.
-            $this->execute("behat_completion::toggle_the_manual_completion_state", [$activityname]);
-            $this->execute("behat_completion::manual_completion_button_displayed_as", [$activityname, "Done"]);
-        } else {
-            // Moodle-3.11 below.
-            $selector = "button[data-action=toggle-manual-completion][data-activityname='{$activityname}']";
-            $this->execute("behat_general::i_click_on", [$selector, "css_element"]);
-            $completionstatus = 'Done';
-            if (!in_array($completionstatus, ['Mark as done', 'Done'])) {
-                throw new coding_exception('Invalid completion status. It must be "Mark as done" or "Done".');
-            }
-
-            $langstringkey = $completionstatus === 'Done' ? 'done' : 'markdone';
-            $conditionslistlabel = get_string('completion_manual:aria:' . $langstringkey, 'format_designer', $activityname);
-            $selector = "button[aria-label='$conditionslistlabel']";
-
-            $this->execute("behat_general::assert_element_contains_text", [$completionstatus, $selector, "css_element"]);
-        }
+        $this->i_click_on_activity($activityidendifier);
+        $this->execute("behat_completion::toggle_the_manual_completion_state", [$activityname]);
+        $this->execute("behat_completion::manual_completion_button_displayed_as", [$activityname, "Done"]);
     }
 
     /**
@@ -250,6 +319,27 @@ class behat_format_designer extends behat_base {
             $this->getSession());
         $this->find('xpath', $xpath, $exception);
         return $xpath;
+    }
+
+    /**
+     * Turns block editing mode on.
+     * @Given I switch block editing mode on
+     * @Given I turn block editing mode on
+     */
+    public function i_turn_block_editing_mode_on() {
+        global $CFG;
+
+        if ($CFG->branch >= "400") {
+            $this->execute('behat_forms::i_set_the_field_to', [get_string('editmode'), 1]);
+            if (!$this->running_javascript()) {
+                $this->execute('behat_general::i_click_on', [
+                    get_string('setmode', 'core'),
+                    'button',
+                ]);
+            }
+        } else {
+            $this->execute('behat_general::i_click_on', ['Blocks editing on', 'button']);
+        }
     }
 
 }

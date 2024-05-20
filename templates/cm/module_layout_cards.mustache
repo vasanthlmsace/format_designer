@@ -31,97 +31,118 @@
     }
 }}
 
-<div class="activity-block designer {{#videotimeprogress}}progress-element{{/videotimeprogress}}" style="{{#prostyle}} {{{prostyle}}} {{/prostyle}}">
-    {{{movehtml}}}
-    <div class="card card-list {{colorclass}}" data-action="go-to-url" data-url="{{cmurl}}">
-        <div class="card-body {{#enableactivityimage}}bg-overlay{{/enableactivityimage}}">
-            <div class="activity-background-style" style="{{#modulebackgroundstyle}} {{modulebackgroundstyle}} {{/modulebackgroundstyle}}">
-            </div>
+<li class="{{modclasses}} {{#isrestricted}}restricted{{/isrestricted}} card" style="{{{modstyle}}}"
+    id="{{anchor}}"
+    data-for="cmitem"
+    data-id="{{cm.id}}">
+    {{#cmformat.moveicon}} {{{cmformat.moveicon}}} {{/cmformat.moveicon}}
+    {{#hascmbulk}}
+        {{$ core_courseformat/local/content/cm/bulkselect }}
+            {{> core_courseformat/local/content/cm/bulkselect }}
+        {{/ core_courseformat/local/content/cm/bulkselect }}
+    {{/hascmbulk}}
+    <div class="activity-block activity-basis designer
+        activity-item {{#modstealth}}hiddenactivity{{/modstealth}}{{!
+        }}{{#modhiddenfromstudents}}hiddenactivity{{/modhiddenfromstudents}}{{!
+        }}{{#modinline}}activityinline{{/modinline}} {{#videotimeprogress}}progress-element{{/videotimeprogress}}" data-activityname="{{activityname}}" style="{{#prostyle}} {{{prostyle}}} {{/prostyle}}">
 
-            {{#modbackoverlaycolor}}
-            <div class="bg-overlay" style="{{modbackoverlaycolor}}"></div>
-            {{/modbackoverlaycolor}}
+        <div class="card card-list {{colorclass}}" data-action="go-to-url" data-url="{{cmurl}}">
+            <div class="card-body {{#enableactivityimage}}bg-overlay{{/enableactivityimage}}">
+                <div class="activity-background-style" style="{{#modulebackgroundstyle}} {{modulebackgroundstyle}} {{/modulebackgroundstyle}}">
+                </div>
 
-            <div class="mod-indent-outer w-100">
-                <div class="{{indentclasses}}"></div>
-                <div>
-                    <div class="activityinstance">
-                        {{^useactivityimage}}
-                            {{#modiconurl}}
-                                <div class="img-element {{elementstate.icon}}">
-                                    <div class="img-block">
-                                        {{{modiconurl}}}
+                {{#modbackoverlaycolor}}
+                <div class="bg-overlay" style="{{modbackoverlaycolor}}"></div>
+                {{/modbackoverlaycolor}}
+
+                <div class="mod-indent-outer w-100">
+                    <div class="{{indentclasses}}"></div>
+                    <div>
+                        <div class="activityinstance">
+                            {{#cmformat.cmname}}
+                                {{$ format_designer/courseformat/content/cm/cmname }}
+                                    {{> format_designer/courseformat/content/cm/cmname }}
+                                {{/ format_designer/courseformat/content/cm/cmname }}
+                            {{/cmformat.cmname}}
+
+                            {{! Module restricttions }}
+                            {{#modrestricted}}
+                            <div class="availability-info {{elementstate.calltoaction}}">
+                                {{#cmformat.modavailability}}
+                                    <div class='restrict-block'>
+                                        <div class='info-content-block'>
+                                        {{$ core_courseformat/local/content/cm/availability }}
+                                            {{> core_courseformat/local/content/cm/availability }}
+                                        {{/ core_courseformat/local/content/cm/availability }}
+                                        <div class='call-action-block'>
+                                        {{{calltoactionhtml}}}
+                                        </div>
                                     </div>
                                 </div>
-                            {{/modiconurl}}
-                        {{/useactivityimage}}
-                        <div class="activity-element {{modcontentclass}}">
-                            <div class="activity-type {{elementstate.modname}}">
-                                <p class="text-capitalize " style="{{#moduletextcolor}} {{moduletextcolor}} {{/moduletextcolor}}">{{modtype}}</p>
+                                {{/cmformat.modavailability}}
                             </div>
-                            <div class="cmname-block {{elementstate.title}}">
-                                {{#cmname}}
-                                    {{{cmname}}}
-                                {{/cmname}}
-                            </div>
+                            {{/modrestricted}}
+
+                            {{#afterlink}}
+                                <div class="afterlink">
+                                    {{{afterlink}}}
+                                </div>
+                            {{/afterlink}}
+
                         </div>
-                        {{#modrestricted}}
-                        <div class="availability-info {{elementstate.calltoaction}}">
+                        {{#modcontent}}
+                            <div class="mod-content {{elementstate.description}}" style="{{#moduletextcolor}} {{moduletextcolor}} {{/moduletextcolor}}">
+                                {{{modcontent}}}
+                            </div>
+                        {{/modcontent}}
+
+                         {{#hasname}}
+                            {{$ core_courseformat/local/content/cm/badges }}
+                                {{> core_courseformat/local/content/cm/badges }}
+                            {{/ core_courseformat/local/content/cm/badges }}
+                        {{/hasname}}
+
+                        {{#useactivityimage}}
+                            {{{modiconurl}}}
+                        {{/useactivityimage}}
+
+                        {{#cmcompletionhtml}}
+                            <div class="completion-html-card {{elementstate.completionbadge}}">
+                                {{{cmcompletionhtml}}}
+                            </div>
+                        {{/cmcompletionhtml}}
+
+                        {{#modvisits}}
+                        <div class="mod-visits-block  {{elementstate.visits}}">
+                            <p style="{{#moduletextcolor}} {{moduletextcolor}} {{/moduletextcolor}}">{{modvisits}}</p>
+                        </div>
+                        {{/modvisits}}
+
+                        {{^modrestricted}}
+                        <div class="action-html-card {{elementstate.calltoaction}}">
                             {{{calltoactionhtml}}}
                         </div>
                         {{/modrestricted}}
-                        {{{afterlink}}}
+                        {{{aftercontent}}}
+
+                        {{#useactivityimage}}
+                            {{#duration_formatted}}
+                                <span class="badge badge-dark video-duration">{{duration_formatted}}</span>
+                            {{/duration_formatted}}
+                        {{/useactivityimage}}
                     </div>
-                    {{{beforecontent}}}
-
-                    {{#modcontent}}
-                        <div class="mod-content {{elementstate.description}}" style="{{#moduletextcolor}} {{moduletextcolor}} {{/moduletextcolor}}">
-                            {{{modcontent}}}
-                        </div>
-                    {{/modcontent}}
-
-                    {{#useactivityimage}}
-                        {{#modiconurl}}
-                            <div class="img-element {{elementstate.icon}}">
-                                <div class="img-block">
-                                    {{{modiconurl}}}
-                                </div>
-                            </div>
-                        {{/modiconurl}}
-                    {{/useactivityimage}}
-
-                    {{#cmcompletionhtml}}
-                        <div class="completion-html-card {{elementstate.completionbadge}}">
-                            {{{cmcompletionhtml}}}
-                        </div>
-                    {{/cmcompletionhtml}}
-
-                    {{#modvisits}}
-                    <div class="mod-visits-block  {{elementstate.visits}}">
-                        <p style="{{#moduletextcolor}} {{moduletextcolor}} {{/moduletextcolor}}">{{modvisits}}</p>
-                    </div>
-                    {{/modvisits}}
-                    {{^modrestricted}}
-                    <div class="action-html-card {{elementstate.calltoaction}}">
-                        {{{calltoactionhtml}}}
-                    </div>
-                    {{/modrestricted}}
-                    {{{aftercontent}}}
-
-                    {{#useactivityimage}}
-                        {{#duration_formatted}}
-                            <span class="badge badge-dark video-duration">{{duration_formatted}}</span>
-                        {{/duration_formatted}}
-                    {{/useactivityimage}}
                 </div>
+                {{#moduleprogress}}
+                    {{{moduleprogress}}}
+                {{/moduleprogress}}
             </div>
-
-            {{{videotimeprogress}}}
+            {{#cmformat.controlmenu}}
+            <div class="activity-actions align-self-start">
+                {{$ core_courseformat/local/content/cm/controlmenu }}
+                    {{> core_courseformat/local/content/cm/controlmenu }}
+                {{/ core_courseformat/local/content/cm/controlmenu }}
+            </div>
+            {{/cmformat.controlmenu}}
         </div>
-        {{#modicons}}
-            <div class="actions">
-                {{{modicons}}}
-            </div>
-        {{/modicons}}
     </div>
-</div>
+</li>
