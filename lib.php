@@ -540,8 +540,6 @@ class format_designer extends \core_courseformat\base {
             if (format_designer_has_pro()) {
                 $courseformatoptions += (new local_designer\courseoptions($PAGE->course))->course_header_options_format_list();
             }
-
-
             $courseformatoptions += [
                 'coursecompletiondateinfo' => [
                     'default' => get_string('completiontrackingmissing', 'format_designer'),
@@ -939,8 +937,6 @@ class format_designer extends \core_courseformat\base {
             // Update the pro fields course values strucuture, Prepare files.
             local_designer\options::load_course_prepare_file($COURSE, $mform);
         }
-
-
         if (!$forsection && (empty($COURSE->id) || $COURSE->id == SITEID)) {
             // Add "numsections" element to the create course form - it will force new course to be prepopulated
             // with empty sections.
@@ -1192,7 +1188,6 @@ class format_designer extends \core_courseformat\base {
      */
     protected function update_format_options($data, $sectionid = null) {
         global $DB;
-        //print_object($data);exit;
         $data = $this->validate_format_options((array)$data, $sectionid);
         if (!$sectionid) {
             $allformatoptions = $this->course_format_options();
