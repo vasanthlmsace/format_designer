@@ -269,6 +269,7 @@ $string['coursesettings'] = 'Course';
 $string['sectionsettings'] = 'Section';
 $string['stractivity'] = 'Activity';
 $string['strsection'] = "Section";
+$string['strcourse'] = "Course";
 $string['courseheader'] = 'Course header';
 $string['popupactivitiesnotinstalled'] = 'Popup format must be installed in order to display the activities in popup.';
 $string['listwidth'] = 'List width';
