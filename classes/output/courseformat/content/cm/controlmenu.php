@@ -72,7 +72,7 @@ class controlmenu extends controlmenu_base {
         // Prioritise the menu ahead of all other actions.
         $menu->prioritise = true;
 
-        $ownerselector = $displayoptions['ownerselector'] ?? '#module-' . $mod->id;
+        $ownerselector = $this->displayoptions['ownerselector'] ?? '#module-' . $mod->id;
         $menu->set_owner_selector($ownerselector);
 
         foreach ($controls as $control) {

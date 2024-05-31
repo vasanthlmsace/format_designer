@@ -126,6 +126,7 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
             return $cmscontent;
         }
         $data->cmscontent = $cmscontent;
+        $data->groupmode = isset($mod->groupmode) ? $mod->groupmode : '';
         return $data;
     }
 }

@@ -88,6 +88,8 @@ define('DESIGNER_CMPIND_BELOWPROGRESS', 'belowcourseprogress');
 
 define('DESIGNER_CMPIND_METADATA', 'coursemetadata');
 
+define('DESIGNER_PROGRESS_CRITERIA', 'criteria');
+
 /**
  * Main class for the Designer course format.
  *
@@ -532,7 +534,13 @@ class format_designer extends \core_courseformat\base {
                     'default' => 0,
                     'type' => PARAM_INT,
                 ],
+            ];
 
+            // Include course header config.
+            if (format_designer_has_pro()) {
+                $courseformatoptions += (new local_designer\courseoptions($PAGE->course))->course_header_options_format_list();
+            }
+            $courseformatoptions += [
                 'coursecompletiondateinfo' => [
                     'default' => get_string('completiontrackingmissing', 'format_designer'),
                     'type' => PARAM_TEXT,
@@ -552,11 +560,6 @@ class format_designer extends \core_courseformat\base {
                     'type' => PARAM_TEXT,
                 ],
             ];
-
-            // Include course header config.
-            if (format_designer_has_pro()) {
-                $courseformatoptions += (new local_designer\courseoptions($PAGE->course))->course_header_options_format_list();
-            }
 
             if (format_designer_has_pro() != 1 ) {
                 $userprofilefields = profile_get_user_fields_with_data(0);
@@ -907,6 +910,16 @@ class format_designer extends \core_courseformat\base {
         return false;
     }
 
+
+    /**
+     * Fetch the context of the current course.
+     *
+     * @return \context_course
+     */
+    public function get_course_context() {
+        return $this->get_course() ? \context_course::instance($this->get_course()->id) : context_system::instance();
+    }
+
     /**
      * Adds format options elements to the course/section edit form.
      *
@@ -920,6 +933,10 @@ class format_designer extends \core_courseformat\base {
         global $COURSE, $PAGE, $CFG;
 
         $elements = parent::create_edit_form_elements($mform, $forsection);
+        if (format_designer_has_pro()) {
+            // Update the pro fields course values strucuture, Prepare files.
+            local_designer\options::load_course_prepare_file($COURSE, $mform);
+        }
         if (!$forsection && (empty($COURSE->id) || $COURSE->id == SITEID)) {
             // Add "numsections" element to the create course form - it will force new course to be prepopulated
             // with empty sections.
@@ -934,6 +951,7 @@ class format_designer extends \core_courseformat\base {
             }
             array_unshift($elements, $element);
         }
+
         if ($forsection) {
             $options = $this->section_format_options(true);
         } else {
@@ -1580,30 +1598,8 @@ class format_designer extends \core_courseformat\base {
      * @return stdClass
      */
     public function get_course() {
-        global $CFG, $PAGE;
+        global $CFG, $PAGE, $DB;
         $course = parent::get_course();
-        if ($PAGE->pagetype == 'course-edit') {
-            if (!isguestuser() &&  isloggedin()) {
-                if (isset($course->prerequisiteinfo) && is_string($course->prerequisiteinfo)) {
-                    $coursecontext = context_course::instance($course->id);
-                    $editoroptions = ['maxfiles' => -1, 'maxbytes' => $CFG->maxbytes, 'trusttext' => false, 'noclean' => true,
-                    ];
-                    $editoroptions['context'] = $coursecontext;
-                    $editoroptions['subdirs'] = file_area_contains_subdirs($coursecontext, 'local_designer', 'prerequisiteinfo', 0);
-                    $course = file_prepare_standard_editor(
-                        $course, 'prerequisiteinfo', $editoroptions,
-                        $coursecontext, 'local_designer', 'prerequisiteinfo', 0
-                    );
-                    $course->prerequisiteinfo = $course->prerequisiteinfo_editor;
-                    unset($course->prerequisiteinfo_editor);
-                }
-            } else {
-                $editoroptions['context'] = \context_system::instance();
-                $course = file_prepare_standard_editor(
-                    $course, 'prerequisiteinfo', $editoroptions, null, 'local_designer', 'prerequisiteinfo', null,
-                );
-            }
-        }
         // Course fields.
         if (isset($course->coursefields)) {
             $course->coursefields = is_string($course->coursefields) ? explode(',', $course->coursefields) : $course->coursefields;
@@ -1993,9 +1989,8 @@ function format_designer_editsetting_style($page) {
          .dropdown-menu {';
         $style .= 'right: 100% !important;';
         $style .= '}';
-        $style .= '.format-designer .course-content ul.designer.kanban-board li.section#section-1 .right .dropdown
-         .dropdown-menu .dropdown-subpanel .dropdown-menu {';
-        $style .= 'right: 40px !important;';
+        $style .= '.format-designer .course-content ul.designer .kanban-board-activities li.section:first-child .right .dropdown .dropdown-menu .dropdown-subpanel .dropdown-menu {';
+        $style .= 'left: 100% !important;';
         $style .= '}';
         echo html_writer::tag('style', $style, []);
     }

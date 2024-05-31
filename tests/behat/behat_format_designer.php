@@ -123,8 +123,6 @@ class behat_format_designer extends behat_base {
      * I set the completion.
      *
      * @Given /^I set the designer manual completion$/
-     * @throws DriverException The step is not available when Javascript is disabled
-     * @param string $selector
      */
     public function i_set_the_manual_completion() {
         global $CFG;
@@ -139,8 +137,7 @@ class behat_format_designer extends behat_base {
      * I set the completion expected.
      *
      * @Given /^I set the designer completion expected "(?P<value>(?:[^"]|\\")*)"$/
-     * @throws DriverException The step is not available when Javascript is disabled
-     * @param string $selector
+     * @param string $value
      */
     public function i_set_completion_expected($value) {
         global $CFG;
@@ -346,7 +343,7 @@ class behat_format_designer extends behat_base {
      * Turns block editing mode on.
      * @Given I check the designer section general section
      */
-    public function I_check_the_designer_section_general_section() {
+    public function i_check_the_designer_section_general_section() {
         global $CFG;
         if ($CFG->branch < "404") {
             $this->execute('behat_forms::the_field_matches_value', ["Custom" , 0]);

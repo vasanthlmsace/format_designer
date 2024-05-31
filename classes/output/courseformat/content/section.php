@@ -37,6 +37,63 @@ use context_course;
  */
 class section extends \core_courseformat\output\local\content\section {
 
+    /**
+     * Add the section format attributes to the data structure.
+     *
+     * @param stdClass $data the current cm data reference
+     * @param bool[] $haspartials the result of loading partial data elements
+     * @param renderer_base $output typically, the renderer that's calling this function
+     * @return bool if the cm has name data
+     */
+    protected function add_format_data(stdClass &$data, array $haspartials, renderer_base $output): bool {
+        global $PAGE, $CFG;
+
+        $section = $this->section;
+        $format = $this->format;
+
+        $data->iscoursedisplaymultipage = ($format->get_course_display() == COURSE_DISPLAY_MULTIPAGE);
+
+        if ($data->num === 0 && !$data->iscoursedisplaymultipage) {
+            $data->collapsemenu = true;
+        }
+
+        $data->contentcollapsed = $this->is_section_collapsed();
+
+        if ($format->is_section_current($section)) {
+            $data->iscurrent = true;
+            $data->currentlink = get_accesshide(
+                get_string('currentsection', 'format_' . $format->get_format())
+            );
+        }
+
+        $renderer = $this->format->get_renderer($PAGE);
+        if (method_exists($format, 'get_sectionnum')) {
+            $sectionnum = $format->get_sectionnum();
+        } else {
+            $sectionnum = $format->get_section_number();
+        }
+
+        if ($data->iscoursedisplaymultipage && !$sectionnum) {
+            if ($CFG->branch < 404) {
+                $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
+            } else {
+                $pagesection = optional_param('section', -1, PARAM_INT);
+                $sectionnum = empty($sectionnum) && ($pagesection >= 0) ? 0 : false;
+                if ($pagesection >= 0) {
+                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), $sectionnum);
+                } else {
+                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
+                }
+            }
+        } else {
+            $formatdata = (array) $renderer->render_section_data(
+                $this->section, $this->format->get_course(), $sectionnum
+            );
+        }
+        $data = (object) array_merge((array) $data, $formatdata);
+
+        return true;
+    }
 
     /**
      * Add the section editor attributes to the data structure.
@@ -68,6 +125,7 @@ class section extends \core_courseformat\output\local\content\section {
             $singlesection = $this->format->get_section_number();
         }
 
+
         if (!$this->isstealth) {
             $data->cmcontrols = $output->course_section_add_cm_control(
                 $course,
@@ -75,52 +133,6 @@ class section extends \core_courseformat\output\local\content\section {
                 $singlesection
             );
         }
-        return true;
-    }
-
-    /**
-     * Add the section format attributes to the data structure.
-     *
-     * @param stdClass $data the current cm data reference
-     * @param bool[] $haspartials the result of loading partial data elements
-     * @param renderer_base $output typically, the renderer that's calling this function
-     * @return bool if the cm has name data
-     */
-    protected function add_format_data(stdClass &$data, array $haspartials, renderer_base $output): bool {
-        global $PAGE;
-
-        $section = $this->section;
-        $format = $this->format;
-
-        $data->iscoursedisplaymultipage = ($format->get_course_display() == COURSE_DISPLAY_MULTIPAGE);
-
-        if ($data->num === 0 && !$data->iscoursedisplaymultipage) {
-            $data->collapsemenu = true;
-        }
-
-        if ($format->is_section_current($section)) {
-            $data->iscurrent = true;
-            $data->currentlink = get_accesshide(
-                get_string('currentsection', 'format_' . $format->get_format())
-            );
-        }
-
-        $renderer = $this->format->get_renderer($PAGE);
-        if (method_exists($format, 'get_sectionnum')) {
-            $sectionnum = $format->get_sectionnum();
-        } else {
-            $sectionnum = $format->get_section_number();
-        }
-
-        if ($data->iscoursedisplaymultipage && !$sectionnum) {
-            $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
-        } else {
-            $formatdata = (array) $renderer->render_section_data(
-                $this->section, $this->format->get_course(), $sectionnum
-            );
-        }
-        $data = (object) array_merge((array) $data, $formatdata);
-
         return true;
     }
 }

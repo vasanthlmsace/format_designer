@@ -80,7 +80,7 @@ class section extends \core_courseformat\output\local\state\section {
 
         if ($CFG->branch > 403) {
             $data['component'] = $section->component;
-            $data['itemid'] =  $section->itemid;
+            $data['itemid'] = $section->itemid;
         }
 
         $data = (object) $data;
