@@ -100,7 +100,7 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
         }
 
         $sectionlayoutclass = 'link-layout';
-        $sectiontype = $this->format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
+        $sectiontype = $this->format->get_section_option($section->id, 'sectiontype') ?: 'default';
         if ($sectiontype == 'list') {
             $sectionlayoutclass = "list-layout";
         } else if ($sectiontype == 'cards') {
@@ -118,7 +118,6 @@ class cmlist extends \core_courseformat\output\local\content\section\cmlist {
                 $templatename = 'layouts_' . $sectiontype . '/layout/section_layout_' . $sectiontype;
             }
         }
-
         $templatename = $output->is_template_exists($templatename);
         $data->sectionlayoutclass = $sectionlayoutclass;
         $cmscontent = $OUTPUT->render_from_template($templatename, $data);
