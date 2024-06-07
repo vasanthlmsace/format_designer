@@ -58,10 +58,6 @@ class content extends content_base {
         $sections = $this->export_sections($output);
         $initialsection = '';
 
-        if ($CFG->branch < 404 && !empty($sections)) {
-            $initialsection = array_shift($sections);
-        }
-
         $data = (object) [
             'title' => $format->page_title(), // This method should be in the course_format class.
             'initialsection' => $initialsection,
@@ -70,21 +66,10 @@ class content extends content_base {
             'sectionreturn' => null,
         ];
 
-        if (method_exists($format, 'get_sectionnum')) {
-            $singlesectionnum = $format->get_sectionnum();
-        } else {
-            $singlesectionnum = $format->get_section_number();
-        }
-
+        $singlesectionnum = $format->get_sectionnum();
         $singlesectionnumhandled = false;
-        if ($CFG->branch >= 404) {
-            if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && optional_param('section', -1, PARAM_INT) >= 0) {
-                $singlesectionnumhandled = true;
-            }
-        } else {
-            if ($singlesectionnum) {
-                $singlesectionnumhandled = true;
-            }
+        if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && optional_param('section', -1, PARAM_INT) >= 0) {
+            $singlesectionnumhandled = true;
         }
 
         // The single section format has extra navigation.
@@ -107,14 +92,14 @@ class content extends content_base {
             $data->numsections = $addsection->export_for_template($output);
         }
 
-        if (method_exists($format, 'show_editor') && $format->show_editor()) {
+        if ($format->show_editor()) {
             $bulkedittools = new $this->bulkedittoolsclass($format);
             $data->bulkedittools = $bulkedittools->export_for_template($output);
         }
 
         $data->course = $course;
 
-        if ($CFG->branch >= 404 && $course->coursetype == DESIGNER_TYPE_KANBAN) {
+        if ($course->coursetype == DESIGNER_TYPE_KANBAN) {
             $data->initialsection = array_shift($sections);
             $data->sections = $sections;
         }
@@ -191,31 +176,16 @@ class content extends content_base {
      */
     private function get_sections_to_display(course_modinfo $modinfo): array {
         global $CFG;
-        if (method_exists($this->format, 'get_sectionnum')) {
-            $singlesection = $this->format->get_sectionnum();
-        } else {
-            $singlesection = $this->format->get_section_number();
-        }
-
+        $singlesection = $this->format->get_sectionnum();
         $course = $this->format->get_course();
-        if ($CFG->branch < 404) {
-            if ($singlesection) {
-                return [
-                    $modinfo->get_section_info(0),
-                    $modinfo->get_section_info($singlesection),
-                ];
-            }
-            return $modinfo->get_section_info_all();
-        } else {
-            if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && optional_param('section', -1, PARAM_INT) >= 0) {
-                $singlesection = empty($singlesection) ? 0 : $singlesection;
-                $sections = [
-                    $modinfo->get_section_info($singlesection),
-                ];
-                return $sections;
-            }
-            return $modinfo->get_listed_section_info_all();
+        if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && optional_param('section', -1, PARAM_INT) >= 0) {
+            $singlesection = empty($singlesection) ? 0 : $singlesection;
+            $sections = [
+                $modinfo->get_section_info($singlesection),
+            ];
+            return $sections;
         }
+        return $modinfo->get_listed_section_info_all();
     }
 
 }

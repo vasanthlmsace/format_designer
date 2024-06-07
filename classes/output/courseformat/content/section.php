@@ -67,23 +67,15 @@ class section extends \core_courseformat\output\local\content\section {
         }
 
         $renderer = $this->format->get_renderer($PAGE);
-        if (method_exists($format, 'get_sectionnum')) {
-            $sectionnum = $format->get_sectionnum();
-        } else {
-            $sectionnum = $format->get_section_number();
-        }
+        $sectionnum = $format->get_sectionnum();
 
         if ($data->iscoursedisplaymultipage && !$sectionnum) {
-            if ($CFG->branch < 404) {
-                $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
+            $pagesection = optional_param('section', -1, PARAM_INT);
+            $sectionnum = empty($sectionnum) && ($pagesection >= 0) ? 0 : false;
+            if ($pagesection >= 0) {
+                $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), $sectionnum);
             } else {
-                $pagesection = optional_param('section', -1, PARAM_INT);
-                $sectionnum = empty($sectionnum) && ($pagesection >= 0) ? 0 : false;
-                if ($pagesection >= 0) {
-                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), $sectionnum);
-                } else {
-                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
-                }
+                $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
             }
         } else {
             $formatdata = (array) $renderer->render_section_data(
@@ -119,13 +111,7 @@ class section extends \core_courseformat\output\local\content\section {
             $data->controlmenu = $controlmenu->export_for_template($output);
         }
 
-        if (method_exists($this->format, 'get_sectionnum')) {
-            $singlesection = $this->format->get_sectionnum();
-        } else {
-            $singlesection = $this->format->get_section_number();
-        }
-
-
+        $singlesection = $this->format->get_sectionnum();
         if (!$this->isstealth) {
             $data->cmcontrols = $output->course_section_add_cm_control(
                 $course,

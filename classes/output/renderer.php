@@ -103,12 +103,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $data->startid = $startid;
 
         $format = course_get_format($course);
-
-        if (method_exists($format, 'get_sectionnum')) {
-            $singlesection = $format->get_sectionnum();
-        } else {
-            $singlesection = $format->get_section_number();
-        }
+        $singlesection = $format->get_sectionnum();
 
         $data->issectionpageclass = $singlesection || ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) ? 'section-page-layout' : '';
 
@@ -885,11 +880,7 @@ class renderer extends \core_courseformat\output\section_renderer {
 
         if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && $sectionheader
             && $format->is_section_visible($section, false)) {
-            if ($CFG->branch < 404 && $section->section > 0) {
-                $gotosection = true;
-            } else {
-                $gotosection = true;
-            }
+            $gotosection = true;
         }
 
         // CM LIST.
@@ -915,7 +906,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $prodata = [];
 
         $sectionlayoutclass = 'link-layout';
-        $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: 'default';
+        $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
         if ($sectiontype == 'list') {
             $sectionlayoutclass = "list-layout";
         } else if ($sectiontype == 'cards') {
@@ -956,12 +947,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             ? sprintf('width: %s;', $course->listwidth) : '') : '';
 
 
-        $showprerequisites = ($section->section == 0) ? true : false;
-        if (method_exists($format, 'get_sectionid')) {
-            if ($format->get_sectionid()) {
-                $showprerequisites = true;
-            }
-        }
+        $showprerequisites = ($section->section == 0) || $format->get_sectionid() ? true : false;
         $templatecontext = [
             'section' => $section,
             'sectionvisible' => $format->is_section_visible($section, false),
@@ -1485,7 +1471,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $cmlist = new $cmlistclass($format, $section, $cm, $displayoptions);
         $output = $this->page->get_renderer('format_designer');
         $cmlistdata = $cmlist->export_for_template($this);
-        $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: 'default';
+        $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
         $templatename = 'format_designer/cm/module_layout_' . $sectiontype;
         $prolayouts = format_designer_get_pro_layouts();
         if (in_array($sectiontype, $prolayouts)) {

@@ -97,11 +97,7 @@ class controlmenu extends controlmenu_base {
 
         $hassectiontypes = true;
 
-        if (method_exists($this->format, 'get_sectionnum')) {
-            $sectionnum = $this->format->get_sectionnum();
-        } else {
-            $sectionnum = $this->format->get_section_number();
-        }
+        $sectionnum = $this->format->get_sectionnum();
 
         $course = $this->format->get_course();
 
@@ -199,11 +195,7 @@ class controlmenu extends controlmenu_base {
         $section = $this->section;
         $course = $format->get_course();
 
-        if (method_exists($format, 'get_sectionnum')) {
-            $sectionreturn = $format->get_sectionnum();
-        } else {
-            $sectionreturn = $format->get_section_number();
-        }
+        $sectionreturn = !is_null($format->get_sectionid()) ? $format->get_sectionnum() : null;
 
         $user = $USER;
 
@@ -220,7 +212,7 @@ class controlmenu extends controlmenu_base {
         $controls = [];
 
         // Only show the view link if we are not already in the section view page.
-        if ($PAGE->pagetype !== 'section-view-' . $course->format && $CFG->branch >= 404) {
+        if ($PAGE->pagetype !== 'section-view-' . $course->format) {
             $controls['view'] = [
                 'url'   => new moodle_url('/course/view.php', ['id' => $course->id, 'section' => $section->section]),
                 'icon' => 'i/viewsection',
@@ -231,17 +223,8 @@ class controlmenu extends controlmenu_base {
         }
 
         if (!$isstealth && has_capability('moodle/course:update', $coursecontext, $user)) {
-            if ($CFG->branch < 404) {
-                if ($section->section > 0
-                    && get_string_manager()->string_exists('editsection', 'format_'.$format->get_format())) {
-                    $streditsection = get_string('editsection', 'format_'.$format->get_format());
-                } else {
-                    $streditsection = get_string('editsection');
-                }
-            } else {
-                $streditsection = get_string('editsection', 'format_'.$format->get_format());
-            }
 
+            $streditsection = get_string('editsection', 'format_'.$format->get_format());
             $controls['edit'] = [
                 'url'   => new moodle_url('/course/editsection.php', ['id' => $section->id, 'sr' => $sectionreturn]),
                 'icon' => 'i/settings',
@@ -257,7 +240,6 @@ class controlmenu extends controlmenu_base {
             }
 
             if (format_designer_is_support_subpanel() && $hassectiontypes) {
-
                 $controls['sectionlayout'] = new action_menu_subpanel(
                     get_string('strsectionlayout', 'format_designer'),
                     $this->get_choice_list($section),
@@ -269,6 +251,11 @@ class controlmenu extends controlmenu_base {
             $duplicatesectionurl = clone($baseurl);
             $duplicatesectionurl->param('section', $section->section);
             $duplicatesectionurl->param('duplicatesection', $section->section);
+
+            if (!is_null($sectionreturn)) {
+                $duplicatesectionurl->param('sr', $sectionreturn);
+            }
+
             $controls['duplicate'] = [
                 'url' => $duplicatesectionurl,
                 'icon' => 't/copy',
@@ -280,6 +267,11 @@ class controlmenu extends controlmenu_base {
 
         if ($section->section) {
             $url = clone($baseurl);
+
+            if (!is_null($sectionreturn)) {
+                $url->param('sectionid', $format->get_sectionid());
+            }
+
             if (!$isstealth) {
                 if (has_capability('moodle/course:sectionvisibility', $coursecontext, $user)) {
                     $strhidefromothers = get_string('hidefromothers', 'format_' . $course->format);
@@ -374,14 +366,21 @@ class controlmenu extends controlmenu_base {
                 } else {
                     $strdelete = get_string('deletesection');
                 }
+
+                $params = [
+                    'id' => $section->id,
+                    'delete' => 1,
+                    'sesskey' => sesskey(),
+                ];
+
+                if (!is_null($sectionreturn)) {
+
+                    $params['sr'] = $sectionreturn;
+
+                }
                 $url = new moodle_url(
                     '/course/editsection.php',
-                    [
-                        'id' => $section->id,
-                        'sr' => $sectionreturn,
-                        'delete' => 1,
-                        'sesskey' => sesskey(),
-                    ]
+                    $params,
                 );
                 $controls['delete'] = [
                     'url' => $url,
@@ -429,9 +428,8 @@ class controlmenu extends controlmenu_base {
      * @return choicelist
      */
     public function get_choice_list($section): choicelist {
-
         $sectiontype = $this->format->get_section_option($section->id, 'sectiontype');
-        $sectiontype = $sectiontype ? $sectiontype : 'default';
+        $sectiontype = $sectiontype ? $sectiontype : get_config('format_designer', 'sectiontype');
         $choice = $this->create_choice_list($section);
         $choice->set_selected_value($sectiontype);
         return $choice;
