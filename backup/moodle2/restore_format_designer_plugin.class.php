@@ -170,7 +170,18 @@ class restore_format_designer_plugin extends restore_format_plugin {
      */
     protected function after_restore_section() {
 
-        $this->add_related_files('format_designer', 'sectiondesignbackground', null);
-        $this->add_related_files('format_designer', 'sectiondesigncompletionbackground', null);
+        $files = \format_designer\options::get_file_areas('section');
+        foreach ($files as $file => $component) {
+            $this->add_related_files($component, $file, 'course_section');
+        }
+
+        // Restore the courseheaderbgimage.
+        $this->add_related_files('local_designer', 'courseheaderbgimage', null, null, $this->step->get_task()->get_old_courseid());
+        // Restore the coursebgimage.
+        $this->add_related_files('local_designer', 'coursebgimage', null, null, $this->step->get_task()->get_old_courseid());
+        // Restore the additionalcontent.
+        $this->add_related_files('local_designer', 'additionalcontent', null, null, $this->step->get_task()->get_old_courseid());
+        // Restore the prerequisiteinfo.
+        $this->add_related_files('local_designer', 'prerequisiteinfo', null, null, $this->step->get_task()->get_old_courseid());
     }
 }

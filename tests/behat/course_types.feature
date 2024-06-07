@@ -25,7 +25,7 @@ Feature: Users can choose different course types.
 
   @javascript
   Scenario: Collapsible sections
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
         | Course type | Collapsible sections |
@@ -36,7 +36,7 @@ Feature: Users can choose different course types.
 
   @javascript @kanban_board
   Scenario: Kanban board
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
         | Course type | Kanban Board |
@@ -48,7 +48,7 @@ Feature: Users can choose different course types.
 
   @javascript
   Scenario: Flow
-    Given I navigate to "Edit settings" in current page administration
+    Given I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
         | Course type | Flow |
@@ -60,9 +60,31 @@ Feature: Users can choose different course types.
     And I click on "#section-head-1" "css_element"
     Then the "class" attribute of "#section-head-1" "css_element" should not contain "collapsed"
     And the "class" attribute of "#section-1 .activity" "css_element" should contain "flow-animation"
-    And I navigate to "Edit settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
         | Flow animation | Disable |
     And I press "Save and display"
     Then the "class" attribute of "#section-1 .activity" "css_element" should not contain "flow-animation"
     And "div.kanban-board-activities" "css_element" should not exist
+
+  @javascript
+  Scenario: Check for add course to secondary menu item.
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    Then I should see "Course" in the ".secondary-navigation" "css_element"
+    Then I am on the "Test assignment name" "assign activity" page
+    Then I should not see "Course" in the ".secondary-navigation" "css_element"
+    And I am on "Course 1" course homepage
+    And I navigate to "Settings" in current page administration
+    And I expand all fieldsets
+    And I set the following fields to these values:
+      | Add course to secondary menu item on all course pages | 1 |
+    And I press "Save and display"
+    Then I am on the "Test assignment name" "assign activity" page
+    Then I should see "Course" in the ".secondary-navigation" "css_element"
+    And I navigate to "Settings" in current page administration
+    Then I should see "Course" in the ".secondary-navigation" "css_element"
+    And I navigate to "Overrides" in current page administration
+    Then I should see "Course" in the ".secondary-navigation" "css_element"
+    And I navigate to "Advanced grading" in current page administration
+    Then I should see "Course" in the ".secondary-navigation" "css_element"

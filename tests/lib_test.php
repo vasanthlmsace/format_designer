@@ -38,7 +38,6 @@ require_once($CFG->dirroot . '/course/lib.php');
  */
 class lib_test extends \advanced_testcase {
 
-
     /**
      * Test setup.
      */
@@ -53,7 +52,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_section_name method with default section names.
-     *
+     * @covers ::get_section_name
      * @return void
      */
     public function test_get_section_name() {
@@ -79,7 +78,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_section_name method with modified section names.
-     *
+     * @covers ::get_section_name_customised
      * @return void
      */
     public function test_get_section_name_customised() {
@@ -113,7 +112,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_default_section_name.
-     *
+     * @covers ::get_default_section_name
      * @return void
      */
     public function test_get_default_section_name() {
@@ -144,7 +143,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test web service updating section name.
-     *
+     * @covers \core_external::update_inplace_editable
      * @return void
      */
     public function test_update_inplace_editable() {
@@ -172,14 +171,18 @@ class lib_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
 
         $res = \core_external::update_inplace_editable('format_designer', 'sectionname', $section->id, 'New section name');
-        $res = \external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        if (class_exists('\core_external\external_api')) {
+            $res = \core_external\external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        } else {
+            $res = \external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        }
         $this->assertEquals('New section name', $res['value']);
         $this->assertEquals('New section name', $DB->get_field('course_sections', 'name', ['id' => $section->id]));
     }
 
     /**
      * Test callback updating section name.
-     *
+     * @covers ::inplace_editable
      * @return void
      */
     public function test_inplace_editable() {
@@ -213,7 +216,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test get_default_course_enddate.
-     *
+     * @covers ::get_default_course_enddate
      * @return void
      */
     public function test_default_course_enddate() {
@@ -234,7 +237,7 @@ class lib_test extends \advanced_testcase {
             'category' => $category,
             'editoroptions' => [
                 'context' => \context_course::instance($course->id),
-                'subdirs' => 0
+                'subdirs' => 0,
             ],
             'returnto' => new \moodle_url('/'),
             'returnurl' => new \moodle_url('/'),
@@ -252,7 +255,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test for get_view_url() to ensure that the url is only given for the correct cases.
-     *
+     * @covers ::get_view_url
      * @return void
      */
     public function test_get_view_url() {
@@ -291,7 +294,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test the module content trim character.
-     *
+     * @covers ::format_designer_modcontent_trim_char
      * @return void
      */
     public function test_format_designer_modcontent_trim_char() {
@@ -309,7 +312,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test desginer format date method.
-     *
+     * @covers ::format_designer_format_date
      * @return void
      */
     public function test_format_designer_format_date() {
@@ -320,7 +323,7 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test the kanban board setup changes the section type.
-     *
+     * @covers ::setup_kanban_board
      * @return void
      */
     public function test_kanban_setup() {
@@ -362,14 +365,18 @@ class lib_test extends \advanced_testcase {
         $record = ['format' => 'designer'];
         $course = $this->getDataGenerator()->create_course($record);
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
-        $result = format_designer_show_staffs_header($course);
+        $result = helper::create()->get_course_staff_users($course);
         $this->assertEquals(1, count($result));
         $this->assertEquals($user->id, $result[0]->userid);
     }
 
+    /**
+     * Test the Critera progress function.
+     * @covers ::critera_progress
+     * @return void
+     */
     public function test_critera_progress() {
-        global $DB, $CFG;
-        require_once($CFG->dirroot. "/course/format/designer/renderer.php");
+        global $DB;
         $this->resetAfterTest();
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         $user = $this->getDataGenerator()->create_user();
@@ -403,8 +410,7 @@ class lib_test extends \advanced_testcase {
         ];
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
-
-        $result = \format_designer_renderer::criteria_progress($course, $user->id);
+        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
 
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(0, $result['completed']);
@@ -413,9 +419,11 @@ class lib_test extends \advanced_testcase {
         $completion = new \completion_info($course);
         $completion->update_state($cmassign, COMPLETION_COMPLETE, $user->id);
 
-        $result = \format_designer_renderer::criteria_progress($course, $user->id);
+        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(1, $result['completed']);
         $this->assertEquals(50, $result['percent']);
+
     }
 }
+

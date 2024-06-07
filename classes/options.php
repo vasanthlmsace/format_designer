@@ -62,26 +62,6 @@ class options {
     }
 
     /**
-     * Get course options.
-     *
-     * @param string $name
-     * @param int $courseid
-     * @return string Value of course option.
-     */
-    public static function get_course_option($name, $courseid=null) {
-        global $DB;
-        $record = $DB->get_record('course_format_options', [
-            'name' => $name,
-            'courseid' => $courseid,
-            'format' => 'designer'
-        ]);
-        if (!empty($record)) {
-            return $record->value;
-        }
-        return null;
-    }
-
-    /**
      * Get designer additional fields values for the given module.
      *
      * @param int $cmid course module id.
@@ -118,7 +98,7 @@ class options {
         $record->value = $value ?: '';
         $record->timemodified = time();
         if ($exitrecord = $DB->get_record('format_designer_options', [
-            'cmid' => $cmid, 'courseid' => $courseid, 'name' => $name])) {
+            'cmid' => $cmid, 'courseid' => $courseid, 'name' => $name, ])) {
             $record->id = $exitrecord->id;
             $record->timecreated = $exitrecord->timecreated;
             $DB->update_record('format_designer_options', $record);
@@ -137,8 +117,38 @@ class options {
     public static function is_mod_completed($mod) {
         $cmcompletion = new \format_designer\output\cm_completion($mod);
         $cmcompletionstate = $cmcompletion->get_completion_state();
-        if ($cmcompletionstate == COMPLETION_COMPLETE || $cmcompletionstate == COMPLETION_COMPLETE_PASS ) {
+        if ($cmcompletionstate == COMPLETION_COMPLETE || $cmcompletionstate == COMPLETION_COMPLETE_PASS) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check the section able to complete.
+     *
+     * @param [object] $section
+     * @param [object] $course
+     * @param [object] $modinfo
+     * @param boolean $onlyrelative
+     * @return boolean
+     */
+    public static function is_vaild_section_completed($section, $course, $modinfo, $onlyrelative = false) {
+
+        $completioninfo = new \completion_info($course);
+        $completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY), 'moduleinstance');
+        if (!empty($modinfo->sections[$section->section]) && $section->uservisible) {
+            foreach ($modinfo->sections[$section->section] as $modnumber) {
+                $mod = $modinfo->cms[$modnumber];
+                if (!empty($mod)) {
+                    if ($onlyrelative && !in_array($mod->id, $completionactivities)) {
+                        continue;
+                    }
+                    $cmcompletion = new cm_completion($mod);
+                    if ($mod->is_visible_on_course_page() && $cmcompletion->get_completion_mode() != COMPLETION_TRACKING_NONE) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -151,11 +161,13 @@ class options {
      * @param stdclass $course Course instance record.
      * @param \Course_modinfo $modinfo Course mod info.
      * @param bool $result True to only for REsult, False for current progress.
+     * @param bool $onlyrelative
      * @return bool|array Result of section completion or Current progress data.
      */
-    public static function is_section_completed($section, $course, $modinfo, $result=false) {
+    public static function is_section_completed($section, $course, $modinfo, $result = false, $onlyrelative = false) {
 
         $completioninfo = new \completion_info($course);
+        $completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY), 'moduleinstance');
         $cmcompleted = 0;
         $totalmods = 0;
         $issectioncompletion = 0;
@@ -163,8 +175,11 @@ class options {
             foreach ($modinfo->sections[$section->section] as $modnumber) {
                 $mod = $modinfo->cms[$modnumber];
                 if (!empty($mod)) {
+                    if ($onlyrelative && !in_array($mod->id, $completionactivities)) {
+                        continue;
+                    }
                     $cmcompletion = new cm_completion($mod);
-                    if ($mod->uservisible && $cmcompletion->get_completion_mode() != COMPLETION_TRACKING_NONE) {
+                    if ($mod->is_visible_on_course_page() && $cmcompletion->get_completion_mode() != COMPLETION_TRACKING_NONE) {
                         $totalmods++;
                         $cmcompletionstate = $cmcompletion->get_completion_state();
                         if ($cmcompletionstate == COMPLETION_COMPLETE || $cmcompletionstate == COMPLETION_COMPLETE_PASS ) {
@@ -177,10 +192,15 @@ class options {
 
         if ($totalmods) {
             $sectionprogress = $cmcompleted / $totalmods * 100;
-            $issectioncompletion = 1;
+            $issectioncompletion = true;
         } else {
-            $sectionprogress = 0;
+            $sectionprogress = false;
         }
+
+        if (isguestuser()) {
+            $issectioncompletion = false;
+        }
+
         $sectionprogresscomp = ($sectionprogress == 100) ? true : false;
 
         return ($result) ? $sectionprogresscomp : [
@@ -217,13 +237,13 @@ class options {
     }
 
     /**
-     * Fetch default data for course, section, modules.
+     * Get default value for the course, section and module config.
      *
      * @param bool $issection
-     * @return stdclass
+     * @return void
      */
     public static function get_default_options($issection=false) {
-
+        global $DB, $PAGE;
         static $design;
         if ($design == null) {
 
@@ -237,7 +257,7 @@ class options {
                 'position' => isset($design->bgimagestyle_position) ? $design->bgimagestyle_position : '',
                 'position_adv' => isset($design->bgimagestyle_position_adv) ? $design->bgimagestyle_position_adv : '',
                 'repeat' => isset($design->bgimagestyle_repeat) ? $design->bgimagestyle_repeat : '',
-                'repeat_adv' => isset($design->bgimagestyle_repeat_adv) ? $design->bgimagestyle_repeat_adv : ''
+                'repeat_adv' => isset($design->bgimagestyle_repeat_adv) ? $design->bgimagestyle_repeat_adv : '',
             ];
 
             $design->maskstyle = [
@@ -253,8 +273,9 @@ class options {
                 $design->activityelements[$element] = isset($design->{'activityelements_'.$element})
                     ? $design->{'activityelements_'.$element} : '';
             }
+
+            unset($design->sectiondesignerbackgroundimage);
         }
         return $design;
     }
-
 }

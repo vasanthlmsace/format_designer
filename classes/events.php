@@ -30,12 +30,14 @@ namespace format_designer;
 class events {
 
     /**
-     * Observer section created event and insert section format options into DB;
+     * After new section created, section format options are not added to the DB.
+     * Observe the section creation and add global format options to section in dB.
      *
      * @param object $event
      * @return void
      */
     public static function course_section_created($event) {
+
         $data = $event->get_data();
         $sectionid = $data['objectid'];
         $sectionnum = $data['other']['sectionnum'];
@@ -52,9 +54,10 @@ class events {
         $options = $format->section_format_options();
         $sectiondata = ['id' => $sectionid];
         foreach ($options as $name => $option) {
-            $sectiondata[$name] = get_config('format_designer', $name);
+            if (get_config('format_designer', $name)) {
+                $sectiondata[$name] = get_config('format_designer', $name);
+            }
         }
-
         if (!defined('NO_OUTPUT_BUFFERING') || (defined('NO_OUTPUT_BUFFERING') && !NO_OUTPUT_BUFFERING)) {
             $format->update_section_format_options($sectiondata);
         }
