@@ -250,9 +250,8 @@ class lib_test extends \advanced_testcase {
 
         $weeksformat = course_get_format($course->id);
         $this->assertEquals($enddate, $weeksformat->get_default_course_enddate($courseform->get_quick_form()));
-
     }
-    
+
     /**
      * Test the module content trim character.
      * @covers ::format_designer_modcontent_trim_char
