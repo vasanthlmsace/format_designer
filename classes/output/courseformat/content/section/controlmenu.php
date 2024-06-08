@@ -167,7 +167,6 @@ class controlmenu extends controlmenu_base {
 
         }
 
-
         $data = (object) [
             'menu' => $output->render($menu),
             'hasmenu' => true,

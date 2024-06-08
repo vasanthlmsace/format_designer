@@ -123,7 +123,7 @@ if ($ADMIN->fulltree) {
     $title = get_string('strsectionlayout', 'format_designer');
     $description = get_string('section_layout_desc', 'format_designer');
     $layouts = [];
-    $setting = new admin_setting_configselect($name , $title, $description, 'link', format_designer_get_all_layouts());
+    $setting = new admin_setting_configselect($name , $title, $description, 'default', format_designer_get_all_layouts());
     $sectionpage->add($setting);
 
 

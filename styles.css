@@ -1265,6 +1265,9 @@ span.section-collapse-icon:before {
     display: flex;
     position: relative;
 }
+.format-designer.editing .designer .section .content .section li.activity .activity-block.designer:hover {
+    box-shadow: none;
+}
 .format-designer .designer .section .content .section li.activity .activity-block.designer .activity-background-style {
     width: 100%;
     height: 100%;

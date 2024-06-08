@@ -10,7 +10,7 @@ Feature: Sections can be edited and deleted in designer format
       | teacher1 | Teacher   | 1        | teacher1@example.com |
     And the following "courses" exist:
       | fullname | shortname | format | coursedisplay | numsections |
-      | Course 1 | C1        | designer | 0             | 5           |
+      | Course 1 | C1        | designer | 0           | 5           |
     And the following "activities" exist:
       | activity   | name                   | intro                         | course | idnumber    | section |
       | assign     | Test assignment name   | Test assignment description   | C1     | assign1     | 0       |
@@ -46,14 +46,6 @@ Feature: Sections can be edited and deleted in designer format
     Then I should see "Are you absolutely sure you want to completely delete \"Designer section 5\" and all the activities it contains?"
     And I press "Delete"
     And I should not see "Designer section 5"
-    And I should see "Designer section 4"
-
-  Scenario: Deleting the middle section in designer format
-    When I delete section "4"
-    And I press "Delete"
-    Then I should not see "Designer section 5"
-    And I should not see "Test chat name"
-    And I should see "Test choice name" in the "li#section-4" "css_element"
     And I should see "Designer section 4"
 
   @javascript

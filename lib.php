@@ -1166,8 +1166,6 @@ class format_designer extends \core_courseformat\base {
      */
     public function duplicate_section(section_info $originalsection): section_info {
         global $USER, $CFG;
-
-
         $course = $this->get_course();
 
         $fileareasections = [
@@ -1197,7 +1195,8 @@ class format_designer extends \core_courseformat\base {
 
                 if (in_array($option, array_keys($fileareasections))) {
                     $files = $fs->get_area_files(
-                        $coursecontext->id, $fileareasections[$option]['component'], $fileareasections[$option]['filearea'], $oldsection->id, 'itemid, filepath, filename', false);
+                        $coursecontext->id, $fileareasections[$option]['component'], $fileareasections[$option]['filearea'], $oldsection->id,
+                        'itemid, filepath, filename', false);
                     $file = current($files);
                     if ($file) {
                         $userdraft = [
@@ -1214,7 +1213,7 @@ class format_designer extends \core_courseformat\base {
             }
         }
 
-		// Prepare the section summary.
+        // Prepare the section summary.
         $files = $fs->get_area_files(
             $coursecontext->id, 'course', 'section', $oldsection->id, 'itemid, filepath, filename', false);
         $file = current($files);
@@ -1782,6 +1781,10 @@ function format_designer_get_pro_layouts() {
     return $layouts;
 }
 
+/**
+ * Get the designer format custom layouts
+ * @return array 
+ */
 function format_designer_get_all_layouts() {
     $layouts = [
         'default' => get_string('link', 'format_designer'),
@@ -2077,7 +2080,8 @@ function format_designer_editsetting_style($page) {
          .dropdown-menu {';
         $style .= 'right: 100% !important;';
         $style .= '}';
-        $style .= '.format-designer .course-content ul.designer .kanban-board-activities li.section:first-child .right .dropdown .dropdown-menu .dropdown-subpanel .dropdown-menu {';
+        $style .= '.format-designer .course-content ul.designer .kanban-board-activities li.section:first-child .right .dropdown
+         .dropdown-menu .dropdown-subpanel .dropdown-menu {';
         $style .= 'left: 100% !important;';
         $style .= '}';
         echo html_writer::tag('style', $style, []);
@@ -2242,7 +2246,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
         "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "true", ]
         );
         $secondarymenutocoursecontent .= html_writer::link(new moodle_url('/course/view.php', ['id' => $course->id]),
-        get_string('strsecondarymenucourse', 'format_designer'), ['role' => 'menuitem', 'class' => 'designercoursehome', "tabindex" => "-1" ]);
+        get_string('strsecondarymenucourse', 'format_designer'), ['role' => 'menuitem',
+            'class' => 'designercoursehome', "tabindex" => "-1" ]);
         $secondarymenutocoursecontent .= html_writer::end_tag("li");
 
         if (format_designer_has_pro() && $course->prerequisitesbackmain
