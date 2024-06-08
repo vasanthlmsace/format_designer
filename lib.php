@@ -1194,8 +1194,8 @@ class format_designer extends \core_courseformat\base {
                 }
 
                 if (in_array($option, array_keys($fileareasections))) {
-                    $files = $fs->get_area_files($coursecontext->id, $fileareasections[$option]['component'], $fileareasections[$option]['filearea'],
-                        $oldsection->id, 'itemid, filepath, filename', false);
+                    $files = $fs->get_area_files($coursecontext->id, $fileareasections[$option]['component'],
+                    $fileareasections[$option]['filearea'], $oldsection->id, 'itemid, filepath, filename', false);
                     $file = current($files);
                     if ($file) {
                         $userdraft = [
