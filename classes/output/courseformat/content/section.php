@@ -57,7 +57,18 @@ class section extends \core_courseformat\output\local\content\section {
             $data->collapsemenu = true;
         }
 
-        $data->contentcollapsed = $this->is_section_collapsed();
+        if (method_exists($this, 'is_section_collapsed')) {
+            $data->contentcollapsed = $this->is_section_collapsed();
+        } else {
+            $data->contentcollapsed = false;
+            $preferences = $format->get_sections_preferences();
+            if (isset($preferences[$section->id])) {
+                $sectionpreferences = $preferences[$section->id];
+                if (!empty($sectionpreferences->contentcollapsed)) {
+                    $data->contentcollapsed = true;
+                }
+            }
+        }
 
         if ($format->is_section_current($section)) {
             $data->iscurrent = true;
@@ -67,24 +78,10 @@ class section extends \core_courseformat\output\local\content\section {
         }
 
         $renderer = $this->format->get_renderer($PAGE);
-        if (method_exists($format, 'get_sectionnum')) {
-            $sectionnum = $format->get_sectionnum();
-        } else {
-            $sectionnum = $format->get_section_number();
-        }
+        $sectionnum = $format->get_section_number();
 
         if ($data->iscoursedisplaymultipage && !$sectionnum) {
-            if ($CFG->branch < 404) {
-                $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
-            } else {
-                $pagesection = optional_param('section', -1, PARAM_INT);
-                $sectionnum = empty($sectionnum) && ($pagesection >= 0) ? 0 : false;
-                if ($pagesection >= 0) {
-                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), $sectionnum);
-                } else {
-                    $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
-                }
-            }
+            $formatdata = (array) $renderer->render_section_data($this->section, $this->format->get_course(), false, true);
         } else {
             $formatdata = (array) $renderer->render_section_data(
                 $this->section, $this->format->get_course(), $sectionnum
@@ -92,47 +89,6 @@ class section extends \core_courseformat\output\local\content\section {
         }
         $data = (object) array_merge((array) $data, $formatdata);
 
-        return true;
-    }
-
-    /**
-     * Add the section editor attributes to the data structure.
-     *
-     * @param stdClass $data the current cm data reference
-     * @param renderer_base $output typically, the renderer that's calling this function
-     * @return bool if the cm has name data
-     */
-    protected function add_editor_data(stdClass &$data, renderer_base $output): bool {
-        $course = $this->format->get_course();
-        $coursecontext = context_course::instance($course->id);
-        $editcaps = [];
-        if (has_capability('moodle/course:sectionvisibility', $coursecontext)) {
-            $editcaps = ['moodle/course:sectionvisibility'];
-        }
-        if (!$this->format->show_editor($editcaps)) {
-            return false;
-        }
-
-        // In a single section page the control menu is located in the page header.
-        if (empty($this->hidecontrols)) {
-            $controlmenu = new $this->controlmenuclass($this->format, $this->section);
-            $data->controlmenu = $controlmenu->export_for_template($output);
-        }
-
-        if (method_exists($this->format, 'get_sectionnum')) {
-            $singlesection = $this->format->get_sectionnum();
-        } else {
-            $singlesection = $this->format->get_section_number();
-        }
-
-
-        if (!$this->isstealth) {
-            $data->cmcontrols = $output->course_section_add_cm_control(
-                $course,
-                $this->section->section,
-                $singlesection
-            );
-        }
         return true;
     }
 }

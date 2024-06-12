@@ -1097,7 +1097,7 @@ class format_designer extends \core_courseformat\base {
                 'type' => PARAM_ALPHANUMEXT,
                 'label' => '',
                 'element_type' => 'hidden',
-                'default' => 'default',
+                'default' => get_config('format_designer', 'sectiontype'),
             ],
         ];
         $width = [
@@ -1155,6 +1155,83 @@ class format_designer extends \core_courseformat\base {
         }
         return $sectionoptions;
     }
+
+
+    /**
+     * Duplicate a section
+     *
+     * @param section_info $originalsection The section to be duplicated
+     * @return section_info The new duplicated section
+     * @since Moodle 4.2
+     */
+    public function duplicate_section(section_info $originalsection): section_info {
+        global $USER, $CFG;
+
+
+        $course = $this->get_course();
+
+        $fileareasections = [
+            'sectiondesignerbackgroundimage' => [
+                'filearea' => 'sectiondesignbackground',
+                'component' => 'format_designer',
+            ],
+            'sectiondesignercompletionbg' => [
+                'filearea' => 'sectiondesigncompletionbackground',
+                'component' => 'format_designer',
+            ],
+            'sectioncardcta' => [
+                'filearea' => 'sectioncardcta',
+                'component' => 'local_designer',
+            ],
+        ];
+        $sectioninfo = parent::duplicate_section($originalsection);
+        $oldsection = get_fast_modinfo($course)->get_section_info($originalsection->section);
+        $oldsectionoptions = $this->get_section_options($oldsection->id);
+        $coursecontext = \context_course::instance($course->id);
+        $fs = get_file_storage();
+        if (!empty($oldsectionoptions)) {
+            foreach ($oldsectionoptions as $option => $value) {
+                if ($value) {
+                    $this->set_section_option($sectioninfo->id, $option, $value);
+                }
+
+                if (in_array($option, array_keys($fileareasections))) {
+                    $files = $fs->get_area_files(
+                        $coursecontext->id, $fileareasections[$option]['component'], $fileareasections[$option]['filearea'], $oldsection->id, 'itemid, filepath, filename', false);
+                    $file = current($files);
+                    if ($file) {
+                        $userdraft = [
+                            'contextid' => $coursecontext->id,
+                            'component' => $fileareasections[$option]['component'],
+                            'filearea' => $fileareasections[$option]['filearea'],
+                            'itemid' => $sectioninfo->id,
+                            'filepath' => '/',
+                            'filename' => $file->get_filename(),
+                        ];
+                        $fs->create_file_from_storedfile($userdraft, $file);
+                    }
+                }
+            }
+        }
+
+		// Prepare the section summary.
+        $files = $fs->get_area_files(
+            $coursecontext->id, 'course', 'section', $oldsection->id, 'itemid, filepath, filename', false);
+        $file = current($files);
+        if ($file) {
+            $userdraft = [
+                'contextid' => $coursecontext->id,
+                'component' => 'course',
+                'filearea' => 'section',
+                'itemid' => $sectioninfo->id,
+                'filepath' => '/',
+                'filename' => $file->get_filename(),
+            ];
+            $fs->create_file_from_storedfile($userdraft, $file);
+        }
+        return $sectioninfo;
+    }
+
 
     /**
      * Updates format options for a section
@@ -1705,6 +1782,17 @@ function format_designer_get_pro_layouts() {
     return $layouts;
 }
 
+function format_designer_get_all_layouts() {
+    $layouts = [
+        'default' => get_string('link', 'format_designer'),
+        'list' => get_string('list', 'format_designer'),
+        'cards' => get_string('cards', 'format_designer')
+    ];
+    $prolayouts = array_keys(core_component::get_plugin_list('layouts'));
+    $prolayouts = (array) get_strings($prolayouts, 'format_designer');
+    return array_merge($layouts, $prolayouts);
+}
+
 /**
  * Get section background image url.
  *
@@ -2004,7 +2092,7 @@ function format_designer_editsetting_style($page) {
  * @return string|null
  */
 function format_designer_get_module_layoutclass($format, $section) {
-    $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: 'default';
+    $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
 
     if ($sectiontype == 'list') {
         $sectionlayoutclass = " position-relative ";
@@ -2154,7 +2242,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
         "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "true", ]
         );
         $secondarymenutocoursecontent .= html_writer::link(new moodle_url('/course/view.php', ['id' => $course->id]),
-        get_string('course'), ['role' => 'menuitem', 'class' => 'designercoursehome', "tabindex" => "-1" ]);
+        get_string('strsecondarymenucourse', 'format_designer'), ['role' => 'menuitem', 'class' => 'designercoursehome', "tabindex" => "-1" ]);
         $secondarymenutocoursecontent .= html_writer::end_tag("li");
 
         if (format_designer_has_pro() && $course->prerequisitesbackmain

@@ -97,11 +97,7 @@ class controlmenu extends controlmenu_base {
 
         $hassectiontypes = true;
 
-        if (method_exists($this->format, 'get_sectionnum')) {
-            $sectionnum = $this->format->get_sectionnum();
-        } else {
-            $sectionnum = $this->format->get_section_number();
-        }
+        $sectionnum = $this->format->get_section_number();
 
         $course = $this->format->get_course();
 
@@ -198,12 +194,7 @@ class controlmenu extends controlmenu_base {
         $format = $this->format;
         $section = $this->section;
         $course = $format->get_course();
-
-        if (method_exists($format, 'get_sectionnum')) {
-            $sectionreturn = $format->get_sectionnum();
-        } else {
-            $sectionreturn = $format->get_section_number();
-        }
+        $sectionreturn = $format->get_section_number();
 
         $user = $USER;
 
@@ -219,27 +210,13 @@ class controlmenu extends controlmenu_base {
 
         $controls = [];
 
-        // Only show the view link if we are not already in the section view page.
-        if ($PAGE->pagetype !== 'section-view-' . $course->format && $CFG->branch >= 404) {
-            $controls['view'] = [
-                'url'   => new moodle_url('/course/view.php', ['id' => $course->id, 'section' => $section->section]),
-                'icon' => 'i/viewsection',
-                'name' => get_string('view'),
-                'pixattr' => ['class' => ''],
-                'attr' => ['class' => 'icon view'],
-            ];
-        }
-
         if (!$isstealth && has_capability('moodle/course:update', $coursecontext, $user)) {
-            if ($CFG->branch < 404) {
-                if ($section->section > 0
-                    && get_string_manager()->string_exists('editsection', 'format_'.$format->get_format())) {
-                    $streditsection = get_string('editsection', 'format_'.$format->get_format());
-                } else {
-                    $streditsection = get_string('editsection');
-                }
-            } else {
+
+            if ($section->section > 0
+                && get_string_manager()->string_exists('editsection', 'format_'.$format->get_format())) {
                 $streditsection = get_string('editsection', 'format_'.$format->get_format());
+            } else {
+                $streditsection = get_string('editsection');
             }
 
             $controls['edit'] = [
@@ -250,32 +227,33 @@ class controlmenu extends controlmenu_base {
                 'attr' => ['class' => 'icon edit'],
             ];
 
-            $hassectiontypes = true;
-            if (($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$sectionreturn)
-                || $course->coursetype == DESIGNER_TYPE_FLOW) {
-                $hassectiontypes = false;
+            if ($CFG->branch >= 402) {
+                $hassectiontypes = true;
+                if (($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$sectionreturn)
+                    || $course->coursetype == DESIGNER_TYPE_FLOW) {
+                    $hassectiontypes = false;
+                }
+
+                if (format_designer_is_support_subpanel() && $hassectiontypes) {
+                    $controls['sectionlayout'] = new action_menu_subpanel(
+                        get_string('strsectionlayout', 'format_designer'),
+                        $this->get_choice_list($section),
+                        ['data-value' => 'section-designer-action'],
+                        new pix_icon('t/hide', '', 'moodle', ['class' => 'iconsmall'])
+                    );
+                }
+
+                $duplicatesectionurl = clone($baseurl);
+                $duplicatesectionurl->param('section', $section->section);
+                $duplicatesectionurl->param('duplicatesection', $section->section);
+                $controls['duplicate'] = [
+                    'url' => $duplicatesectionurl,
+                    'icon' => 't/copy',
+                    'name' => get_string('duplicate'),
+                    'pixattr' => ['class' => ''],
+                    'attr' => ['class' => 'icon duplicate'],
+                ];
             }
-
-            if (format_designer_is_support_subpanel() && $hassectiontypes) {
-
-                $controls['sectionlayout'] = new action_menu_subpanel(
-                    get_string('strsectionlayout', 'format_designer'),
-                    $this->get_choice_list($section),
-                    ['data-value' => 'section-designer-action'],
-                    new pix_icon('t/hide', '', 'moodle', ['class' => 'iconsmall'])
-                );
-            }
-
-            $duplicatesectionurl = clone($baseurl);
-            $duplicatesectionurl->param('section', $section->section);
-            $duplicatesectionurl->param('duplicatesection', $section->section);
-            $controls['duplicate'] = [
-                'url' => $duplicatesectionurl,
-                'icon' => 't/copy',
-                'name' => get_string('duplicate'),
-                'pixattr' => ['class' => ''],
-                'attr' => ['class' => 'icon duplicate'],
-            ];
         }
 
         if ($section->section) {
@@ -396,12 +374,13 @@ class controlmenu extends controlmenu_base {
                 ];
             }
         }
+
         if (
             has_any_capability([
                 'moodle/course:movesections',
                 'moodle/course:update',
                 'moodle/course:sectionvisibility',
-            ], $coursecontext)
+            ], $coursecontext) && $CFG->branch >= 402
         ) {
             $sectionlink = new moodle_url(
                 '/course/view.php',
@@ -429,9 +408,8 @@ class controlmenu extends controlmenu_base {
      * @return choicelist
      */
     public function get_choice_list($section): choicelist {
-
         $sectiontype = $this->format->get_section_option($section->id, 'sectiontype');
-        $sectiontype = $sectiontype ? $sectiontype : 'default';
+        $sectiontype = $sectiontype ? $sectiontype : get_config('format_designer', 'sectiontype');
         $choice = $this->create_choice_list($section);
         $choice->set_selected_value($sectiontype);
         return $choice;
@@ -453,6 +431,7 @@ class controlmenu extends controlmenu_base {
             'list' => get_string('list', 'format_designer'),
             'cards' => get_string('cards', 'format_designer'),
         ];
+
         if (format_designer_has_pro()) {
             $prosectiontypes = \local_designer\info::get_layout_menu($this->format, $section, $this->format->get_course());
             $lists = array_merge($lists, array_column($prosectiontypes, 'name', 'type'));
@@ -462,7 +441,7 @@ class controlmenu extends controlmenu_base {
             $choice->add_option(
                 $key,
                 $value,
-                $this->get_option_data( $key)
+                $this->get_option_data($key)
             );
         }
 

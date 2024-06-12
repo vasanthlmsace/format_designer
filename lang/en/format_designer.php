@@ -557,3 +557,7 @@ $string['courseindicator'] = "Course status: ";
 $string['strsectionlayout'] = "Section Layout";
 $string['completioncriteria'] = "Completion criteria";
 $string['plugin_description'] = 'Mix and match layouts to create unique and visually appealing course designs.';
+$string['strsecondarymenucourse'] = "Course";
+
+$string['section_layout'] = "Section layout";
+$string['section_layout_desc'] = "";

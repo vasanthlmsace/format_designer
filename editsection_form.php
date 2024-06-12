@@ -47,31 +47,19 @@ class editsection_form extends moodleform {
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
 
-        if ($CFG->branch < 404) {
-
-            $mform->addElement('defaultcustom', 'name', get_string('sectionname'), [
-                'defaultvalue' => $this->_customdata['defaultsectionname'],
-                'customvalue' => $sectioninfo->name,
-            ], ['size' => 30, 'maxlength' => 255]);
-            $mform->setDefault('name', false);
-            $mform->addGroupRule('name', ['name' => [[get_string('maximumchars', '', 255), 'maxlength', 255]]]);
-
-        } else {
-
-            $mform->addElement(
-                'text',
-                'name',
-                get_string('sectionname'),
-                [
-                    'placeholder' => $this->_customdata['defaultsectionname'],
-                    'size' => 30,
-                    'maxlength' => 255,
-                ],
-            );
-            $mform->setType('name', PARAM_RAW);
-            $mform->setDefault('name', $sectioninfo->name);
-            $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        }
+        $mform->addElement(
+            'text',
+            'name',
+            get_string('sectionname'),
+            [
+                'placeholder' => $this->_customdata['defaultsectionname'],
+                'size' => 30,
+                'maxlength' => 255,
+            ],
+        );
+        $mform->setType('name', PARAM_RAW);
+        $mform->setDefault('name', $sectioninfo->name);
+        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         // Prepare course and the editor.
         $mform->addElement('editor', 'summary_editor', get_string('summary'), null, $this->_customdata['editoroptions']);
@@ -87,7 +75,7 @@ class editsection_form extends moodleform {
             $elements = $courseformat->create_edit_form_elements($mform, true);
         }
         // Check the moodle 4.3 higher.
-        if ($CFG->version >= 2023092300 && !empty($CFG->enableavailability)) {
+        if ($CFG->branch >= 403 && !empty($CFG->enableavailability)) {
 
             $mform->addElement('header', 'availabilityconditions',
                 get_string('restrictaccess', 'availability'));
@@ -123,7 +111,7 @@ class editsection_form extends moodleform {
 
         if (!empty($CFG->enableavailability)) {
             // Check the moodle 4.3 lower.
-            if ($CFG->version < 2023092300) {
+            if ($CFG->version < 403) {
                 $mform->addElement('header', 'availabilityconditions',
                         get_string('restrictaccess', 'availability'));
                 $mform->setExpanded('availabilityconditions', false);
@@ -134,6 +122,7 @@ class editsection_form extends moodleform {
                 $mform->addElement('textarea', 'availabilityconditionsjson',
                         get_string('accessrestrictions', 'availability'));
             }
+
             \core_availability\frontend::include_all_javascript($course, null,
                     $this->_customdata['cs']);
         }
@@ -162,10 +151,8 @@ class editsection_form extends moodleform {
             $defaultvalues = \local_designer\options::prepare_sectioncardcta_editor_files($defaultvalues,
                 $this->_customdata['course']);
         }
-        if ($CFG->branch < 404) {
-            if (strval($defaultvalues->name) === '') {
-                $defaultvalues->name = false;
-            }
+        if (strval($defaultvalues->name) === '') {
+            $defaultvalues->name = false;
         }
         parent::set_data($defaultvalues);
     }

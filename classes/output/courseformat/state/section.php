@@ -78,13 +78,7 @@ class section extends \core_courseformat\output\local\state\section {
             $data['bulkeditable'] = $this->is_bulk_editable();
         }
 
-        if ($CFG->branch > 403) {
-            $data['component'] = $section->component;
-            $data['itemid'] = $section->itemid;
-        }
-
         $data = (object) $data;
-
         if (empty($modinfo->sections[$section->section])) {
             return $data;
         }
