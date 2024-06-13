@@ -28,15 +28,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - php: '8.0'
-          #   moodle-branch: 'MOODLE_403_STABLE'
-          #   database: 'mariadb'
           - php: '8.0'
             moodle-branch: 'MOODLE_403_STABLE'
-            database: 'pgsql'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_402_STABLE'
-            database: 'pgsql'
+            database: 'mariadb'
+          # - php: '8.0'
+          #   moodle-branch: 'MOODLE_403_STABLE'
+          #   database: 'pgsql'
+          # - php: '8.0'
+          #   moodle-branch: 'MOODLE_402_STABLE'
+          #   database: 'pgsql'
           # - php: '8.0'
           #   moodle-branch: 'MOODLE_402_STABLE'
           #   database: 'mariadb'
@@ -87,13 +87,13 @@ jobs:
       #   if: ${{ always() }}
       #   run: moodle-plugin-ci phpmd
 
-      # - name: Moodle Code Checker
-      #   if: ${{ always() }}
-      #   run: moodle-plugin-ci codechecker --max-warnings 0
+      - name: Moodle Code Checker
+        if: ${{ always() }}
+        run: moodle-plugin-ci codechecker --max-warnings 0
 
-      # - name: Moodle PHPDoc Checker
-      #   if: ${{ always() }}
-      #   run: moodle-plugin-ci phpdoc
+      - name: Moodle PHPDoc Checker
+        if: ${{ always() }}
+        run: moodle-plugin-ci phpdoc
 
       # - name: Validating
       #   if: ${{ always() }}
@@ -107,14 +107,14 @@ jobs:
       #   if: ${{ always() }}
       #   run: moodle-plugin-ci mustache
 
-      # - name: Grunt
-      #   if: ${{ always() }}
-      #   run: moodle-plugin-ci grunt
+      - name: Grunt
+        if: ${{ always() }}
+        run: moodle-plugin-ci grunt
 
       # - name: PHPUnit tests
       #   if: ${{ always() }}
       #   run: moodle-plugin-ci phpunit
 
-      - name: Behat features
-        if: ${{ always() }}
-        run: moodle-plugin-ci behat --profile chrome
+      # - name: Behat features
+      #   if: ${{ always() }}
+      #   run: moodle-plugin-ci behat --profile chrome
