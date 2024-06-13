@@ -75,8 +75,8 @@
         };
         this.expandSection();
 
-        var contactModal = document.getElementsByClassName('toggle-contact-button');
-        Array.from(contactModal).forEach(function(element) {
+        var contactModalHandler = document.getElementsByClassName('toggle-contact-button');
+        Array.from(contactModalHandler).forEach(function(element) {
             element.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (e.currentTarget.dataset.userid != undefined) {

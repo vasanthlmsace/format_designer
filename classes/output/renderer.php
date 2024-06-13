@@ -106,7 +106,8 @@ class renderer extends \core_courseformat\output\section_renderer {
 
         $singlesection = $format->get_section_number();
 
-        $data->issectionpageclass = $singlesection || ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) ? 'section-page-layout' : '';
+        $data->issectionpageclass = $singlesection || ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE)
+            ? 'section-page-layout' : '';
 
         if (!format_designer_has_pro()) {
             $data->headermetadata = $this->course_header_metadata_details($course);
@@ -945,7 +946,6 @@ class renderer extends \core_courseformat\output\section_renderer {
         $sectionstylerules = ($course->coursetype == DESIGNER_TYPE_KANBAN)
             ? (isset($course->listwidth) && $section->section != 0
             ? sprintf('width: %s;', $course->listwidth) : '') : '';
-
 
         $showprerequisites = ($section->section == 0) ? true : false;
         $templatecontext = [

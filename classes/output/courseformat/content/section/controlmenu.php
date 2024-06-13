@@ -167,7 +167,6 @@ class controlmenu extends controlmenu_base {
 
         }
 
-
         $data = (object) [
             'menu' => $output->render($menu),
             'hasmenu' => true,
@@ -272,7 +271,7 @@ class controlmenu extends controlmenu_base {
                             'attr' => [
                                 'class' => 'icon editing_showhide',
                                 'data-sectionreturn' => $sectionreturn,
-                                'data-action' => ($usecomponents) ? 'sectionHide' : 'hide',
+                                'data-action' => ($usecomponents) && ($CFG->branch > 400) ? 'sectionHide' : 'hide',
                                 'data-id' => $section->id,
                                 'data-swapname' => $strshowfromothers,
                                 'data-swapicon' => 'i/show',
