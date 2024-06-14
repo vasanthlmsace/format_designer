@@ -2062,23 +2062,6 @@ function format_designer_timemanagement_installed() {
 function format_designer_editsetting_style($page) {
     if ($page->user_is_editing()) {
         // Fixed the overlapping issue by make this css rule as important. Moodle CI doesn't allow important.
-        $style = '.format-designer .course-content ul.designer li.section .right .dropdown .dropdown-menu {';
-        $style .= 'top: -50px !important;left: auto !important;right: 40px !important;transform: none !important;';
-        $style .= '}';
-        $style .= '.format-designer .designer .section .activity .actions .menubar .dropdown .dropdown-menu {';
-        $style .= 'top: -50px !important;left: auto !important;right: 40px !important;transform: none !important;';
-        $style .= '}';
-        $style .= '.format-designer .course-content ul.designer li.section .right .dropdown.designer-menu .dropdown-menu {';
-        $style .= 'top: -90px !important;';
-        $style .= '}';
-        $style .= '.format-designer .designer .section .activity .actions .menubar .dropdown .dropdown-menu .dropdown-subpanel
-         .dropdown-menu {';
-        $style .= 'right: 100% !important;';
-        $style .= '}';
-        $style .= '.format-designer .course-content ul.designer li.section .right .dropdown .dropdown-menu .dropdown-subpanel
-         .dropdown-menu {';
-        $style .= 'right: 100% !important;';
-        $style .= '}';
         $style .= '.format-designer .course-content ul.designer .kanban-board-activities li.section:first-child .right .dropdown
          .dropdown-menu .dropdown-subpanel .dropdown-menu {';
         $style .= 'left: 100% !important;';
