@@ -708,6 +708,7 @@ span.section-collapse-icon:before {
     vertical-align: middle;
 }
 .format-designer.path-course-view.pagelayout-course #page {
+    height: 100%;
     background-color: transparent;
 }
 .format-designer #page #page-content section#region-main {
@@ -771,7 +772,7 @@ span.section-collapse-icon:before {
     position: relative;
     z-index: 2;
 }
-.format-designer .course-content ul.designer li.section .right .dropdown {
+.format-designer .course-content ul.designer li.section .right .dropdown:not(.dropdown-subpanel) {
     display: inline-block;
     margin-right: 10px;
 }
@@ -1102,6 +1103,8 @@ span.section-collapse-icon:before {
 }
 /* Course Edit dropdown menu */
 @media (min-width: 576px) and (max-width: 1690px) {
+    .format-designer .designer .section.desktop-five-column .section.link-layout .activity .action-menu .menubar .dropdown
+    .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-five-column .section.card-layout .activity .action-menu .menubar .dropdown
     .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-five-column .section.circles-layout .activity .action-menu .menubar .dropdown
@@ -1111,6 +1114,8 @@ span.section-collapse-icon:before {
 }
 
 @media (min-width: 576px) and (max-width: 1570px) {
+    .format-designer .designer .section.desktop-four-column .section.link-layout .activity .action-menu .menubar .dropdown
+    .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-four-column .section.card-layout .activity .action-menu .menubar .dropdown
     .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-four-column .section.circles-layout .activity .action-menu .menubar .dropdown
@@ -1120,6 +1125,8 @@ span.section-collapse-icon:before {
 }
 
 @media (min-width: 576px) and (max-width: 1380px) {
+    .format-designer .designer .section.desktop-three-column .section.link-layout .activity .action-menu .menubar .dropdown
+    .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-three-column .section.card-layout .activity .action-menu .menubar .dropdown
     .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-three-column .section.circles-layout .activity .action-menu .menubar .dropdown
@@ -1129,6 +1136,8 @@ span.section-collapse-icon:before {
 }
 
 @media (min-width: 576px) and (max-width: 991px) {
+    .format-designer .designer .section.desktop-two-column .section.link-layout .activity .action-menu .menubar .dropdown
+    .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-two-column .section.card-layout .activity .action-menu .menubar .dropdown
     .dropdown-menu .dropdown-subpanel .dropdown-menu,
     .format-designer .designer .section.desktop-two-column .section.circles-layout .activity .action-menu .menubar .dropdown
@@ -1268,6 +1277,7 @@ span.section-collapse-icon:before {
     position: relative;
 }
 .format-designer.editing .designer .section .content .section li.activity .activity-block.designer:hover {
+    background: none;
     box-shadow: none;
 }
 .format-designer .designer .section .content .section li.activity .activity-block.designer .activity-background-style {
@@ -1329,7 +1339,8 @@ span.section-collapse-icon:before {
 .format-designer.editing .designer .section .content .section li.activity .mod-indent-outer > .icon {
     position: absolute;
 }
-.format-designer .activity-item {
+.format-designer .activity-item,
+.format-designer .activity-item.hiddenactivity {
     background-color: transparent;
 }
 .format-designer .designer .section .content .section li.activity .badge-restricted {
