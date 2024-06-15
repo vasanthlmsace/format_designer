@@ -52,7 +52,7 @@ class editsection_form extends moodleform {
             'customvalue' => $sectioninfo->name,
         ], ['size' => 30, 'maxlength' => 255]);
         $mform->setDefault('name', false);
-        $mform->addGroupRule('name', array('name' => array(array(get_string('maximumchars', '', 255), 'maxlength', 255))));
+        $mform->addGroupRule('name', ['name' => [[get_string('maximumchars', '', 255), 'maxlength', 255]]]);
 
         // Prepare course and the editor.
         $mform->addElement('editor', 'summary_editor', get_string('summary'), null, $this->_customdata['editoroptions']);

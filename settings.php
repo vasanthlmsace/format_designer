@@ -112,7 +112,7 @@ if ($ADMIN->fulltree) {
 
     // Section mask images.
     $name = 'formaty_designer_sectiongeneral';
-    $heading = get_string('general_settings', 'format_designer');
+    $heading = get_string('general', 'format_designer');
     $information = '';
     $setting = new admin_setting_heading($name, $heading, $information);
     $sectionpage->add($setting);
