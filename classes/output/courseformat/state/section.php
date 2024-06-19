@@ -53,11 +53,12 @@ class section extends \core_courseformat\output\local\state\section {
                 $indexcollapsed = true;
             }
         }
-        $sectionurlinfo = course_get_url($course, $section->section, ['navigation' => true]);
+        $sectionurlinfo = course_get_url($course, $section->section, ['navigation' => false]);
         $sectionurl = '';
         if ($sectionurlinfo instanceof moodle_url) {
             $sectionurl = $sectionurlinfo->out(false);
         }
+    
         $data = [
             'id' => $section->id,
             'section' => $section->section,
