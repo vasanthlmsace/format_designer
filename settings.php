@@ -147,7 +147,6 @@ if ($ADMIN->fulltree) {
         get_string('modtrimlength_desc', 'format_designer'), 23, PARAM_INT);
     $activitypage->add($setting);
 
-
     // Activity elements list to manage the visibility - Activity page continue.
     $elements = [
         'icon' => 1,
@@ -165,7 +164,6 @@ if ($ADMIN->fulltree) {
         3 => get_string('hideonhover', 'format_designer'),
         4 => get_string('remove'),
     ];
-    
     foreach ($elements as $element => $defaultvalue) {
         $name = 'format_designer/activityelements_'.$element;
         $title = get_string('activity:'.$element, 'format_designer');

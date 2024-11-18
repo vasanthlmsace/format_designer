@@ -58,8 +58,34 @@ class events {
                 $sectiondata[$name] = get_config('format_designer', $name);
             }
         }
-        if (!defined('NO_OUTPUT_BUFFERING') || (defined('NO_OUTPUT_BUFFERING') && !NO_OUTPUT_BUFFERING)) {
+        if (!defined('NO_OUTPUT_BUFFERING') || (defined('NO_OUTPUT_BUFFERING') && !NO_OUTPUT_BUFFERING)
+            && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0')) {
             $format->update_section_format_options($sectiondata);
         }
+    }
+
+    /**
+     * After course module deleted, deleted the format_designer_options data related to the format_designer options.
+     *
+     * @param object $event
+     * @return void
+     */
+    public static function course_module_deleted($event) {
+        global $DB;
+        $courseid = $event->courseid;
+        $cmid = $event->objectid;
+        $DB->delete_records('format_designer_options', ['courseid' => $courseid, 'cmid' => $cmid]);
+    }
+
+    /**
+     * After course deleted, deleted the format_designer_options data related to the format_designer options.
+     *
+     * @param object $event
+     * @return void
+     */
+    public static function course_deleted($event) {
+        global $DB;
+        $courseid = $event->courseid;
+        $DB->delete_records('format_designer_options', ['courseid' => $courseid]);
     }
 }

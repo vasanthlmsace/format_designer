@@ -189,7 +189,6 @@
     margin-top: 10px;
 }
 .format-designer .course-content ul.designer.course-type-flow li.section .availability-section-block + div {
-    max-height: 66%;
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-box-orient: vertical;
