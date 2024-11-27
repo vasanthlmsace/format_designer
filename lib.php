@@ -2572,7 +2572,10 @@ function format_designer_is_support_subpanel() {
     return false;
 }
 
-
+/**
+ * Designer get the cache object.
+ * @return cache_application|cache_session|cache_store
+ */
 function format_designer_get_cache_object() {
     return cache::make('format_designer', 'designeroptions');
 }

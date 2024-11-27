@@ -127,7 +127,7 @@ class events {
             return true;
         }
         self::course_user_cache_updated($courseid, $userid);
-        // related the course data cache deleted.
+        // Related the course data cache deleted.
         $records = $DB->get_records('course_completion_criteria', ['courseinstance' => $courseid]);
         foreach ($records as $record) {
             self::course_user_cache_updated($record->course, $userid);
@@ -176,6 +176,11 @@ class events {
         self::course_section_module_cache_updated($event->courseid, $event->objectid);
     }
 
+    /**
+     * Event course module update.
+     * @param mixed $event
+     * @return void
+     */
     public static function course_module_updated($event) {
         self::course_section_module_cache_updated($event->courseid, $event->objectid);
     }

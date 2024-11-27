@@ -46,16 +46,16 @@ Feature: Course progress bar checking criteria in designer format
     And I am on "Course 4" course homepage with editing mode on
     And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
     And I expand all fieldsets
-    And I set the field "courseheadertype" to "Hero"
+    And I set the field "Type" to "Hero"
     And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
     Then I click on "Select all/none" "link"
     And I press "Save changes"
     And I am on "Course 5" course homepage with editing mode on
-     And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
     And I expand all fieldsets
-    And I set the field "courseheadertype" to "Hero"
+    And I set the field "Type" to "Hero"
     And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
@@ -64,7 +64,7 @@ Feature: Course progress bar checking criteria in designer format
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
     And I expand all fieldsets
-    And I set the field "courseheadertype" to "Hero"
+    And I set the field "Type" to "Hero"
     And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Completion of other courses" "link"
