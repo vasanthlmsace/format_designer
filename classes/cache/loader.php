@@ -35,17 +35,10 @@ class loader extends \cache_application {
 
     /**
      * Delete the cached menus or menu items for all of its users.
-     *
-     * Fetch the cache store, generate the keys with menu or item id and keyword of user cache.
-     * Get the list of cached files by their filename, filenames are stored in the format of "menuid/itemid_u_ userid".
-     * Generate the key with menu/item id and the keyword of "_u" to get list of all users cache file for this menu/item.
-     *
-     * Delete all the files using delete_many method.
-     *
-     * @param int $id ID of the menu or item.
+     * @param mixed $courseid
      * @return void
      */
-    public function delete_vaild_section_completed_cache($courseid, $sectionid = 0) {
+    public function delete_vaild_section_completed_cache($courseid) {
         $store = $this->get_store();
         $prefix = "v_s_c_c_{$courseid}";
         if ($list = $store->find_by_prefix($prefix)) {
@@ -57,13 +50,22 @@ class loader extends \cache_application {
         }
     }
 
-
-    public function delete_user_section_completed_cache($courseid, $sectionid = 0, $userid = 0) {
+    /**
+     * Delete user section completed cache.
+     * @param mixed $courseid
+     * @return void
+     */
+    public function delete_user_section_completed_cache($courseid) {
         $prefix = "s_c_c_{$courseid}";
         $this->delete_prefix_cache($prefix);
     }
 
-
+    /**
+     * Delete due overdue activities count.
+     * @param mixed $courseid
+     * @param mixed $userid
+     * @return void
+     */
     public function delete_due_overdue_activities_count($courseid, $userid = 0) {
         $prefix = "d_o_a_c_c{$courseid}";
         if ($userid) {
@@ -72,7 +74,12 @@ class loader extends \cache_application {
         $this->delete_prefix_cache($prefix);
     }
 
-
+    /**
+     * Deleted course uncompletion criteria.
+     * @param mixed $courseid
+     * @param mixed $userid
+     * @return void
+     */
     public function delete_course_progress_uncompletion_criteria($courseid, $userid = 0) {
         $prefix = "u_c_c_s{$courseid}";
         if ($userid) {
@@ -81,6 +88,12 @@ class loader extends \cache_application {
         $this->delete_prefix_cache($prefix);
     }
 
+    /**
+     * Deleted criteria progress,
+     * @param mixed $courseid
+     * @param mixed $userid
+     * @return void
+     */
     public function delete_criteria_progress($courseid, $userid = 0) {
         $prefix = "c_p_c{$courseid}";
         if ($userid) {
@@ -89,12 +102,20 @@ class loader extends \cache_application {
         $this->delete_prefix_cache($prefix);
     }
 
-
+    /**
+     * Delete prerequisites courses.
+     * @return void
+     */
     public function delete_prerequisites_courses() {
         $prefix = "data_prereq_main_c";
         $this->delete_prefix_cache($prefix);
     }
 
+    /**
+     * Delete the prefix cache.
+     * @param mixed $prefix
+     * @return void
+     */
     public function delete_prefix_cache($prefix) {
         $store = $this->get_store();
         if ($list = $store->find_by_prefix($prefix)) {

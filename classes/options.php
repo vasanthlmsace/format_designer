@@ -172,7 +172,7 @@ class options {
         $totalmods = 0;
         $issectioncompletion = 0;
         $cache = format_designer_get_cache_object();
-        // vaild section completed c _courseid _sectionid_.
+        // Vaild section completed c _courseid _sectionid.
         $cachekey = "s_c_c_{$course->id}_s_{$section->id}_u_{$USER->id}";
         if (!$cache->get($cachekey)) {
             if (!empty($modinfo->sections[$section->section]) && $section->uservisible) {

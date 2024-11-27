@@ -44,27 +44,47 @@ Feature: Course progress bar checking criteria in designer format
 
     When I log in as "admin"
     And I am on "Course 4" course homepage with editing mode on
+    And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I expand all fieldsets
+    And I set the field "courseheadertype" to "Hero"
+    And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
     Then I click on "Select all/none" "link"
     And I press "Save changes"
     And I am on "Course 5" course homepage with editing mode on
+     And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I expand all fieldsets
+    And I set the field "courseheadertype" to "Hero"
+    And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
     Then I click on "Select all/none" "link"
     And I press "Save changes"
     And I am on "Course 1" course homepage with editing mode on
+    And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I expand all fieldsets
+    And I set the field "courseheadertype" to "Hero"
+    And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Completion of other courses" "link"
     And I set the following fields to these values:
       | Courses available| Course 4, Course 5|
     And I press "Save changes"
     And I am on "Course 2" course homepage with editing mode on
+    And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I expand all fieldsets
+    And I set the field "courseheadertype" to "Hero"
+    And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
     Then I click on "Select all/none" "link"
     And I press "Save changes"
     And I am on "Course 3" course homepage with editing mode on
+    And I click on "Settings" "link" in the ".secondary-navigation" "css_element"
+    And I expand all fieldsets
+    And I set the field "courseheadertype" to "Hero"
+    And I press "Save and display"
     And I navigate to "Course completion" in current page administration
     And I click on "Condition: Activity completion" "link"
     Then I click on "Select all/none" "link"

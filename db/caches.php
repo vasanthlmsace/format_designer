@@ -17,7 +17,7 @@
 /**
  * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
- * @package     report_lmsace_reports
+ * @package     format_designer
  * @copyright   Lmsace dev team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

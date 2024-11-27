@@ -584,7 +584,8 @@ class renderer extends \core_courseformat\output\section_renderer {
 
             foreach ($modinfo->sections as $sectionno => $modnumbers) {
                 $section = course_get_format($course)->get_section($sectionno);
-                if (\format_designer\options::is_vaild_section_completed($section, $course, $modinfo, $realtiveactivities) == "true") {
+                if (\format_designer\options::is_vaild_section_completed($section, $course,
+                    $modinfo, $realtiveactivities) == "true") {
                     $sections += 1;
                 }
             }
@@ -676,7 +677,7 @@ class renderer extends \core_courseformat\output\section_renderer {
                 }
             }
 
-            if ($isapplycompletioncourses  && $complteioncourses) {
+            if ($isapplycompletioncourses && $complteioncourses) {
                 foreach ($complteioncourses as $coursecriteria) {
                     $courseid = $coursecriteria->courseinstance;
                     $course = get_course($courseid);
@@ -748,7 +749,7 @@ class renderer extends \core_courseformat\output\section_renderer {
                 $uncompletioncriteriahtml .= html_writer::end_div();
             }
 
-            $cachedata =  [
+            $cachedata = [
                 'count' => $count,
                 'completed' => $completed,
                 'percent' => round($percent),
