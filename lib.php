@@ -833,22 +833,6 @@ class format_designer extends \core_courseformat\base {
                 'help_component' => 'format_designer',
             ];
 
-           /*  if (format_designer_has_pro() != 1 ) {
-                $userprofilefields = profile_get_user_fields_with_data(0);
-                if (!empty($userprofilefields)) {
-                    foreach ($userprofilefields as $field) {
-                        $courseformatoptionsedit[$field->inputname] = [
-                            'label' => $field->field->name,
-                            'element_type' => 'advcheckbox',
-                            'help' => 'profilefieditem',
-                            'help_component' => 'format_designer',
-                        ];
-                    }
-                }
-            } */
-
-
-
             $courseformatoptionsedit['courseheroactivityheader'] = [
                 'label' => new lang_string('heroactivity', 'format_designer'),
                 'element_type' => 'header',
