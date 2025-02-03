@@ -89,9 +89,6 @@ class events {
     public static function course_completion_updated($event) {
         $data = $event->get_data();
         $courseid = $data['courseid'];
-        if (course_get_format($courseid)->get_course()->format !== 'designer') {
-            return true;
-        }
         self::course_cache_updated($courseid);
     }
 
@@ -106,19 +103,22 @@ class events {
     public static function course_completed($event) {
         $userid = $event->relateduserid;
         $courseid = $event->courseid;
-        if (course_get_format($courseid)->get_course()->format !== 'designer') {
-            return true;
-        }
         self::course_user_cache_updated($courseid, $userid);
     }
 
     public static function course_module_completion_updated($event) {
+        global $DB;
         $userid = $event->relateduserid;
         $courseid = $event->courseid;
-        if (course_get_format($courseid)->get_course()->format !== 'designer') {
-            return true;
-        }
         self::course_user_cache_updated($courseid, $userid);
+        $records = $DB->get_records('course_completion_criteria', ['courseinstance' => $courseid]);
+        if ($records) {
+            foreach ($records as $record) {
+                if ($record) {
+                    self::course_user_cache_updated($record->course, $userid);
+                }
+            }
+        }
     }
 
 
