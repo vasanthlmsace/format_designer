@@ -30,3 +30,4 @@ $plugin->component = 'format_designer';  // Full name of the plugin (used for di
 $plugin->release = 'Version 1.7';
 $plugin->supported = [404, 405];
 $plugin->maturity  = MATURITY_STABLE;
+$plugin->type = 'format';
