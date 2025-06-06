@@ -1300,14 +1300,14 @@ class format_designer extends \core_courseformat\base {
         $changed = $needrebuild = false;
         foreach ($defaultoptions as $key => $value) {
             if (isset($records[$key])) {
-                if (array_key_exists($key, $data) && $records[$key]->value != $data[$key]) {
+                if (is_array($data) && array_key_exists($key, $data) && $records[$key]->value != $data[$key]) {
                     $DB->set_field('course_format_options', 'value',
                             $data[$key], ['id' => $records[$key]->id]);
                     $changed = true;
                     $needrebuild = $needrebuild || $cached[$key];
                 }
             } else {
-                if (array_key_exists($key, $data) && $data[$key] !== $value) {
+                if (is_array($data) && array_key_exists($key, $data) && $data[$key] !== $value) {
                     $newvalue = $data[$key];
                     $changed = true;
                     $needrebuild = $needrebuild || $cached[$key];
@@ -1364,8 +1364,8 @@ class format_designer extends \core_courseformat\base {
             $oldcourse = (array)$oldcourse;
             $options = $this->course_format_options();
             foreach ($options as $key => $unused) {
-                if (!array_key_exists($key, $data)) {
-                    if (array_key_exists($key, $oldcourse)) {
+                if (is_array($data) && !array_key_exists($key, $data)) {
+                    if (is_array($oldcourse) && array_key_exists($key, $oldcourse)) {
                         $data[$key] = $oldcourse[$key];
                     }
                 }
