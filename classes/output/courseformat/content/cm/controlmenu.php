@@ -52,7 +52,7 @@ class controlmenu extends controlmenu_base {
 
         $mod = $this->mod;
 
-        $controls = $this->cm_control_items();
+        $controls = $this->get_cm_control_items();
 
         if (empty($controls) || (isset($mod->get_course()->coursedisplay) &&
             $mod->get_course()->coursedisplay == COURSE_DISPLAY_MULTIPAGE)) {
@@ -81,4 +81,5 @@ class controlmenu extends controlmenu_base {
 
         return $menu;
     }
+    
 }
