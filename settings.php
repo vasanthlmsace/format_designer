@@ -123,7 +123,7 @@ if ($ADMIN->fulltree) {
     $title = get_string('strsectionlayout', 'format_designer');
     $description = get_string('section_layout_desc', 'format_designer');
     $layouts = [];
-    $setting = new admin_setting_configselect($name , $title, $description, 'default', format_designer_get_all_layouts());
+    $setting = new admin_setting_configselect($name , $title, $description, 'default', \format_designer\helper::get_all_layouts());
     $sectionpage->add($setting);
 
 
@@ -177,7 +177,7 @@ if ($ADMIN->fulltree) {
         $activitypage->add($setting);
     }
 
-    if (format_designer_has_pro()
+    if (\format_designer\helper::has_pro()
          && file_exists($CFG->dirroot.'/local/designer/setting.php')) {
         require_once($CFG->dirroot.'/local/designer/setting.php');
     } else {
@@ -194,10 +194,9 @@ $ADMIN->add('formatsettings', new admin_category('format_designer', get_string('
 
 $ADMIN->add('format_designer', $settings);
 
-
 $settings = null;
 
-if (format_designer_has_pro()) {
+if (\format_designer\helper::has_pro()) {
     // Tell core we already added the settings structure.
     $ADMIN->add('format_designer', new admin_externalpage('managepurposes', get_string('managepurposes', 'format_designer'),
     new moodle_url('/local/designer/purposes.php')));

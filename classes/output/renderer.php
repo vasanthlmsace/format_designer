@@ -103,16 +103,21 @@ class renderer extends \core_courseformat\output\section_renderer {
         $data->startid = $startid;
 
         $format = course_get_format($course);
-        $singlesection = $format->get_sectionnum();
+
+        if (method_exists($format, 'get_sectionnum')) {
+            $singlesection = $format->get_sectionnum();
+        } else {
+            $singlesection = $format->get_section_number();
+        }
 
         $data->issectionpageclass = $singlesection || ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE)
             ? 'section-page-layout' : '';
 
-        if (!format_designer_has_pro()) {
+        if (!\format_designer\helper::has_pro()) {
             $data->headermetadata = $this->course_header_metadata_details($course);
         }
 
-        if (format_designer_has_pro()) {
+        if (\format_designer\helper::has_pro()) {
             $startclass[] = ($course->activitydisplaymode == 'bypurpose') ? 'activity-purpose-mode' : 'activity-default-mode';
         }
         $data->startclass = implode(' ', $startclass);
@@ -129,8 +134,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         global $CFG;
         $data = $widget->export_for_template($this);
         $data->elementstate = $this->get_activity_elementclasses($data->mod);
-        if (format_designer_has_pro()) {
-            require_once($CFG->dirroot. "/local/designer/lib.php");
+        if (\format_designer\helper::has_pro()) {
             if ($textcolor = \format_designer\options::get_option($data->mod->id, 'textcolor')) {
                 $data->moduletextcolor = "color: $textcolor" . ";";
             }
@@ -264,7 +268,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $numsections = course_get_format($course)->get_last_section_number();
         $isstealth = $section->section > $numsections;
 
-        $baseurl = course_get_url($course, $sectionreturn);
+        $baseurl = course_get_url($course, $sectionreturn, ['navigation' => true]);
         $baseurl->param('sesskey', sesskey());
 
         $controls = [];
@@ -469,9 +473,14 @@ class renderer extends \core_courseformat\output\section_renderer {
             'slidearrow' => count($coursestaffs) > 1 ? true : false,
             'currentuser' => $USER->id,
             'ismessaging' => $CFG->messaging,
+            'dataride' => $CFG->branch >= 500 ? "data-bs-ride" : "data-ride",
+            "dataslide" => $CFG->branch >= 500 ? "data-bs-slide" : "data-slide",
+            'datatoggle' => $CFG->branch >= 500 ? "data-bs-toggle" : "data-toggle",
+            'datacontent' => $CFG->branch >= 500 ? "data-bs-content" : "data-content",
+            'datahtml' => $CFG->branch >= 500 ? "data-bs-html" : "data-html",
         ];
 
-        if (format_designer_has_pro()) {
+        if (\format_designer\helper::has_pro()) {
             list($indicatorstatus, $indicatorclass) = self::get_course_completion_indicator($course);
             $data += [
                 'indicatorstatus' => $indicatorstatus,
@@ -494,11 +503,16 @@ class renderer extends \core_courseformat\output\section_renderer {
             ];
         }
 
-        // Find the course due date. only if the timemanagement installed.
-        if (format_designer_timemanagement_installed() && function_exists('ltool_timemanagement_cal_course_duedate')) {
-            $coursedatesinfo = $DB->get_record('ltool_timemanagement_course', ['course' => $course->id]);
-            if ($courseduedate && $coursedatesinfo) {
-                $data['courseduedate'] = ltool_timemanagement_cal_course_duedate($coursedatesinfo, $enrolstartdate);
+        // Find the course due date. only if the timetable installed.
+        if (\format_designer\helper::timetable_installed()) {
+            if ($courseduedate && ($timecourse = $DB->get_record('tool_timetable_course', ['course' => $course->id]))) {
+                $timemanagement = new \tool_timetable\time_management($timecourse->course);
+                // Get user enrolment info in course.
+                $usercourseenrollinfo = $timemanagement->get_course_user_enrollment($USER->id);
+                $startdate = $usercourseenrollinfo[0]['timestart'] ?? 0;
+                $enddate = $usercourseenrollinfo[0]['timeend'] ?? 0;
+                $coursedue = $timemanagement->calculate_course_duedate($startdate, $enddate, $USER->id);
+                $data['courseduedate'] = $coursedue ?? false;
             }
         }
 
@@ -519,7 +533,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      */
     public function due_overdue_activities_count(): array {
         global $USER, $DB;
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cachekey = "d_o_a_c_c{$this->modinfo->get_course()->id}_u{$USER->id}";
         if (!$cache->get($cachekey)) {
             $duecount = $overduecount = 0;
@@ -550,7 +564,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      * @return cm_info[] Array from $cmid => $cm of all activities with completion enabled,
      */
     public static function get_completion_activities($course) {
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $key = "g_c_a{$course->id}";
         if (!$cache->get($key)) {
             $modinfo = get_fast_modinfo($course);
@@ -573,7 +587,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      * @return int
      */
     public static function get_count_sections_incourse($course) {
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $key = "g_c_s_ic{$course->id}";
         if (!$cache->get($key)) {
             $sections = 0;
@@ -602,7 +616,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      */
     public static function criteria_progress($course, $userid) {
         global $USER;
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cachekey = "c_p_c{$course->id}_u_{$userid}";
         if ($cache->get($cachekey) === false) {
 
@@ -638,7 +652,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             }
             $cmidentifier = "moduleinstance";
 
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $format = course_get_format($course);
                 $course = $format->get_course();
                 if ($course->calcourseprogress == DESIGNER_PROGRESS_ALLACTIVITIES) {
@@ -692,7 +706,7 @@ class renderer extends \core_courseformat\output\section_renderer {
                 }
             }
 
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $sectiontooltiplink = '';
                 if (isset($course->calcourseprogress) && $course->calcourseprogress == DESIGNER_PROGRESS_SECTIONS
                     && !empty($modinfo->sections)) {
@@ -700,7 +714,7 @@ class renderer extends \core_courseformat\output\section_renderer {
                         $section = course_get_format($course)->get_section($sectionno);
                         if ($section->visible) {
                             $sectionname = get_section_name($course, $section);
-                            $sectionurl = new moodle_url('/course/view.php', ['id' => $course->id, 'section' => $sectionno]);
+                            $sectionurl = course_get_url($section->course, $section->section, ['navigation' => true]);
                             $sectiontooltiplink = html_writer::link($sectionurl,
                                     get_string('strsection', 'format_designer') . ": ". $sectionname);
                             $realtiveactivities = isset($course->calsectionprogress) &&
@@ -884,11 +898,13 @@ class renderer extends \core_courseformat\output\section_renderer {
     public function render_section_data(section_info $section, stdClass $course, $onsectionpage,
         $sectionheader = false, $sectionreturn = 0, $sectioncontent = false) {
         global $CFG;
-        $sectionurl = new \moodle_url('/course/view.php', ['id' => $course->id, 'section' => $section->section]);
-        if (format_designer_has_pro() && !$section->uservisible && $section->availableinfo
+        $sectionurl = course_get_url($section->course, $section->section, ['navigation' => true]);;
+
+        if (\format_designer\helper::has_pro() && !$section->uservisible && $section->availableinfo
                 && !empty($section->sectioncardredirect)) {
             $sectionurl = $section->sectioncardredirect;
         }
+
         /** @var format_designer $format */
         $format = course_get_format($course);
         $sectionstyle = '';
@@ -920,6 +936,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $realtiveactivities = isset($course->calsectionprogress) &&
             ($course->calsectionprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) ? true : false;
         $sectiondata = \format_designer\options::is_section_completed($section, $course, $modinfo, false, $realtiveactivities);
+
         list($issectioncompletion, $sectionprogress, $sectionprogresscomp) = $sectiondata;
 
         $sectionbackgroundstyle = '';
@@ -933,6 +950,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         $bgoverlay = false;
         $prodata = [];
 
+
         $sectionlayoutclass = 'link-layout';
         $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
         if ($sectiontype == 'list') {
@@ -940,6 +958,8 @@ class renderer extends \core_courseformat\output\section_renderer {
         } else if ($sectiontype == 'cards') {
             $sectionlayoutclass = 'card-layout';
         }
+
+
 
         if ($course->coursetype == DESIGNER_TYPE_FLOW) {
             $sectionlayoutclass = 'card-layout';
@@ -962,6 +982,7 @@ class renderer extends \core_courseformat\output\section_renderer {
         if ($course->coursetype == DESIGNER_TYPE_FLOW && count($modinfo->sections) <= 1) {
             $sectioncollapsestatus = 'show';
         }
+
         // Calculate section width for single section format.
         $sectionwidthclass = ($course->coursedisplay && !$this->page->user_is_editing() && !$onsectionpage && $sectionheader)
             ? $this->generate_section_widthclass($section) : '';
@@ -974,9 +995,9 @@ class renderer extends \core_courseformat\output\section_renderer {
             ? (isset($course->listwidth) && $section->section != 0
             ? sprintf('width: %s;', $course->listwidth) : '') : '';
 
+
         $showprerequisites = ($section->section == 0) || $format->get_sectionid() ? true : false;
         $templatecontext = [
-            'section' => $section,
             'sectionvisible' => $format->is_section_visible($section, false),
             'sectiontype' => $sectiontype,
             'sectionlayoutclass' => $sectionlayoutclass,
@@ -988,7 +1009,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'hasviewsectionprogress' => !isguestuser() ? true : false,
             'sectionprogress' => isset($sectionprogress) ? round($sectionprogress) : '',
             'sectionprogresscomp' => isset($sectionprogresscomp) ? round($sectionprogresscomp) : '',
-            'sectioncategorisetitle' => isset($section->categorisetitle) ? $section->categorisetitle : '',
+            'sectioncategorisetitle' => property_exists($section, 'categorisetitle') ? $section->categorisetitle : '',
             'sectionbackgroundstyle' => $sectionbackgroundstyle,
             'sectioncontainerwidth' => $sectioncontainerwidth,
             'sectioncontentwidth' => $sectioncontentwidth,
@@ -1004,7 +1025,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'issectioncompletion' => $issectioncompletion,
             'gotosection' => (isset($gotosection) ? $gotosection : false),
             'sectionurl' => $sectionurl,
-            'sectioncardcontentdirect' => (format_designer_has_pro() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE)
+            'sectioncardcontentdirect' => (\format_designer\helper::has_pro() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE)
                 && !empty($section->sectioncardredirect) ? $section->sectioncardtab : '',
             'sectioncollapse' => isset($sectioncollapse) ? $sectioncollapse : false,
             'sectionshow' => $sectioncollapsestatus,
@@ -1012,9 +1033,11 @@ class renderer extends \core_courseformat\output\section_renderer {
             'coursetype' => $this->course_type_sectionclasses($course, $section, $modinfo),
             'stylerules' => $sectionstylerules,
             'flowcourse' => isset($course->coursetype) && $course->coursetype == DESIGNER_TYPE_FLOW ? true : false,
-            'maskimage' => (isset($section->sectiondesignermaskimage) && $section->sectiondesignermaskimage) ? true : false,
+            'maskimage' => (property_exists($section, 'sectiondesignermaskimage') && $section->sectiondesignermaskimage) ? true : false,
             'flowsizeclass' => (isset($course->flowsize) && $course->coursetype == DESIGNER_TYPE_FLOW &&
             !$this->page->user_is_editing()) ? $this->get_flow_size($course) : '',
+            'datatarget' => ($CFG->branch >= 500) ? 'data-bs-target' : 'data-target',
+            'datatoggle' => ($CFG->branch >= 500) ? 'data-bs-toggle' : 'data-toggle',
         ];
         $zerotohero = $course->sectionzeroactivities;
         if ($zerotohero == DESIGNER_HERO_ZERO_HIDE && $section->section == 0 && !$this->page->user_is_editing()) {
@@ -1022,35 +1045,52 @@ class renderer extends \core_courseformat\output\section_renderer {
         }
 
         if ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && $course->coursetype == DESIGNER_TYPE_NORMAL && $sectionheader) {
+            // Static cache for module icons to reduce file operations.
+            static $modiconscache = [];
+
             $mods = [];
             $cmids = $modinfo->sections[$section->section] ?? [];
+
+            $displayunavailableactivities = isset($course->displayunavailableactivities) ?
+                $course->displayunavailableactivities : false;
 
             foreach ($cmids as $cmid) {
                 $thismod = $modinfo->cms[$cmid];
                 if (!$thismod->get_course_module_record()->deletioninprogress) {
-                    if (!$thismod->is_visible_on_course_page() && !$course->displayunavailableactivities) {
+                    if (!$thismod->is_visible_on_course_page() && !$displayunavailableactivities) {
                         continue;
                     }
-                    if (format_designer_has_pro() && isset($course->activitydisplaymode)
+                    if (\format_designer\helper::has_pro() && isset($course->activitydisplaymode)
                         && ($course->activitydisplaymode == 'bypurpose')) {
                             \local_designer\options::process_purpose_modules($mods, $course, $thismod);
                     } else {
                         if (isset($mods[$thismod->modname])) {
                             $mods[$thismod->modname]['name'] = $thismod->modplural;
-                            if (file_exists($CFG->dirroot . '/mod/' . $thismod->modname . '/pix/monologo.svg')) {
-                                $mods[$thismod->modname]['activityimgsvg'] = file_get_contents($CFG->dirroot . '/mod/' .
-                                $thismod->modname . '/pix/monologo.svg');
-                            } else if (file_exists($CFG->dirroot.'/mod/'.$thismod->modname.'/pix/icon.png')) {
-                                $mods[$thismod->modname]['img'] = $CFG->wwwroot . '/mod/' . $thismod->modname . '/pix/icon.png';
+                            // Use cached icon data.
+                            if (isset($modiconscache[$thismod->modname])) {
+                                if (isset($modiconscache[$thismod->modname]['activityimgsvg'])) {
+                                    $mods[$thismod->modname]['activityimgsvg'] = $modiconscache[$thismod->modname]['activityimgsvg'];
+                                } else if (isset($modiconscache[$thismod->modname]['img'])) {
+                                    $mods[$thismod->modname]['img'] = $modiconscache[$thismod->modname]['img'];
+                                }
                             }
                             $mods[$thismod->modname]['count']++;
                         } else {
                             $mods[$thismod->modname]['name'] = $thismod->modfullname;
-                            if (file_exists($CFG->dirroot . '/mod/'. $thismod->modname . '/pix/monologo.svg')) {
-                                $mods[$thismod->modname]['activityimgsvg'] = file_get_contents($CFG->dirroot . '/mod/'.
-                                $thismod->modname . '/pix/monologo.svg');
-                            } else if (file_exists($CFG->dirroot . '/mod/'. $thismod->modname . '/pix/icon.png')) {
-                                $mods[$thismod->modname]['img'] = $CFG->wwwroot . '/mod/' . $thismod->modname . '/pix/icon.png';
+                            // Cache icon on first access per module type.
+                            if (!isset($modiconscache[$thismod->modname])) {
+                                if (file_exists($CFG->dirroot . '/mod/'. $thismod->modname . '/pix/monologo.svg')) {
+                                    $modiconscache[$thismod->modname]['activityimgsvg'] = file_get_contents($CFG->dirroot . '/mod/'.
+                                    $thismod->modname . '/pix/monologo.svg');
+                                } else if (file_exists($CFG->dirroot . '/mod/'. $thismod->modname . '/pix/icon.png')) {
+                                    $modiconscache[$thismod->modname]['img'] = $CFG->wwwroot . '/mod/' . $thismod->modname . '/pix/icon.png';
+                                }
+                            }
+                            // Copy from cache.
+                            if (isset($modiconscache[$thismod->modname]['activityimgsvg'])) {
+                                $mods[$thismod->modname]['activityimgsvg'] = $modiconscache[$thismod->modname]['activityimgsvg'];
+                            } else if (isset($modiconscache[$thismod->modname]['img'])) {
+                                $mods[$thismod->modname]['img'] = $modiconscache[$thismod->modname]['img'];
                             }
                             $mods[$thismod->modname]['count'] = 1;
                         }
@@ -1063,20 +1103,23 @@ class renderer extends \core_courseformat\output\section_renderer {
             $templatecontext['sectionmodcount'] = array_values($mods);
             $templatecontext['sectionsingle'] = true;
         }
-        if (format_designer_has_pro() && $showprerequisites) {
+
+        if (\format_designer\helper::has_pro() && $showprerequisites) {
             require_once($CFG->dirroot. "/local/designer/lib.php");
             if ($course->displaycourseprerequisites == DESIGNER_PREREQUISITES_ABOVECOURSE
-                && function_exists('local_designer_import_prerequisites_courses')) {
-                $templatecontext += local_designer_import_prerequisites_courses($course);
+                && class_exists('\local_designer\helper') && method_exists('\local_designer\helper', 'import_prerequisites_courses')) {
+                $templatecontext += \local_designer\helper::import_prerequisites_courses($course);
             }
         }
-        if (format_designer_has_pro()) {
+
+
+        if (\format_designer\helper::has_pro()) {
             $prodata = \local_designer\options::render_section(
                 $section, $course, $modinfo, $templatecontext
             );
         }
-        if (format_designer_has_pro()) {
-            $sectionbackgroundcolor = isset($section->sectiondesignerbackgroundcolor) ?
+        if (\format_designer\helper::has_pro()) {
+            $sectionbackgroundcolor = property_exists($section, 'sectiondesignerbackgroundcolor') ?
                 $section->sectiondesignerbackgroundcolor : '';
             $templatecontext += \local_designer\courseheader::create($format)
                 ->section_progress_type(round($sectionprogress), $sectionprogresscomp, $sectionbackgroundcolor);
@@ -1116,7 +1159,6 @@ class renderer extends \core_courseformat\output\section_renderer {
             'sectionclass' => $sectionclass,
         ];
         $templatecontext['sectionend'] = html_writer::end_tag('li');
-
         return $templatecontext;
     }
 
@@ -1130,14 +1172,23 @@ class renderer extends \core_courseformat\output\section_renderer {
      * @param array $cmdata Course module data.
      * @return void|string
      */
-    public function render_course_module($mod, $sectionreturn, $displayoptions = [], $section=null, $cmdata=[]) {
+    public function render_course_module($mod, $sectionreturn, $displayoptions = [], $section=null, $cmdata=[], $sectiontype = '') {
         global $DB, $USER, $CFG;
+
+        // Static caches to reduce DB queries - persists across multiple calls within same request.
+        static $modvisitscache = [];
+        static $videotimecache = [];
+        static $vimeovideocache = [];
+        static $completioncache = []; // Add completion cache
+        static $completionbulkloaded = false; // Track if bulk loaded
+
         $course = course_get_format($mod->get_course())->get_course();
         if (!$mod->is_visible_on_course_page()) {
             return [];
         }
         $dbman = $DB->get_manager();
         $modclasses = 'activity ' . $mod->modname . ' modtype_' . $mod->modname . ' ' . $mod->extraclasses;
+
 
         // Add course type flow animation class.
         if ($course->coursetype == DESIGNER_TYPE_FLOW && !$this->page->user_is_editing()) {
@@ -1176,27 +1227,33 @@ class renderer extends \core_courseformat\output\section_renderer {
         $cmtext = '';
         $videotime = $mod->modname == 'videotime';
         $isvideotimelabel = false;
+        $videoinstance = null;
         $useactivityimagestatus = false;
         $useactivityimage = '';
-        if (format_designer_has_pro()) {
+        $enableactivityimage = false;
+
+        // Cache module options early to reuse throughout function.
+        $options = null;
+        if (\format_designer\helper::has_pro()) {
+            $options = \local_designer\options::get_options($mod->id);
             if ($mod->modname == 'videotime' && $dbman->table_exists('videotimeplugin_pro')) {
                 if ($videorecord = $DB->get_record('videotimeplugin_pro', ['videotime' => $mod->instance])) {
                     if (isset($videorecord->label_mode) && $videorecord->label_mode == 2) {
-                        $useactivityimage = \format_designer\options::get_option($mod->id, 'useactivityimage');
+                        $useactivityimage = $options->useactivityimage ?? '';
                     } else if ($videorecord->label_mode == 1) {
                         $isvideotimelabel = true;
                     }
                 }
             }
             $useactivityimagestatus = ($videotime && $useactivityimage);
-            $enableactivityimage = \format_designer\options::get_option($mod->id, 'useactivityimage');
+            $enableactivityimage = $options->useactivityimage ?? false;
         }
 
         if (!empty($url) && !$videotime) {
             $cmtext = $mod->get_formatted_content(['overflowdiv' => true, 'noclean' => true]);
             if (isset($videotime) && $videotime) {
-                $videotime = $DB->get_record('videotime', ['id' => $mod->instance]);
-                $cmtext = $videotime->intro;
+                $videoinstance = $DB->get_record('videotime', ['id' => $mod->instance]);
+                $cmtext = $videoinstance->intro;
             }
             $cmtextcontent = format_string($cmtext);
             $cmtextlength = get_config('format_designer', 'activitydesclength');
@@ -1207,7 +1264,7 @@ class renderer extends \core_courseformat\output\section_renderer {
                     if (str_word_count($cmtextcontent) >= 23) {
                         $modcontenthtml = '';
                         $modcontenthtml .= html_writer::start_tag('div', ['class' => 'trim-summary']);
-                        $modcontenthtml .= format_designer_modcontent_trim_char($cmtextcontent, $trimlenght);
+                        $modcontenthtml .= \format_designer\helper::modcontent_trim_char($cmtextcontent, $trimlenght);
                         $modcontenthtml .= \html_writer::link('javascript:void(0)', get_string('more'),
                         ['class' => 'mod-description-action']);
                         $modcontenthtml .= html_writer::end_tag('div');
@@ -1232,17 +1289,56 @@ class renderer extends \core_courseformat\output\section_renderer {
             }
         }
 
-        $modvisits = $DB->count_records('logstore_standard_log', ['contextinstanceid' => $mod->id,
-            'userid' => $USER->id, 'action' => 'viewed', 'target' => 'course_module',
-        ]);
-        $modvisits = !empty($modvisits) ? get_string('modvisit', 'format_designer', $modvisits) :
+        // Bulk load ALL visit counts in ONE query on first call.
+        static $visitsbulkloaded = false;
+
+
+        if (!$visitsbulkloaded) {
+            // Get all course module IDs from modinfo to use IN clause instead of LIKE.
+            $modinfo = get_fast_modinfo($course);
+            $cmids = array_keys($modinfo->get_cms());
+            
+            if (!empty($cmids)) {
+                // Use IN clause for much better performance than LIKE on path.
+                list($insql, $params) = $DB->get_in_or_equal($cmids, SQL_PARAMS_NAMED, 'cmid');
+                
+                $params['userid'] = $USER->id;
+                $params['action'] = 'viewed';
+                $params['target'] = 'course_module';
+                // Optional: Only get logs from last 6 months to reduce dataset.
+                $params['timefrom'] = time() - (6 * 30 * 24 * 60 * 60);
+                
+                $sql = "SELECT l.contextinstanceid, COUNT(*) as visitcount
+                        FROM {logstore_standard_log} l
+                        WHERE l.userid = :userid
+                        AND l.action = :action
+                        AND l.target = :target
+                        AND l.contextinstanceid $insql
+                        AND l.timecreated >= :timefrom
+                        GROUP BY l.contextinstanceid";
+
+                // Use get_records_sql() since we already filtered by course modules.
+                $visits = $DB->get_records_sql($sql, $params);
+                foreach ($visits as $visit) {
+                    $modvisitscache[$visit->contextinstanceid . '_' . $USER->id] = $visit->visitcount;
+                }
+            }
+            $visitsbulkloaded = true;
+        }
+
+        // Use cached visits count.
+        $cachekey = $mod->id . '_' . $USER->id;
+        $modvisits = !empty($modvisitscache[$cachekey]) ? get_string('modvisit', 'format_designer', $modvisitscache[$cachekey]) :
             get_string('notvisit', 'format_designer');
+
+
         $calltoactionhtml = $this->render(new call_to_action($mod));
         $modrestricted = ($mod->availableinfo) ?: false;
 
         $activitylink = html_writer::empty_tag('img', ['src' => $mod->get_icon_url(),
                 'class' => 'iconlarge activityicon', 'alt' => '', 'role' => 'presentation', 'aria-hidden' => 'true',
         ]);
+
 
         if ($mod->uservisible) {
             if (empty($url)) {
@@ -1258,11 +1354,21 @@ class renderer extends \core_courseformat\output\section_renderer {
         $videotimeduration = '';
         $durationformatted = '';
         if ($mod->modname == 'videotime') {
-            $videoinstance = $DB->get_record('videotime', ['id' => $mod->instance]);
+            if ($videoinstance === null) {
+                // Use cached videotime instance.
+                if (!isset($videotimecache[$mod->instance])) {
+                    $videotimecache[$mod->instance] = $DB->get_record('videotime', ['id' => $mod->instance]);
+                }
+                $videoinstance = $videotimecache[$mod->instance];
+            }
             $dbman = $DB->get_manager();
             if ($videoinstance && $dbman->table_exists('videotime_vimeo_video')) {
-                if ($video = $DB->get_record('videotime_vimeo_video', ['link' => $videoinstance->vimeo_url])) {
-                    $videotimeduration = $video->duration;
+                // Use cached vimeo video data.
+                if (!isset($vimeovideocache[$videoinstance->vimeo_url])) {
+                    $vimeovideocache[$videoinstance->vimeo_url] = $DB->get_record('videotime_vimeo_video', ['link' => $videoinstance->vimeo_url]);
+                }
+                if ($vimeovideocache[$videoinstance->vimeo_url]) {
+                    $videotimeduration = $vimeovideocache[$videoinstance->vimeo_url]->duration;
                 }
             }
         }
@@ -1281,8 +1387,8 @@ class renderer extends \core_courseformat\output\section_renderer {
 
         $afterlink = $mod->afterlink;
 
-        if (format_designer_has_pro()) {
-            $options = \local_designer\options::get_options($mod->id);
+        // Use cached options (already loaded earlier in the function).
+        if (\format_designer\helper::has_pro() && $options) {
             if (isset($options->subcoursedisplayprogress) && $options->subcoursedisplayprogress) {
                 $afterlink = "";
             }
@@ -1308,19 +1414,19 @@ class renderer extends \core_courseformat\output\section_renderer {
             'isrestricted' => !empty($mod->availableinfo),
             'modcontent' => isset($modcontent) ? $modcontent : '',
             'modcontentclass' => !empty($modcontent) ? 'ismodcontent' : '',
-            'modvisits' => $this->get_cmurl($mod) ? $modvisits : false,
+            'modvisits' => $this->get_cmurl($mod, $options) ? $modvisits : false,
             'modiconurl' => $modiconurl,
             'modrestricted' => $modrestricted,
-            'elementstate' => $this->get_activity_elementclasses($mod),
+            'elementstate' => $this->get_activity_elementclasses($mod, $options),
             'modstyle' => isset($modstyle) ? $modstyle : '',
             'useactivityimage' => $useactivityimage,
             'duration_formatted' => $durationformatted,
             'enableactivityimage' => $enableactivityimage ?? false,
             'hascmbulk' => class_exists('core_courseformat\output\local\content\bulkedittoggler') ? true : false,
+            'haspro' => \format_designer\helper::has_pro(),
         ];
-        if (format_designer_has_pro()) {
-            require_once($CFG->dirroot. "/local/designer/lib.php");
-            $prodata = \local_designer\options::render_course_module($mod, $cmlist, $section);
+        if (\format_designer\helper::has_pro()) {
+            $prodata = \local_designer\options::render_course_module($mod, $cmlist, $section, $sectiontype);
             $cmlist = array_merge($cmlist, $prodata);
         }
         return $cmlist;
@@ -1349,13 +1455,18 @@ class renderer extends \core_courseformat\output\section_renderer {
      * Generate the classes for the activity elements visibility classes.
      * It used to show or hide, or show, hide during the activity hover.
      * @param \modinfo $mod
+     * @param object|null $options Cached module options to avoid extra DB query
      * @return void
      */
-    public function get_activity_elementclasses($mod) {
+    public function get_activity_elementclasses($mod, $options = null) {
+        // Use cached options if provided, otherwise fetch (for backward compatibility).
+        if ($options === null) {
+            $option = \format_designer\options::get_option($mod->id, 'activityelements');
+        } else {
+            $option = $options->activityelements ?? null;
+        }
 
-        $option  = \format_designer\options::get_option($mod->id, 'activityelements');
-        if (!empty($option)) {
-            $element = json_decode($option, true);
+        if ($option) {
             $classes = [
                 0 => 'content-hide', 1 => 'content-show', 2 => 'content-show-hover',
                 3 => 'content-hide-hover', 4 => 'content-remove',
@@ -1363,7 +1474,7 @@ class renderer extends \core_courseformat\output\section_renderer {
 
             $elementclasses = array_map(function($v) use ($classes) {
                 return (isset($classes[$v])) ? $classes[$v] : $v;
-            }, $element);
+            }, (array) $option);
             return $elementclasses;
         }
         return [];
@@ -1373,13 +1484,17 @@ class renderer extends \core_courseformat\output\section_renderer {
      * Get course module URL.
      *
      * @param cminfo $mod Course Module Info.
+     * @param object|null $options Cached module options to avoid extra DB query
      * @return string
      */
-    public function get_cmurl($mod) {
-        $options = (format_designer_has_pro()) ? \local_designer\options::get_options($mod->id) : [];
+    public function get_cmurl($mod, $options = null) {
+        // Use cached options if provided, otherwise fetch (for backward compatibility).
+        if ($options === null && \format_designer\helper::has_pro()) {
+            $options = \local_designer\options::get_options($mod->id);
+        }
         if ($mod->url) {
             return $mod->url;
-        } else if ($mod->modname == 'videotime' && $options && $options->useactivityimage) {
+        } else if ($mod->modname == 'videotime' && $options && isset($options->useactivityimage) && $options->useactivityimage) {
             return new moodle_url('/mod/videotime/view.php', ['id' => $mod->id]);
         }
         return '';
@@ -1500,9 +1615,9 @@ class renderer extends \core_courseformat\output\section_renderer {
         $cmlistdata = $cmlist->export_for_template($this);
         $sectiontype = $format->get_section_option($section->id, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
         $templatename = 'format_designer/cm/module_layout_' . $sectiontype;
-        $prolayouts = format_designer_get_pro_layouts();
+        $prolayouts = \format_designer\helper::get_pro_layouts();
         if (in_array($sectiontype, $prolayouts)) {
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $templatename = 'layouts_' . $sectiontype . '/cm/module_layout_' . $sectiontype;
             }
         }

@@ -83,7 +83,7 @@ class events {
         global $DB;
         $courseid = $event->courseid;
         $DB->delete_records('format_designer_options', ['courseid' => $courseid]);
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cache->delete_prerequisites_courses();
         self::course_cache_updated($courseid);
     }
@@ -132,14 +132,20 @@ class events {
         $userid = $event->relateduserid;
         $courseid = $event->courseid;
         self::course_user_cache_updated($courseid, $userid);
-        $records = $DB->get_records('course_completion_criteria', ['courseinstance' => $courseid]);
-        if ($records) {
-            foreach ($records as $record) {
-                if ($record) {
-                    self::course_user_cache_updated($record->course, $userid);
-                }
-            }
+
+        $recordrs = $DB->get_recordset_sql(
+            <<<'EOT'
+            SELECT DISTINCT course
+            FROM {course_completion_criteria}
+            WHERE
+                courseinstance = ?
+            EOT,
+            [ $courseid ]
+        );
+        foreach ($recordrs as $record) {
+            self::course_user_cache_updated($record->course, $userid);
         }
+        $recordrs->close();
     }
 
     /**
@@ -209,7 +215,7 @@ class events {
      * @return void
      */
     public static function course_cache_updated($courseid) {
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cache->delete_vaild_section_completed_cache($courseid);
         $cache->delete_user_section_completed_cache($courseid);
         $cache->delete_course_progress_uncompletion_criteria($courseid);
@@ -226,7 +232,7 @@ class events {
      * @return void
      */
     public static function course_user_cache_updated($courseid , $userid) {
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cache->delete_vaild_section_completed_cache($courseid);
         $cache->delete_user_section_completed_cache($courseid);
         $cache->delete_course_progress_uncompletion_criteria($courseid, $userid);
@@ -252,7 +258,7 @@ class events {
 
         $cm = $DB->get_record("course_modules", ['id' => $cmid]);
         // Clear cache.
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cache->delete_vaild_section_completed_cache($courseid);
         $cache->delete_user_section_completed_cache($courseid);
         $cache->delete_course_progress_uncompletion_criteria($courseid);
@@ -274,7 +280,7 @@ class events {
             return true;
         }
         // Clear cache.
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         $cache->delete_vaild_section_completed_cache($courseid, $sectionid);
         $cache->delete_user_section_completed_cache($courseid, $sectionid);
         $cache->delete_due_overdue_activities_count($courseid);

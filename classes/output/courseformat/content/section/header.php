@@ -64,7 +64,7 @@ class header extends \core_courseformat\output\local\content\section\header {
         if ($coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
             $data->headerdisplaymultipage = true;
             $data->title = $output->section_title($section, $course);
-            if (format_designer_has_pro() && !$section->uservisible && $section->availableinfo
+            if (\format_designer\helper::has_pro() && !$section->uservisible && $section->availableinfo
                 && !empty($section->sectioncardredirect)) {
                 $target = '_self';
                 if ($section->sectioncardtab) {
@@ -92,7 +92,7 @@ class header extends \core_courseformat\output\local\content\section\header {
 
         if (!$format->show_editor() && $coursedisplay == COURSE_DISPLAY_MULTIPAGE && empty($data->issinglesection)) {
             if ($section->uservisible) {
-                $data->url = course_get_url($course, $section->section);
+                $data->url = course_get_url($course, $section->section, ['navigation' => true]);
             }
         }
         $data->name = get_section_name($course, $section);

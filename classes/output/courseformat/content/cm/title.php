@@ -42,15 +42,14 @@ class title extends \core_courseformat\output\local\content\cm\title {
      * Return the title template data to be used inside the inplace editable.
      *
      */
-    protected function get_title_displayvalue (): string {
+    protected function get_title_displayvalue(): string {
         global $PAGE, $CFG;
 
         // Inplace editable uses core renderer by default. However, course elements require
         // the format specific renderer.
         $courseoutput = $this->format->get_renderer($PAGE);
 
-        $mod = $this->mod;
-
+        $mod = $this->mod;;
         $data = (object)[
             'url' => ($mod->modname == 'videotime') ? new moodle_url('/mod/videotime/view.php', ['id' => $mod->id]) : $mod->url,
             'instancename' => ($mod->modname == 'videotime') ? $mod->name : $mod->get_formatted_name(),
@@ -60,6 +59,14 @@ class title extends \core_courseformat\output\local\content\cm\title {
         $useactivityitemcustom = \format_designer\options::get_option($mod->id, 'customtitleuseactivityitem');
         if ($useactivityitemcustom) {
             $data->designercmname = $this->format->get_cm_secondary_title($mod);
+        }
+        // Use cached options to avoid DB query per module.
+        if (\format_designer\helper::has_pro()) {
+            $options = \format_designer\options::get_options($mod->id);
+            $useactivityitemcustom = $options->customtitleuseactivityitem ?? false;
+            if ($useactivityitemcustom) {
+                $data->designercmname = $this->format->get_cm_secondary_title($mod);
+            }
         }
 
         // File type after name, for alphabetic lists (screen reader).
@@ -73,9 +80,8 @@ class title extends \core_courseformat\output\local\content\cm\title {
         // Get on-click attribute value if specified and decode the onclick - it
         // has already been encoded for display (puke).
         $data->onclick = htmlspecialchars_decode($mod->onclick, ENT_QUOTES);
-        if (format_designer_has_pro()) {
-            require_once($CFG->dirroot. "/local/designer/lib.php");
-            if ($textcolor = \format_designer\options::get_option($mod->id, 'textcolor')) {
+        if (\format_designer\helper::has_pro()) {
+            if ($textcolor = $options->textcolor ?? null) {
                 $data->moduletextcolor = "color: $textcolor" . ";";
             }
         }

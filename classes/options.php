@@ -35,6 +35,16 @@ use format_designer\output\cm_completion;
  */
 class options {
 
+
+    private static $completionactivitiescache = [];
+
+    /**
+     * Cache for options per cmid.
+     *
+     * @var array
+     */
+    public static $optionspercmid = [];
+
     /**
      * Find the given string is JSON format or not.
      *
@@ -50,34 +60,96 @@ class options {
      *
      * @param int $cmid Course module id.
      * @param string $name Module additional field name.
-     * @return null|string Returns value of given module field.
+     * @return mixed Returns value of given module field.
      */
     public static function get_option(int $cmid, $name) {
-        global $DB;
-        if ($data = $DB->get_field('format_designer_options', 'value',
-            ['cmid' => $cmid, 'name' => $name])) {
-            return $data;
-        }
-        return null;
+        return static::get_options($cmid)->{$name} ?? null;
     }
 
     /**
      * Get designer additional fields values for the given module.
      *
      * @param int $cmid course module id.
-     * @return stdclass $options List of additional field values
      */
     public static function get_options($cmid) {
-        global $DB;
-        $options = new \stdclass;
-        if ($records = $DB->get_records('format_designer_options', ['cmid' => $cmid])) {
-            foreach ($records as $key => $field) {
-                $options->{$field->name} = self::is_json($field->value)
-                    ? json_decode($field->value, true) : $field->value;
+        global $DB, $PAGE;
+
+        static $optionspercmid = [];
+        static $bulkloaded = [];
+        // Determine course ID
+        $courseid = null;
+        if (isset($PAGE->course->id) && $PAGE->course->id > 1) {
+            $courseid = $PAGE->course->id;
+        } else {
+            // Fallback: get course from the specific cm
+            if (!isset($optionspercmid[$cmid])) {
+                $cm = $DB->get_record('course_modules', ['id' => $cmid], 'course', IGNORE_MISSING);
+                if ($cm) {
+                    $courseid = $cm->course;
+                }
             }
         }
-        return $options;
+
+        // Bulk load ALL options for this course in ONE query (only once per course)
+        if ($courseid && !isset($bulkloaded[$courseid])) {
+            // Get all cmids for this course first
+            $sql = "SELECT fdo.id, fdo.cmid, fdo.name, fdo.value
+                    FROM {format_designer_options} fdo
+                    INNER JOIN {course_modules} cm ON cm.id = fdo.cmid
+                    WHERE cm.course = :courseid
+                    ORDER BY fdo.cmid, fdo.name";
+
+            $alloptions = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+            // Group options by cmid
+            foreach ($alloptions as $option) {
+                if (!isset($optionspercmid[$option->cmid])) {
+                    $optionspercmid[$option->cmid] = new \stdClass();
+                }
+
+                $value = $option->value;
+                // Optimize JSON detection and decoding
+                if ($value && isset($value[0]) && $value[0] === '{') {
+                    $json = json_decode($value, true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $value = $json;
+                    }
+                }
+                $optionspercmid[$option->cmid]->{$option->name} = $value;
+            }
+
+            // Mark this course as bulk loaded
+            $bulkloaded[$courseid] = true;
+        }
+
+        // Return cached data or create empty object
+        if (!isset($optionspercmid[$cmid])) {
+            // Check if bulk load happened for this course
+            if ($courseid && isset($bulkloaded[$courseid])) {
+                // Module has no options - return empty object
+                $optionspercmid[$cmid] = new \stdClass();
+            } else {
+                // Fallback: fetch individually (only for edge cases)
+                $options = new \stdClass();
+                $optionrs = $DB->get_recordset('format_designer_options', ['cmid' => $cmid], '', 'name, value');
+                foreach ($optionrs as $field) {
+                    $value = $field->value;
+                    if ($value && isset($value[0]) && $value[0] === '{') {
+                        $json = json_decode($value, true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $value = $json;
+                        }
+                    }
+                    $options->{$field->name} = $value;
+                }
+                $optionrs->close();
+                $optionspercmid[$cmid] = $options;
+            }
+        }
+
+        return $optionspercmid[$cmid];
     }
+
 
     /**
      * Insert the additional module fields data to the table.
@@ -133,7 +205,7 @@ class options {
      * @return boolean
      */
     public static function is_vaild_section_completed($section, $course, $modinfo, $onlyrelative = false) {
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         // Vaild section completed c _courseid _sectionid_.
         $key = "v_s_c_c_{$course->id}_s_{$section->id}";
         if (!$cache->get($key)) {
@@ -163,6 +235,23 @@ class options {
         return $cache->get($key);
     }
 
+
+    /**
+     * Get completion activities for a course (cached).
+     *
+     * @param int $courseid Course ID
+     * @return array Array of module instances that are completion activities
+     */
+    private static function get_completion_activities($courseid) {
+        if (!isset(self::$completionactivitiescache[$courseid])) {
+            $course = get_course($courseid);
+            $completioninfo = new \completion_info($course);
+            $criteria = $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+            self::$completionactivitiescache[$courseid] = array_column($criteria, 'moduleinstance');
+        }
+        return self::$completionactivitiescache[$courseid];
+    }
+
     /**
      * Find all the modules inside the given sections are completed by the logged in user.
      * If result is not true it will return the progress and current completion details of section.
@@ -177,11 +266,12 @@ class options {
     public static function is_section_completed($section, $course, $modinfo, $result = false, $onlyrelative = false) {
         global $USER;
         $completioninfo = new \completion_info($course);
-        $completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY), 'moduleinstance');
+        //$completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY), 'moduleinstance');
+        $completionactivities = self::get_completion_activities($course->id);
         $cmcompleted = 0;
         $totalmods = 0;
         $issectioncompletion = 0;
-        $cache = format_designer_get_cache_object();
+        $cache = \format_designer\helper::get_cache_object();
         // Vaild section completed c _courseid _sectionid_.
         $cachekey = "s_c_c_{$course->id}_s_{$section->id}_u_{$USER->id}";
         if (!$cache->get($cachekey)) {
@@ -238,22 +328,31 @@ class options {
      * @return null|array List of available fileareas
      */
     public static function get_file_areas($structure='module') {
-        if (format_designer_has_pro()) {
+        if (\format_designer\helper::has_pro()) {
             return \local_designer\options::get_file_areas($structure);
+        } else {
+            return [];
         }
     }
 
     /**
-     * Get timemanagement tools due date for the module.
+     * Get tool timetable due date for the module.
      *
      * @param cm_info $cm
      * @return int|bool Mod due date if available otherwiser returns false.
      */
     public static function timetool_duedate($cm) {
-        global $USER;
-        if (format_designer_timemanagement_installed() && function_exists('ltool_timemanagement_get_mod_user_info')) {
-            $data = ltool_timemanagement_get_mod_user_info($cm, $USER->id);
-            return $data['duedate'] ?? false;
+        global $USER, $DB;
+        if (\format_designer\helper::timetable_installed()) {
+            $record = $DB->get_record('tool_timetable_modules', ['cmid' => $cm->id ?? 0]);
+            if ($record) {
+                $timemanagement = new \tool_timetable\time_management($cm->course);
+                $userenrolments = $timemanagement->get_course_user_enrollment($USER->id, $cm->course);
+                $timestarted = $userenrolments[0]['timestart'] ?? 0;
+                $timeended = $userenrolments[0]['timeend'] ?? 0;
+                $moduledates = $timemanagement->calculate_coursemodule_managedates($record, $timestarted, $timeended);
+                return $moduledates['duedate'] ?? false;
+            }
         }
         return false;
     }

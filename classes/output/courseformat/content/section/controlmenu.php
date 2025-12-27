@@ -97,7 +97,13 @@ class controlmenu extends controlmenu_base {
 
         $hassectiontypes = true;
 
-        $sectionnum = $this->format->get_sectionnum();
+        $format = $this->format;
+
+        if (method_exists($format, 'get_sectionnum')) {
+            $sectionnum = $format->get_sectionnum();
+        } else {
+            $sectionnum = $format->get_section_number();
+        }
 
         $course = $this->format->get_course();
 
@@ -136,7 +142,7 @@ class controlmenu extends controlmenu_base {
         }
 
         $sectiontypes = [];
-        if (!format_designer_is_support_subpanel()) {
+        if (!\format_designer\helper::is_support_subpanel()) {
 
             $sectiontypes = [
                 [
@@ -160,7 +166,7 @@ class controlmenu extends controlmenu_base {
                 ],
             ];
 
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $prosectiontypes = \local_designer\info::get_layout_menu($this->format, $section, $course);
                 $sectiontypes = array_merge($sectiontypes, $prosectiontypes);
             }
@@ -172,7 +178,7 @@ class controlmenu extends controlmenu_base {
             'hasmenu' => true,
             'id' => $section->id,
             'seciontypes' => $sectiontypes,
-            'is_subpanel' => format_designer_is_support_subpanel(),
+            'is_subpanel' => \format_designer\helper::is_support_subpanel(),
             'hassectiontypes' => $hassectiontypes,
         ];
         return $data;
@@ -203,7 +209,8 @@ class controlmenu extends controlmenu_base {
         $numsections = $format->get_last_section_number();
         $isstealth = $section->section > $numsections;
 
-        $baseurl = course_get_url($course, $sectionreturn);
+        $baseurl = course_get_url($course, $sectionreturn, ['navigation' => true]);
+
         $baseurl->param('sesskey', sesskey());
 
         $course = $format->get_course();
@@ -238,7 +245,7 @@ class controlmenu extends controlmenu_base {
                 $hassectiontypes = false;
             }
 
-            if (format_designer_is_support_subpanel() && $hassectiontypes) {
+            if (\format_designer\helper::is_support_subpanel() && $hassectiontypes) {
                 $controls['sectionlayout'] = new action_menu_subpanel(
                     get_string('strsectionlayout', 'format_designer'),
                     $this->get_choice_list($section),
@@ -450,7 +457,7 @@ class controlmenu extends controlmenu_base {
             'list' => get_string('list', 'format_designer'),
             'cards' => get_string('cards', 'format_designer'),
         ];
-        if (format_designer_has_pro()) {
+        if (\format_designer\helper::has_pro()) {
             $prosectiontypes = \local_designer\info::get_layout_menu($this->format, $section, $this->format->get_course());
             $lists = array_merge($lists, array_column($prosectiontypes, 'name', 'type'));
         }

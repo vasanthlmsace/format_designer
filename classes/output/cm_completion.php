@@ -59,6 +59,12 @@ class cm_completion implements renderable, templatable {
     private static $completioninfos = [];
 
     /**
+     * @var array Cache for tracked user status. Format: ['courseid_userid' => bool]
+     */
+    private static $trackedusers = [];
+
+
+    /**
      * Constructor.
      *
      * @param cm_info $cm
@@ -176,14 +182,23 @@ class cm_completion implements renderable, templatable {
      * @param int|null $userid
      * @return bool
      */
-    final public function is_tracked_user(int $userid = null): bool {
+    final public function is_tracked_user(?int $userid = null): bool {
         global $USER;
 
         if (is_null($userid)) {
             $userid = $USER->id;
         }
 
-        return $this->get_completion_info()->is_tracked_user($userid);
+        // Create cache key using course ID and user ID
+        $cachekey = $this->cm->course . '_' . $userid;
+
+        // Check if result is already cached
+        if (!isset(self::$trackedusers[$cachekey])) {
+            // Cache miss - fetch and store the result
+            self::$trackedusers[$cachekey] = $this->get_completion_info()->is_tracked_user($userid);
+        }
+
+        return self::$trackedusers[$cachekey];
     }
 
     /**
@@ -436,6 +451,7 @@ class cm_completion implements renderable, templatable {
             'overdueby' => $this->get_overdue_by(),
             'duetoday' => $this->is_due_today(),
             'colorclass' => $this->get_color_class(),
+            'badgeprimaryclass' => ($this->get_color_class() == 'notstarted') ? 'badge-primary' : '',
             'completioncheckbox' => $this->get_completion_checkbox(),
             'completionexpected' => ($this->get_completion_expected()) ? true : false,
             'completiontrackingmanual' => $this->get_completion_mode() == COMPLETION_TRACKING_MANUAL,
@@ -447,11 +463,11 @@ class cm_completion implements renderable, templatable {
             'completionincompletefail' => $this->get_completion_fail(),
         ];
         if ($completiondate = $this->get_completion_date()) {
-            $data['completiondate'] = format_designer_format_date($completiondate);
+            $data['completiondate'] = \format_designer\helper::format_date($completiondate);
         }
 
         if ($completionexpected = $this->get_completion_expected()) {
-            $data['completionexpected'] = format_designer_format_date($completionexpected);
+            $data['completionexpected'] = \format_designer\helper::format_date($completionexpected);
         }
 
         return $data;

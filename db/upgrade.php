@@ -67,8 +67,8 @@ function xmldb_format_designer_upgrade($oldversion) {
         // Conditionally launch create table for designer activity customfields.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
-            if (format_designer_has_pro()) {
-                local_designer_update_prodata();
+            if (\format_designer\helper::has_pro()) {
+                \local_designer\helper::update_prodata();
             }
         }
 

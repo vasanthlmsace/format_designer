@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @copyright  2015 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lib_test extends \advanced_testcase {
+final class lib_test extends \advanced_testcase {
 
     /**
      * Test setup.
@@ -45,6 +45,7 @@ class lib_test extends \advanced_testcase {
         global $CFG;
         require_once($CFG->dirroot.'/completion/criteria/completion_criteria_course.php');
         require_once($CFG->dirroot.'/completion/criteria/completion_criteria_activity.php');
+        parent::setUp();
 
         $this->setAdminUser();
         $this->resetAfterTest(true);
@@ -55,7 +56,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::get_section_name
      * @return void
      */
-    public function test_get_section_name() {
+    public function test_get_section_name(): void {
         global $DB;
         $this->resetAfterTest(true);
 
@@ -81,7 +82,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::get_section_name_customised
      * @return void
      */
-    public function test_get_section_name_customised() {
+    public function test_get_section_name_customised(): void {
         global $DB;
         $this->resetAfterTest(true);
 
@@ -115,7 +116,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::get_default_section_name
      * @return void
      */
-    public function test_get_default_section_name() {
+    public function test_get_default_section_name(): void {
         global $DB;
         $this->resetAfterTest(true);
 
@@ -146,7 +147,7 @@ class lib_test extends \advanced_testcase {
      * @covers \core_external::update_inplace_editable
      * @return void
      */
-    public function test_update_inplace_editable() {
+    public function test_update_inplace_editable(): void {
         global $CFG, $DB, $PAGE;
         require_once($CFG->dirroot . '/lib/external/externallib.php');
 
@@ -185,7 +186,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::inplace_editable
      * @return void
      */
-    public function test_inplace_editable() {
+    public function test_inplace_editable(): void {
         global $DB, $PAGE;
 
         $this->resetAfterTest();
@@ -219,7 +220,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::get_default_course_enddate
      * @return void
      */
-    public function test_default_course_enddate() {
+    public function test_default_course_enddate(): void {
         global $CFG, $DB;
 
         $this->resetAfterTest(true);
@@ -254,30 +255,30 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test the module content trim character.
-     * @covers ::format_designer_modcontent_trim_char
+     * @covers ::\format_designer\helper::modcontent_trim_char
      * @return void
      */
-    public function test_format_designer_modcontent_trim_char() {
+    public function test_\format_designer\helper::modcontent_trim_char(): void {
 
         $str1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
         when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
-        $resstr1 = format_designer_modcontent_trim_char($str1, 30);
+        $resstr1 = \format_designer\helper::modcontent_trim_char($str1, 30);
         $this->assertEquals(23, str_word_count($resstr1));
 
         $str2 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-        $resstr2 = format_designer_modcontent_trim_char($str2, 30);
+        $resstr2 = \format_designer\helper::modcontent_trim_char($str2, 30);
         $this->assertEquals(str_word_count($str2), str_word_count($resstr2));
     }
 
     /**
      * Test desginer format date method.
-     * @covers ::format_designer_format_date
+     * @covers ::\format_designer\helper::format_date
      * @return void
      */
-    public function test_format_designer_format_date() {
+    public function test_\format_designer\helper::format_date(): void {
         $timestamp = 1642861536;
-        $dateformat = format_designer_format_date($timestamp);
+        $dateformat = \format_designer\helper::format_date($timestamp);
         $this->assertEquals("Jan 22", $dateformat);
     }
 
@@ -286,7 +287,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::setup_kanban_board
      * @return void
      */
-    public function test_kanban_setup() {
+    public function test_kanban_setup(): void {
         global $DB;
         $this->resetAfterTest();
         $record = ['format' => 'designer', 'coursetype' => '0', 'numsections' => 3];
@@ -317,7 +318,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::format_designer_show_staffs_header
      * @return void
      */
-    public function test_format_designer_show_staffs_header() {
+    public function test_format_designer_show_staffs_header(): void {
         global $DB;
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
@@ -335,7 +336,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::critera_progress
      * @return void
      */
-    public function test_critera_progress() {
+    public function test_critera_progress(): void {
         global $DB;
         $this->resetAfterTest();
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);

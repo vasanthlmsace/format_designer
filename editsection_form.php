@@ -135,7 +135,7 @@ class editsection_form extends moodleform {
         $defaultvalues = file_prepare_standard_editor($defaultvalues, 'summary', $editoroptions,
         $editoroptions['context'], 'course', 'section', $defaultvalues->id);
 
-        if (format_designer_has_pro() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
+        if (\format_designer\helper::has_pro() && $course->coursedisplay == COURSE_DISPLAY_MULTIPAGE) {
             $defaultvalues = \local_designer\options::prepare_sectioncardcta_editor_files($defaultvalues,
                 $this->_customdata['course']);
         }

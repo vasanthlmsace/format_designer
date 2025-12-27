@@ -152,9 +152,9 @@ trait set_section_options {
         $cmlistdata = $renderer->render_course_module($cm, $sectionreturn, [], $section);
 
         $templatename = 'format_designer/cm/module_layout_' . $sectiontype;
-        $prolayouts = format_designer_get_pro_layouts();
+        $prolayouts = \format_designer\helper::get_pro_layouts();
         if (in_array($sectiontype, $prolayouts)) {
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $templatename = 'layouts_' . $sectiontype . '/cm/module_layout_' . $sectiontype;
             }
         }
