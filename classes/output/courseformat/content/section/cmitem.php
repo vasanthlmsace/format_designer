@@ -36,7 +36,6 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cmitem extends \core_courseformat\output\local\content\section\cmitem {
-
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
@@ -99,7 +98,5 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
             'data-id' => $data['cm']->id,
         ]);
         $data['moduleend'] = \html_writer::end_tag('li');
-
     }
-
 }

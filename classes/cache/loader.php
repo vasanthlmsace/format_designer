@@ -53,7 +53,7 @@ trait loader_common_methods {
             $prefix .= "_s_{$sectionid}";
         }
         if ($list = $store->find_by_prefix($prefix)) {
-            $keys = array_map(function($key) {
+            $keys = array_map(function ($key) {
                 $key = current(explode('-', $key));
                 return $key;
             }, $list);
@@ -132,7 +132,7 @@ trait loader_common_methods {
     public function delete_prefix_cache($prefix) {
         $store = $this->get_store();
         if ($list = $store->find_by_prefix($prefix)) {
-            $keys = array_map(function($key) {
+            $keys = array_map(function ($key) {
                 $key = current(explode('-', $key));
                 return $key;
             }, $list);
@@ -142,7 +142,7 @@ trait loader_common_methods {
 }
 
 if (version_compare($CFG->version, '2024100700', '<')) {
-    require_once($CFG->dirroot.'/cache/classes/loaders.php');
+    require_once($CFG->dirroot . '/cache/classes/loaders.php');
     /**
      * Custom cache loader to handle the smart menus and items deletion for older Moodle versions.
      */

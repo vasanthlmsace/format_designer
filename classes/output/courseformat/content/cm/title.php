@@ -37,7 +37,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class title extends \core_courseformat\output\local\content\cm\title {
-
     /**
      * Return the title template data to be used inside the inplace editable.
      *
@@ -49,7 +48,8 @@ class title extends \core_courseformat\output\local\content\cm\title {
         // the format specific renderer.
         $courseoutput = $this->format->get_renderer($PAGE);
 
-        $mod = $this->mod;;
+        $mod = $this->mod;
+        ;
         $data = (object)[
             'url' => ($mod->modname == 'videotime') ? new moodle_url('/mod/videotime/view.php', ['id' => $mod->id]) : $mod->url,
             'instancename' => ($mod->modname == 'videotime') ? $mod->name : $mod->get_formatted_name(),
@@ -70,10 +70,12 @@ class title extends \core_courseformat\output\local\content\cm\title {
         }
 
         // File type after name, for alphabetic lists (screen reader).
-        if (strpos(
-            \core_text::strtolower($data->instancename),
-            \core_text::strtolower($mod->modfullname)
-        ) === false) {
+        if (
+            strpos(
+                \core_text::strtolower($data->instancename),
+                \core_text::strtolower($mod->modfullname)
+            ) === false
+        ) {
             $data->altname = get_accesshide(' ' . $mod->modfullname);
         }
 
@@ -91,5 +93,4 @@ class title extends \core_courseformat\output\local\content\cm\title {
             $data
         );
     }
-
 }

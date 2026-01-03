@@ -36,7 +36,6 @@ use context_course;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class section extends \core_courseformat\output\local\content\section {
-
     /**
      * Add the section format attributes to the data structure.
      *
@@ -84,7 +83,9 @@ class section extends \core_courseformat\output\local\content\section {
             }
         } else {
             $formatdata = (array) $renderer->render_section_data(
-                $this->section, $this->format->get_course(), $sectionnum
+                $this->section,
+                $this->format->get_course(),
+                $sectionnum
             );
         }
         $data = (object) array_merge((array) $data, $formatdata);

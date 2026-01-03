@@ -37,7 +37,6 @@ use cache;
  * Course helper class with utility methods.
  */
 class helper {
-
     /**
      * Instance for the helper class.
      *
@@ -54,6 +53,8 @@ class helper {
 
     /**
      * Cache for section layout types. Format: ['sectionid' => 'layouttype']
+     *
+     * @var array
      */
     private static $sectionlayoutcache = [];
 
@@ -63,7 +64,7 @@ class helper {
      * @param \stdClass $course
      * @return self
      */
-    public static function create($course=null) {
+    public static function create($course = null) {
         // Create this class instance.
         if (self::$instance == null) {
             self::$instance = new self();
@@ -124,7 +125,7 @@ class helper {
             }
 
             $roles = get_user_roles($coursecontext, $userid, false);
-            array_map(function($role) {
+            array_map(function ($role) {
                 $role->name = role_get_name($role);
                 return $role;
             }, $roles);
@@ -261,21 +262,28 @@ class helper {
      * @return string Section background image URL.
      */
     public static function get_section_background_image($section, $course, $modinfo): string {
-        $sectiondesignerbackgroundimage = property_exists($section, 'sectiondesignerbackgroundimage') ?
-        $section->sectiondesignerbackgroundimage : '';
+        $format = course_get_format($section->course);
+        $sectiondesignerbackgroundimage = $format->get_section_option($section->id, 'sectiondesignerbackgroundimage') ?? null;
         if (!empty($sectiondesignerbackgroundimage)) {
             $coursecontext = context_course::instance($course->id);
             $itemid = $section->id;
             $filearea = 'sectiondesignbackground';
             $realtiveactivities = isset($course->calsectionprogress) &&
                 ($course->calsectionprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) ? true : false;
-            if (\format_designer\options::is_section_completed($section, $course, $modinfo, true, $realtiveactivities)
-                && (isset($section->sectiondesignerusecompletionbg) && $section->sectiondesignerusecompletionbg)) {
+            if (
+                \format_designer\options::is_section_completed($section, $course, $modinfo, true, $realtiveactivities)
+                && (isset($section->sectiondesignerusecompletionbg) && $section->sectiondesignerusecompletionbg)
+            ) {
                 $filearea = 'sectiondesigncompletionbackground';
             }
             $files = get_file_storage()->get_area_files(
-                $coursecontext->id, 'format_designer', $filearea,
-                $itemid, 'itemid, filepath, filename', false);
+                $coursecontext->id,
+                'format_designer',
+                $filearea,
+                $itemid,
+                'itemid, filepath, filename',
+                false
+            );
             if (empty($files)) {
                 return '';
             }
@@ -286,7 +294,9 @@ class helper {
                 $file->get_filearea(),
                 $file->get_itemid(),
                 $file->get_filepath(),
-                $file->get_filename(), false);
+                $file->get_filename(),
+                false
+            );
             return $fileurl->out(false);
         }
         return '';
@@ -301,7 +311,7 @@ class helper {
      * @return string Layout class.
      */
     public static function get_module_layoutclass($format, $section): string {
-        // Cache section type
+        // Cache section type.
         if (!isset(self::$sectionlayoutcache[$section->id])) {
             self::$sectionlayoutcache[$section->id] = $format->get_section_option($section->id, 'sectiontype')
                 ?: get_config('format_designer', 'sectiontype');
@@ -493,7 +503,7 @@ class helper {
 
         if ($result === null) {
             if (array_key_exists('timetable', core_component::get_plugin_list('tool'))) {
-                require_once($CFG->dirroot.'/admin/tool/timetable/classes/time_management.php');
+                require_once($CFG->dirroot . '/admin/tool/timetable/classes/time_management.php');
                 $result = true;
             } else {
                 $result = false;

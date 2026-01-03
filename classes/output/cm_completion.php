@@ -47,7 +47,6 @@ require_once("$CFG->dirroot/course/format/designer/lib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cm_completion implements renderable, templatable {
-
     /**
      * @var cm_info
      */
@@ -189,12 +188,12 @@ class cm_completion implements renderable, templatable {
             $userid = $USER->id;
         }
 
-        // Create cache key using course ID and user ID
+        // Create cache key using course ID and user ID.
         $cachekey = $this->cm->course . '_' . $userid;
 
-        // Check if result is already cached
+        // Check if result is already cached.
         if (!isset(self::$trackedusers[$cachekey])) {
-            // Cache miss - fetch and store the result
+            // Cache miss - fetch and store the result.
             self::$trackedusers[$cachekey] = $this->get_completion_info()->is_tracked_user($userid);
         }
 
@@ -295,11 +294,15 @@ class cm_completion implements renderable, templatable {
     final public function get_completion_checkbox(): array {
         global $OUTPUT, $CFG;
 
-        if ($this->get_completion_state() == COMPLETION_INCOMPLETE ||
-        $this->get_completion_state() == COMPLETION_COMPLETE_FAIL) {
+        if (
+            $this->get_completion_state() == COMPLETION_INCOMPLETE ||
+            $this->get_completion_state() == COMPLETION_COMPLETE_FAIL
+        ) {
             $completionicon = 'manual-n' . ($this->get_completion_data()->overrideby ? '-override' : '');
-        } else if ($this->get_completion_state() == COMPLETION_COMPLETE ||
-            $this->get_completion_state() == COMPLETION_COMPLETE_PASS) {
+        } else if (
+            $this->get_completion_state() == COMPLETION_COMPLETE ||
+            $this->get_completion_state() == COMPLETION_COMPLETE_PASS
+        ) {
             $completionicon = 'manual-y' . ($this->get_completion_data()->overrideby ? '-override' : '');
         }
         if ($this->is_overridden()) {
@@ -324,8 +327,10 @@ class cm_completion implements renderable, templatable {
         // conditional activities system, we need to turn
         // off the JS.
         $extraclass = '';
-        if (!empty($CFG->enableavailability) &&
-            info::completion_value_used($this->cm->get_course(), $this->cm->id)) {
+        if (
+            !empty($CFG->enableavailability) &&
+            info::completion_value_used($this->cm->get_course(), $this->cm->id)
+        ) {
             $extraclass = ' preventjs';
         }
         $buttonclass = 'btn btn-link';
@@ -370,7 +375,6 @@ class cm_completion implements renderable, templatable {
      */
     final public function get_color_class(): string {
         if ($this->is_editing() || !$this->is_tracked_user()) {
-
             if ($this->is_restricted()) {
                 return 'restricted';
             }
@@ -433,8 +437,10 @@ class cm_completion implements renderable, templatable {
 
         $withavailability = false;
         $course = $this->cm->get_course();
-        if ($this->get_completion_mode() != COMPLETION_TRACKING_NONE
-            && $this->get_completion_mode() != COMPLETION_TRACKING_AUTOMATIC) {
+        if (
+            $this->get_completion_mode() != COMPLETION_TRACKING_NONE
+            && $this->get_completion_mode() != COMPLETION_TRACKING_AUTOMATIC
+        ) {
             $withavailability = !empty($CFG->enableavailability) && info::completion_value_used($course, $this->cm->id);
         }
 

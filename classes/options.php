@@ -26,7 +26,7 @@ namespace format_designer;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/format/designer/lib.php');
+require_once($CFG->dirroot . '/course/format/designer/lib.php');
 
 use format_designer\output\cm_completion;
 
@@ -34,8 +34,11 @@ use format_designer\output\cm_completion;
  * Module additional custom fields processing.
  */
 class options {
-
-
+    /**
+     * Cache for completion activities.
+     *
+     * @var array
+     */
     private static $completionactivitiescache = [];
 
     /**
@@ -76,12 +79,12 @@ class options {
 
         static $optionspercmid = [];
         static $bulkloaded = [];
-        // Determine course ID
+        // Determine course ID.
         $courseid = null;
         if (isset($PAGE->course->id) && $PAGE->course->id > 1) {
             $courseid = $PAGE->course->id;
         } else {
-            // Fallback: get course from the specific cm
+            // Fallback: get course from the specific cm.
             if (!isset($optionspercmid[$cmid])) {
                 $cm = $DB->get_record('course_modules', ['id' => $cmid], 'course', IGNORE_MISSING);
                 if ($cm) {
@@ -90,9 +93,9 @@ class options {
             }
         }
 
-        // Bulk load ALL options for this course in ONE query (only once per course)
+        // Bulk load ALL options for this course in ONE query (only once per course).
         if ($courseid && !isset($bulkloaded[$courseid])) {
-            // Get all cmids for this course first
+            // Get all cmids for this course first.
             $sql = "SELECT fdo.id, fdo.cmid, fdo.name, fdo.value
                     FROM {format_designer_options} fdo
                     INNER JOIN {course_modules} cm ON cm.id = fdo.cmid
@@ -101,14 +104,14 @@ class options {
 
             $alloptions = $DB->get_records_sql($sql, ['courseid' => $courseid]);
 
-            // Group options by cmid
+            // Group options by cmid.
             foreach ($alloptions as $option) {
                 if (!isset($optionspercmid[$option->cmid])) {
                     $optionspercmid[$option->cmid] = new \stdClass();
                 }
 
                 $value = $option->value;
-                // Optimize JSON detection and decoding
+                // Optimize JSON detection and decoding.
                 if ($value && isset($value[0]) && $value[0] === '{') {
                     $json = json_decode($value, true);
                     if (json_last_error() === JSON_ERROR_NONE) {
@@ -118,18 +121,18 @@ class options {
                 $optionspercmid[$option->cmid]->{$option->name} = $value;
             }
 
-            // Mark this course as bulk loaded
+            // Mark this course as bulk loaded.
             $bulkloaded[$courseid] = true;
         }
 
-        // Return cached data or create empty object
+        // Return cached data or create empty object.
         if (!isset($optionspercmid[$cmid])) {
-            // Check if bulk load happened for this course
+            // Check if bulk load happened for this course.
             if ($courseid && isset($bulkloaded[$courseid])) {
-                // Module has no options - return empty object
+                // Module has no options - return empty object.
                 $optionspercmid[$cmid] = new \stdClass();
             } else {
-                // Fallback: fetch individually (only for edge cases)
+                // Fallback: fetch individually (only for edge cases).
                 $options = new \stdClass();
                 $optionrs = $DB->get_recordset('format_designer_options', ['cmid' => $cmid], '', 'name, value');
                 foreach ($optionrs as $field) {
@@ -163,14 +166,16 @@ class options {
     public static function insert_option(int $cmid, int $courseid, $name, $value) {
         global $DB;
 
-        $record = new \stdClass;
+        $record = new \stdClass();
         $record->cmid = $cmid;
         $record->courseid = $courseid;
         $record->name = $name;
         $record->value = $value ?: '';
         $record->timemodified = time();
-        if ($exitrecord = $DB->get_record('format_designer_options', [
-            'cmid' => $cmid, 'courseid' => $courseid, 'name' => $name, ])) {
+        if (
+            $exitrecord = $DB->get_record('format_designer_options', [
+            'cmid' => $cmid, 'courseid' => $courseid, 'name' => $name, ])
+        ) {
             $record->id = $exitrecord->id;
             $record->timecreated = $exitrecord->timecreated;
             $DB->update_record('format_designer_options', $record);
@@ -210,8 +215,10 @@ class options {
         $key = "v_s_c_c_{$course->id}_s_{$section->id}";
         if (!$cache->get($key)) {
             $completioninfo = new \completion_info($course);
-            $completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY),
-                'moduleinstance');
+            $completionactivities = array_column(
+                $completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY),
+                'moduleinstance'
+            );
             if (!empty($modinfo->sections[$section->section]) && $section->uservisible) {
                 foreach ($modinfo->sections[$section->section] as $modnumber) {
                     $mod = $modinfo->cms[$modnumber];
@@ -266,7 +273,6 @@ class options {
     public static function is_section_completed($section, $course, $modinfo, $result = false, $onlyrelative = false) {
         global $USER;
         $completioninfo = new \completion_info($course);
-        //$completionactivities = array_column($completioninfo->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY), 'moduleinstance');
         $completionactivities = self::get_completion_activities($course->id);
         $cmcompleted = 0;
         $totalmods = 0;
@@ -286,7 +292,7 @@ class options {
                         if ($mod->is_visible_on_course_page() && $cmcompletion->get_completion_mode() != COMPLETION_TRACKING_NONE) {
                             $totalmods++;
                             $cmcompletionstate = $cmcompletion->get_completion_state();
-                            if ($cmcompletionstate == COMPLETION_COMPLETE || $cmcompletionstate == COMPLETION_COMPLETE_PASS ) {
+                            if ($cmcompletionstate == COMPLETION_COMPLETE || $cmcompletionstate == COMPLETION_COMPLETE_PASS) {
                                 $cmcompleted++;
                             }
                         }
@@ -327,7 +333,7 @@ class options {
      * @param string $structure Type of format module or section
      * @return null|array List of available fileareas
      */
-    public static function get_file_areas($structure='module') {
+    public static function get_file_areas($structure = 'module') {
         if (\format_designer\helper::has_pro()) {
             return \local_designer\options::get_file_areas($structure);
         } else {
@@ -363,11 +369,10 @@ class options {
      * @param bool $issection
      * @return void
      */
-    public static function get_default_options($issection=false) {
+    public static function get_default_options($issection = false) {
         global $DB, $PAGE;
         static $design;
         if ($design == null) {
-
             $formatdesign = (array) get_config('format_designer');
             $localdesign = (array) get_config('local_designer');
             $design = (object) array_merge($formatdesign, $localdesign);
@@ -391,8 +396,8 @@ class options {
 
             $elements = ['icon', 'visits', 'calltoaction', 'title', 'description', 'modname', 'completionbadge'];
             foreach ($elements as $element) {
-                $design->activityelements[$element] = isset($design->{'activityelements_'.$element})
-                    ? $design->{'activityelements_'.$element} : '';
+                $design->activityelements[$element] = isset($design->{'activityelements_' . $element})
+                    ? $design->{'activityelements_' . $element} : '';
             }
 
             unset($design->sectiondesignerbackgroundimage);

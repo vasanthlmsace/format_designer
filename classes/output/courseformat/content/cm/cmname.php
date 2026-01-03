@@ -37,7 +37,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cmname extends \core_courseformat\output\local\content\cm\cmname {
-
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
@@ -110,10 +109,12 @@ class cmname extends \core_courseformat\output\local\content\cm\cmname {
         ];
 
         // File type after name, for alphabetic lists (screen reader).
-        if (strpos(
-            \core_text::strtolower($data->instancename),
-            \core_text::strtolower($mod->modfullname)
-        ) === false) {
+        if (
+            strpos(
+                \core_text::strtolower($data->instancename),
+                \core_text::strtolower($mod->modfullname)
+            ) === false
+        ) {
             $data->altname = get_accesshide(' ' . $mod->modfullname);
         }
 

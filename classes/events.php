@@ -33,7 +33,6 @@ require_once($CFG->dirroot . "/course/format/designer/lib.php");
  * Designer format event observer.
  */
 class events {
-
     /**
      * After new section created, section format options are not added to the DB.
      * Observe the section creation and add global format options to section in dB.
@@ -67,8 +66,10 @@ class events {
                 $sectiondata[$name] = get_config('format_designer', $name);
             }
         }
-        if (!defined('NO_OUTPUT_BUFFERING') || (defined('NO_OUTPUT_BUFFERING') && !NO_OUTPUT_BUFFERING)
-            && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0')) {
+        if (
+            !defined('NO_OUTPUT_BUFFERING') || (defined('NO_OUTPUT_BUFFERING') && !NO_OUTPUT_BUFFERING)
+            && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0')
+        ) {
             $format->update_section_format_options($sectiondata);
         }
     }
@@ -231,7 +232,7 @@ class events {
      * @param mixed $userid
      * @return void
      */
-    public static function course_user_cache_updated($courseid , $userid) {
+    public static function course_user_cache_updated($courseid, $userid) {
         $cache = \format_designer\helper::get_cache_object();
         $cache->delete_vaild_section_completed_cache($courseid);
         $cache->delete_user_section_completed_cache($courseid);

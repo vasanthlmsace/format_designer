@@ -43,7 +43,6 @@ require_once("$CFG->dirroot/course/format/designer/lib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class call_to_action extends cm_completion {
-
     /**
      * Get the call action label html.
      * @return string
@@ -55,8 +54,10 @@ class call_to_action extends cm_completion {
         if ($this->is_restricted()) {
             return get_string('calltoactionrestricted', 'format_designer');
         }
-        if (!$this->is_tracked_user($USER->id) ||
-            !$this->get_completion_info()->is_enabled($this->get_cm())) {
+        if (
+            !$this->is_tracked_user($USER->id) ||
+            !$this->get_completion_info()->is_enabled($this->get_cm())
+        ) {
             return get_string('calltoactionview', 'format_designer', $modtype);
         }
 
@@ -82,7 +83,7 @@ class call_to_action extends cm_completion {
         if (\format_designer\helper::has_pro()) {
             $moduledesign = \format_designer\options::get_options($cmid);
             if ($moduledesign) {
-                $actiontextcolor = !empty($moduledesign->textcolor) ? "color: ". $moduledesign->textcolor . ";" : '';
+                $actiontextcolor = !empty($moduledesign->textcolor) ? "color: " . $moduledesign->textcolor . ";" : '';
             }
         }
         return [
