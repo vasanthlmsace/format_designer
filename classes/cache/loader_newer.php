@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Format Designer - Custom cache loader for the smart menus.
+ * Format Designer - Custom cache loader for newer Moodle versions.
  *
  * @package    format_designer
  * @copyright  2023 bdecent GmbH <https://bdecent.de>
@@ -26,21 +26,15 @@ namespace format_designer\cache;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-
 require_once(__DIR__ . '/loader_trait.php');
 
-if (!class_exists('\core_cache\application_cache')) {
-    require_once($CFG->dirroot . '/cache/classes/loaders.php');
-    /**
-     * Custom cache loader to handle the smart menus and items deletion for older Moodle versions.
-     */
-    class loader extends \cache_application {
-        use loader_trait;
-    }
-} else {
-    // For newer Moodle versions, use the loader_newer class and alias it.
-    require_once(__DIR__ . '/loader_newer.php');
-    // Use class_alias to create the loader class with the correct parent.
-    class_alias('format_designer\cache\loader_newer', 'format_designer\cache\loader');
+/**
+ * Custom cache loader for newer Moodle versions that use the core_cache namespace.
+ *
+ * @package   format_designer
+ * @copyright 2023 bdecent gmbh <https://bdecent.de>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class loader_newer extends \core_cache\application_cache {
+    use loader_trait;
 }

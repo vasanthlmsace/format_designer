@@ -59,12 +59,16 @@ class helper {
     private static $sectionlayoutcache = [];
 
     /**
-     * Shared static cache for all background images across all methods
+     * Shared static cache for all background images across all methods.
+     *
+     * @var array
      */
     private static $backgroundcache = [];
 
     /**
-     * Track which courses have been preloaded
+     * Track which courses have been preloaded.
+     *
+     * @var array
      */
     private static $preloadedcourses = [];
 
@@ -176,6 +180,9 @@ class helper {
 
     /**
      * Bulk preload all section background images for a course.
+     * @param stdClass $course Course object.
+     * @param \course_modinfo|null $modinfo Course module info object or null to load it.
+     * @return void
      */
     public static function preload_section_backgrounds($course, $modinfo) {
         global $DB;
@@ -221,7 +228,7 @@ class helper {
         }
 
         // ONE SQL query to load ALL background files.
-        list($insql, $params) = $DB->get_in_or_equal($sectionids, SQL_PARAMS_NAMED);
+        [$insql, $params] = $DB->get_in_or_equal($sectionids, SQL_PARAMS_NAMED);
         $params['contextid'] = $coursecontext->id;
         $params['component'] = 'format_designer';
 
@@ -256,8 +263,10 @@ class helper {
         // Mark sections without backgrounds as empty to avoid fallback queries.
         foreach ($sectionids as $sectionid) {
             $basecachekey = $sectionid . '_' . $course->id;
-            if (!isset(self::$backgroundcache[$basecachekey . '_sectiondesignbackground']) &&
-                !isset(self::$backgroundcache[$basecachekey . '_sectiondesigncompletionbackground'])) {
+            if (
+                !isset(self::$backgroundcache[$basecachekey . '_sectiondesignbackground']) &&
+                !isset(self::$backgroundcache[$basecachekey . '_sectiondesigncompletionbackground'])
+            ) {
                 self::$backgroundcache[$basecachekey . '_sectiondesignbackground'] = '';
                 self::$backgroundcache[$basecachekey . '_sectiondesigncompletionbackground'] = '';
             }
@@ -370,7 +379,7 @@ class helper {
         $basecachekey = $section->id . '_' . $course->id;
 
         if (empty(self::$backgroundcache)) {
-            \format_designer\helper::preload_section_backgrounds($course, $modinfo);
+            self::preload_section_backgrounds($course, $modinfo);
         }
 
         $format = course_get_format($section->course);
@@ -379,7 +388,7 @@ class helper {
             return '';
         }
 
-        // Determine filearea
+        // Determine filearea.
         $filearea = 'sectiondesignbackground';
         $realtiveactivities = isset($course->calsectionprogress) &&
             ($course->calsectionprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) ? true : false;
@@ -392,11 +401,11 @@ class helper {
         }
 
         $cachekey = $basecachekey . '_' . $filearea;
-        // Return from preloaded cache
+        // Return from preloaded cache.
         if (isset(self::$backgroundcache[$cachekey])) {
             return self::$backgroundcache[$cachekey];
         }
-        // If not in cache (shouldn't happen if preload was called), return empty
+        // If not in cache (shouldn't happen if preload was called), return empty.
         return '';
     }
 

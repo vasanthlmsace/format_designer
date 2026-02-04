@@ -1124,22 +1124,21 @@ class format_designer extends \core_courseformat\base {
     public static function section_format_options_list($foreditform) {
         global $CFG, $PAGE;
 
-        // Static cache to prevent repeated calls - CRITICAL OPTIMIZATION
+        // Static cache to prevent repeated calls - CRITICAL OPTIMIZATION.
         static $cachedoptions = null;
 
-        // Create cache key based on edit form context
+        // Create cache key based on edit form context.
         $cachekey = $foreditform ? 'edit' : 'view';
 
-        // Return cached result if already loaded for this context
+        // Return cached result if already loaded for this context.
         if ($cachedoptions !== null && isset($cachedoptions[$cachekey])) {
             return $cachedoptions[$cachekey];
         }
 
-        // Initialize cache array if first call
+        // Initialize cache array if first call.
         if ($cachedoptions === null) {
             $cachedoptions = [];
         }
-
 
         $design = \format_designer\options::get_default_options();
         $sectionoptions = [
@@ -2166,16 +2165,15 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $modinfo = get_fast_modinfo($course);
     $cmcache = [];
 
-
     if ($reports) {
         foreach ($reports as $report) {
             $cmid = $report['cmid'];
-            // Get CM from modinfo (cached, no DB query)
+            // Get CM from modinfo (cached, no DB query).
             try {
                 $cm = $modinfo->get_cm($cmid);
                 $cmcache[$cmid] = $cm;
             } catch (Exception $e) {
-                // CM not found or not accessible
+                // CM not found or not accessible.
                 continue;
             }
 

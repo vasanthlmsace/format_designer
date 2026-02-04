@@ -93,7 +93,6 @@ class renderer extends \core_courseformat\output\section_renderer {
 
         \format_designer\helper::preload_section_backgrounds($course, $this->modinfo);
 
-
         [$startid, $startclass] = $this->course_type_class($course);
         $startclass[] = ($course->coursedisplay && !$this->page->user_is_editing()) ? 'row' : '';
         // If kanban board enabled remove the row.
@@ -1497,6 +1496,17 @@ class renderer extends \core_courseformat\output\section_renderer {
         return $cmlist;
     }
 
+    /**
+     * Get the course index drawer with placeholder.
+     *
+     * The default course index is loaded after the page is ready. Format plugins can override
+     * this method to provide an alternative course index.
+     *
+     * If the format is not compatible with the course index, this method will return an empty string.
+     *
+     * @param course_format $format the course format
+     * @return String the course index HTML.
+     */
 
     /**
      * Generate the classes for the activity elements visibility classes.
