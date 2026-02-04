@@ -238,10 +238,7 @@ class controlmenu extends controlmenu_base {
             ];
 
             $hassectiontypes = true;
-            if (
-                ($course->coursedisplay == COURSE_DISPLAY_MULTIPAGE && !$sectionreturn)
-                || $course->coursetype == DESIGNER_TYPE_FLOW
-            ) {
+            if ($course->coursetype == DESIGNER_TYPE_FLOW) {
                 $hassectiontypes = false;
             }
 
@@ -262,13 +259,15 @@ class controlmenu extends controlmenu_base {
                 $duplicatesectionurl->param('sr', $sectionreturn);
             }
 
-            $controls['duplicate'] = [
-                'url' => $duplicatesectionurl,
-                'icon' => 't/copy',
-                'name' => get_string('duplicate'),
-                'pixattr' => ['class' => ''],
-                'attr' => ['class' => 'icon duplicate'],
-            ];
+            if ($section->section) {
+                $controls['duplicate'] = [
+                    'url' => $duplicatesectionurl,
+                    'icon' => 't/copy',
+                    'name' => get_string('duplicate'),
+                    'pixattr' => ['class' => ''],
+                    'attr' => ['class' => 'icon duplicate'],
+                ];
+            }
         }
 
         if ($section->section) {

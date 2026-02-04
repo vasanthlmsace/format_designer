@@ -172,7 +172,6 @@ trait set_section_options {
     /**
      * Return structure for get_module()
      *
-     * @since Moodle 3.3
      * @return external_description
      */
     public static function get_module_returns() {

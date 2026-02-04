@@ -971,13 +971,11 @@ class format_designer extends \core_courseformat\base {
             }
             array_unshift($elements, $element);
         }
-
         if ($forsection) {
             $options = $this->section_format_options(true);
         } else {
             $options = $this->designer_course_format_options(true);
         }
-
         $design = \format_designer\options::get_default_options();
         foreach ($options as $optionname => $option) {
             if (isset($option['disabledif'])) {
@@ -1080,6 +1078,7 @@ class format_designer extends \core_courseformat\base {
      */
     public function section_format_options($foreditform = false) {
         global $PAGE, $COURSE;
+
         $sectionid = optional_param('id', 0, PARAM_INT);
         if ($sectionid && $PAGE->pagetype == 'course-editsection') {
             $sectionbackdraftid = 0;
@@ -1124,6 +1123,24 @@ class format_designer extends \core_courseformat\base {
      */
     public static function section_format_options_list($foreditform) {
         global $CFG, $PAGE;
+
+        // Static cache to prevent repeated calls - CRITICAL OPTIMIZATION
+        static $cachedoptions = null;
+
+        // Create cache key based on edit form context
+        $cachekey = $foreditform ? 'edit' : 'view';
+
+        // Return cached result if already loaded for this context
+        if ($cachedoptions !== null && isset($cachedoptions[$cachekey])) {
+            return $cachedoptions[$cachekey];
+        }
+
+        // Initialize cache array if first call
+        if ($cachedoptions === null) {
+            $cachedoptions = [];
+        }
+
+
         $design = \format_designer\options::get_default_options();
         $sectionoptions = [
             'sectiontype' => [
@@ -1193,6 +1210,8 @@ class format_designer extends \core_courseformat\base {
                 $sectionoptions = array_merge($sectionoptions, $prosectionoptions);
             }
         }
+
+        $cachedoptions[$cachekey] = $sectionoptions;
         return $sectionoptions;
     }
 
@@ -2032,6 +2051,7 @@ function format_designer_coursemodule_edit_post_actions($data, $course) {
     return $data;
 }
 
+
 /**
  * This function extends the navigation with the hero activities items
  *
@@ -2061,28 +2081,28 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $PAGE->requires->js_call_amd('format_designer/designer_section', 'init', $jsparams);
 
     $isaddsecondary = ($navigation->children->count() <= 1 && $PAGE->context->contextlevel == CONTEXT_MODULE) &&
-        (\format_designer\helper::course_has_heroactivity($course) || $course->secondarymenutocourse);
+    (\format_designer\helper::course_has_heroactivity($course) || $course->secondarymenutocourse);
     $currentmodname = isset($PAGE->cm->modname) ? get_string('modulename', $PAGE->cm->modname) : '';
     $curentmodurl = isset($PAGE->cm->id) ? new moodle_url("/mod/{$PAGE->cm->modname}/view.php", ['id' => $PAGE->cm->id]) : '';
     $secondarycontent = html_writer::start_div('secondary-navigation d-print-none');
     $secondarycontent .= html_writer::start_tag('nav', ['class' => 'moremenu navigation observed']);
     $secondarycontent .= html_writer::start_tag('ul', ['id' => 'moremenu-63f8473d27694-nav-tabs',
-        'class' => 'nav more-nav nav-tabs', 'role' => 'menubar', ]);
-        $secondarycontent .= html_writer::start_tag('li', ['data-key' => 'modulepage', 'class' => 'nav-item', 'role' => 'none',
-            'data-forceintomoremenu' => 'false', ]);
-        $secondarycontent .= html_writer::link($curentmodurl, $currentmodname, ['role' => 'menuitem',
-            'class' => 'nav-link active active_tree_node', 'aria-current' => 'true', ]);
-        $secondarycontent .= html_writer::end_tag('li');
+    'class' => 'nav more-nav nav-tabs', 'role' => 'menubar', ]);
+    $secondarycontent .= html_writer::start_tag('li', ['data-key' => 'modulepage', 'class' => 'nav-item', 'role' => 'none',
+    'data-forceintomoremenu' => 'false', ]);
+    $secondarycontent .= html_writer::link($curentmodurl, $currentmodname, ['role' => 'menuitem',
+    'class' => 'nav-link active active_tree_node', 'aria-current' => 'true', ]);
+    $secondarycontent .= html_writer::end_tag('li');
         $secondarycontent .= html_writer::start_tag('li', ['role' => 'none',
-            'class' => 'nav-item dropdown dropdownmoremenu d-none', 'data-region' => 'morebutton', ]);
+        'class' => 'nav-item dropdown dropdownmoremenu d-none', 'data-region' => 'morebutton', ]);
             $secondarycontent .= html_writer::link('#', get_string('moremenu'), ['class' => 'dropdown-toggle nav-link',
-                'id' => 'moremenu-dropdown-63f8639161cce', 'role' => 'menuitem', 'data-toggle' => 'dropdown',
+            'id' => 'moremenu-dropdown-63f8639161cce', 'role' => 'menuitem', 'data-toggle' => 'dropdown',
                 'aria-haspopup' => 'true', 'aria-expanded' => 'false', 'tabindex' => -1, ]);
-            $secondarycontent .= html_writer::start_tag('ul', ['class' => 'dropdown-menu dropdown-menu-left',
+                $secondarycontent .= html_writer::start_tag('ul', ['class' => 'dropdown-menu dropdown-menu-left',
                 'data-region' => 'moredropdown', 'aria-labelledby' => 'moremenu-dropdown-63f8639161cce', 'role' => 'menu', ]);
-            $secondarycontent .= html_writer::end_tag('ul');
-        $secondarycontent .= html_writer::end_tag('li');
-    $secondarycontent .= html_writer::end_tag('ul');
+                $secondarycontent .= html_writer::end_tag('ul');
+                $secondarycontent .= html_writer::end_tag('li');
+                $secondarycontent .= html_writer::end_tag('ul');
     $secondarycontent .= html_writer::end_tag('nav');
     $secondarycontent .= html_writer::end_div('');
 
@@ -2090,6 +2110,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $secondarymenutocoursecontent = '';
     // Add the module page to visible the back to main course.
     $modbacktomain = '';
+
     if ($course->secondarymenutocourse) {
         $secondarymenutocoursecontent .= html_writer::start_tag("li", ["data-key" => 'designercoursehome',
         "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "true", ]);
@@ -2138,9 +2159,26 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $neg = [];
     $pos = [];
     $reports = \format_designer\helper::section_zero_tomake_hero($reports, $course);
+    if (empty($reports)) {
+        return;
+    }
+
+    $modinfo = get_fast_modinfo($course);
+    $cmcache = [];
+
 
     if ($reports) {
         foreach ($reports as $report) {
+            $cmid = $report['cmid'];
+            // Get CM from modinfo (cached, no DB query)
+            try {
+                $cm = $modinfo->get_cm($cmid);
+                $cmcache[$cmid] = $cm;
+            } catch (Exception $e) {
+                // CM not found or not accessible
+                continue;
+            }
+
             if ($report['heroactivitypos'] < 0) {
                 $neg[] = $report;
             } else {
@@ -2159,27 +2197,27 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $modulecontent = false;
     $ishidecurrentcmid = false;
     $heroactivityduplicate = get_config("format_designer", "avoidduplicate_heromodentry") == 1 ? true : false;
-
+    $contextlevel = $PAGE->context->contextlevel;
+    $modinfo = get_fast_modinfo($course);
     if ($reports) {
         $reports = array_merge($neg, $pos);
-
         foreach ($reports as $report) {
             if ($report['heroactivity']) {
-                $cm = get_coursemodule_from_id('', $report['cmid']);
+                $cm = $modinfo->get_cm($report['cmid']);
                 $modurl = new moodle_url("/mod/$cm->modname/view.php", ['id' => $cm->id]);
                 $nodepos = $report['heroactivitypos'];
                 $cmtitle = $format->get_cm_secondary_title($cm);
-                if ($PAGE->context->contextlevel == CONTEXT_MODULE) {
+                if ($contextlevel == CONTEXT_MODULE) {
                     if ($report['heroactivity'] == DESIGNER_HERO_ACTIVITY_EVERYWHERE) {
                         if ($cm->id == $PAGE->cm->id && $heroactivityduplicate) {
                             $ishidecurrentcmid = true;
                         }
                         $content .= html_writer::start_tag("li", ["data-key" => $cm->id, "class" => "nav-item",
                             "role" => "none", "data-forceintomoremenu" => "true", ]);
-                        $linkclass = "designer-hero-activity position_$nodepos dropdown-item";
-                        $content .= html_writer::link($modurl, $cmtitle, ['role' => 'menuitem', 'class' => $linkclass,
+                            $linkclass = "designer-hero-activity position_$nodepos dropdown-item";
+                            $content .= html_writer::link($modurl, $cmtitle, ['role' => 'menuitem', 'class' => $linkclass,
                             "tabindex" => "-1", "data-mod" => $cm->name, "data-cm" => $cm->id, ]);
-                        $content .= html_writer::end_tag("li");
+                            $content .= html_writer::end_tag("li");
                         $modulecontent = true;
                     }
                 } else {
@@ -2357,7 +2395,6 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         parent.setAttribute('data-forceintomoremenu', 'false');
                         secondarynav.insertBefore(parent, secondarynav.children[0]);
                 }
-
                 // Insert the prerequisite course link to secondary nav.
                 if ($designerpro) {
                     var backmaincourse = document.querySelectorAll('.backmain-course')[0];
@@ -2368,10 +2405,8 @@ function format_designer_extend_navigation_course($navigation, $course, $context
                         parent.setAttribute('data-forceintomoremenu', 'false');
                         secondarynav.insertBefore(parent, secondarynav.children[0]);
                     }
-                    var moremenu = new MenuMore($('nav.moremenu'));
-                    moremenu.init();
+                    window.dispatchEvent(new Event('resize')); // Dispatch the resize event to create more menu.
                 }
-                MenuMore(secondarynav);
                 return true;
             });
         });

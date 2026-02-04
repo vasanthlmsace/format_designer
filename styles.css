@@ -239,7 +239,7 @@
     height: 100%;
 }
 .format-designer .course-content .single-section-layout ul.designer.course-type-normal li.section.main .section-header-content {
-    height: 100%;
+    /* height: 100%; */
     padding: 15px;
     margin-bottom: 15px;
     display: flex;
@@ -247,7 +247,7 @@
 }
 .format-designer .course-content .single-section-layout ul.designer.course-type-normal li.section.main
 .section-header-content .moodle-actionmenu {
-    margin-top: auto;
+    margin-top: 0;
 }
 .format-designer .course-content .single-section-layout:not(.section-page-layout) ul.designer.course-type-normal
 li.section.main .section-content-wrapper {

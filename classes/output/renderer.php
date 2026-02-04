@@ -91,6 +91,9 @@ class renderer extends \core_courseformat\output\section_renderer {
         $course = $data->course;
         $this->modinfo = course_get_format($course)->get_modinfo();
 
+        \format_designer\helper::preload_section_backgrounds($course, $this->modinfo);
+
+
         [$startid, $startclass] = $this->course_type_class($course);
         $startclass[] = ($course->coursedisplay && !$this->page->user_is_editing()) ? 'row' : '';
         // If kanban board enabled remove the row.
@@ -1233,7 +1236,6 @@ class renderer extends \core_courseformat\output\section_renderer {
         $sectiontype = ''
     ) {
         global $DB, $USER, $CFG;
-
         // Static caches to reduce DB queries - persists across multiple calls within same request.
         static $modvisitscache = [];
         static $videotimecache = [];
@@ -1487,6 +1489,7 @@ class renderer extends \core_courseformat\output\section_renderer {
             'hascmbulk' => class_exists('core_courseformat\output\local\content\bulkedittoggler') ? true : false,
             'haspro' => \format_designer\helper::has_pro(),
         ];
+        $cmlist = array_merge($cmlist, $cmdata);
         if (\format_designer\helper::has_pro()) {
             $prodata = \local_designer\options::render_course_module($mod, $cmlist, $section, $sectiontype);
             $cmlist = array_merge($cmlist, $prodata);
@@ -1494,24 +1497,6 @@ class renderer extends \core_courseformat\output\section_renderer {
         return $cmlist;
     }
 
-    /**
-     * Get the course index drawer with placeholder.
-     *
-     * The default course index is loaded after the page is ready. Format plugins can override
-     * this method to provide an alternative course index.
-     *
-     * If the format is not compatible with the course index, this method will return an empty string.
-     *
-     * @param course_format $format the course format
-     * @return String the course index HTML.
-     */
-    public function course_index_drawer(course_format $format): ?string {
-        if ($format->uses_course_index()) {
-            include_course_editor($format);
-            return $this->render_from_template('format_designer/courseformat/courseindex/drawer', []);
-        }
-        return '';
-    }
 
     /**
      * Generate the classes for the activity elements visibility classes.

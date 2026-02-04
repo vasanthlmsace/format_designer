@@ -55,14 +55,7 @@ class controlmenu extends controlmenu_base {
             $controls = $this->get_cm_control_items();
         } else {
             $controls = $this->cm_control_items();
-        }
-
-        if (
-            empty($controls) || (isset($mod->get_course()->coursedisplay) &&
-            $mod->get_course()->coursedisplay == COURSE_DISPLAY_MULTIPAGE)
-        ) {
-            return null;
-        }
+        }/
 
         // Convert control array into an action_menu.
         $menu = new action_menu();
@@ -83,7 +76,6 @@ class controlmenu extends controlmenu_base {
         }
 
         $this->menu = $menu;
-
         return $menu;
     }
 }

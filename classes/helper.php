@@ -59,6 +59,16 @@ class helper {
     private static $sectionlayoutcache = [];
 
     /**
+     * Shared static cache for all background images across all methods
+     */
+    private static $backgroundcache = [];
+
+    /**
+     * Track which courses have been preloaded
+     */
+    private static $preloadedcourses = [];
+
+    /**
      * Create instance of helper class.
      *
      * @param \stdClass $course
@@ -162,6 +172,100 @@ class helper {
         return $staffs;
     }
 
+
+
+    /**
+     * Bulk preload all section background images for a course.
+     */
+    public static function preload_section_backgrounds($course, $modinfo) {
+        global $DB;
+
+        // Check if already loaded.
+        if (isset(self::$preloadedcourses[$course->id])) {
+            return;
+        }
+
+        // If modinfo is null, load it.
+        if ($modinfo === null) {
+            $modinfo = get_fast_modinfo($course);
+        }
+
+        // Additional null check for safety.
+        if (!$modinfo) {
+            self::$preloadedcourses[$course->id] = true;
+            return;
+        }
+
+        $coursecontext = context_course::instance($course->id);
+        $sections = $modinfo->get_section_info_all();
+
+        if (empty($sections)) {
+            self::$preloadedcourses[$course->id] = true;
+            return;
+        }
+
+        $format = course_get_format($course);
+
+        // Get all section IDs that have background images.
+        $sectionids = [];
+        foreach ($sections as $section) {
+            $hasbackground = $format->get_section_option($section->id, 'sectiondesignerbackgroundimage') ?? null;
+            if (!empty($hasbackground)) {
+                $sectionids[] = $section->id;
+            }
+        }
+
+        if (empty($sectionids)) {
+            self::$preloadedcourses[$course->id] = true;
+            return;
+        }
+
+        // ONE SQL query to load ALL background files.
+        list($insql, $params) = $DB->get_in_or_equal($sectionids, SQL_PARAMS_NAMED);
+        $params['contextid'] = $coursecontext->id;
+        $params['component'] = 'format_designer';
+
+        $sql = "SELECT f.id, f.itemid, f.filearea, f.contextid, f.component,
+                    f.filepath, f.filename
+                FROM {files} f
+                WHERE f.contextid = :contextid
+                AND f.component = :component
+                AND f.filearea IN ('sectiondesignbackground', 'sectiondesigncompletionbackground')
+                AND f.itemid $insql
+                AND f.filename != '.'
+                ORDER BY f.itemid, f.filearea";
+
+        $files = $DB->get_records_sql($sql, $params);
+
+        // Pre-populate cache.
+        foreach ($files as $file) {
+            $fileurl = \moodle_url::make_pluginfile_url(
+                $file->contextid,
+                $file->component,
+                $file->filearea,
+                $file->itemid,
+                $file->filepath,
+                $file->filename,
+                false
+            );
+
+            $cachekey = $file->itemid . '_' . $course->id . '_' . $file->filearea;
+            self::$backgroundcache[$cachekey] = $fileurl->out(false);
+        }
+
+        // Mark sections without backgrounds as empty to avoid fallback queries.
+        foreach ($sectionids as $sectionid) {
+            $basecachekey = $sectionid . '_' . $course->id;
+            if (!isset(self::$backgroundcache[$basecachekey . '_sectiondesignbackground']) &&
+                !isset(self::$backgroundcache[$basecachekey . '_sectiondesigncompletionbackground'])) {
+                self::$backgroundcache[$basecachekey . '_sectiondesignbackground'] = '';
+                self::$backgroundcache[$basecachekey . '_sectiondesigncompletionbackground'] = '';
+            }
+        }
+
+        self::$preloadedcourses[$course->id] = true;
+    }
+
     /**
      * Get course staff users.
      *
@@ -253,6 +357,7 @@ class helper {
         return array_merge($layouts, $prolayouts);
     }
 
+
     /**
      * Get section background image url.
      *
@@ -262,43 +367,36 @@ class helper {
      * @return string Section background image URL.
      */
     public static function get_section_background_image($section, $course, $modinfo): string {
+        $basecachekey = $section->id . '_' . $course->id;
+
+        if (empty(self::$backgroundcache)) {
+            \format_designer\helper::preload_section_backgrounds($course, $modinfo);
+        }
+
         $format = course_get_format($section->course);
         $sectiondesignerbackgroundimage = $format->get_section_option($section->id, 'sectiondesignerbackgroundimage') ?? null;
-        if (!empty($sectiondesignerbackgroundimage)) {
-            $coursecontext = context_course::instance($course->id);
-            $itemid = $section->id;
-            $filearea = 'sectiondesignbackground';
-            $realtiveactivities = isset($course->calsectionprogress) &&
-                ($course->calsectionprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) ? true : false;
-            if (
-                \format_designer\options::is_section_completed($section, $course, $modinfo, true, $realtiveactivities)
-                && (isset($section->sectiondesignerusecompletionbg) && $section->sectiondesignerusecompletionbg)
-            ) {
-                $filearea = 'sectiondesigncompletionbackground';
-            }
-            $files = get_file_storage()->get_area_files(
-                $coursecontext->id,
-                'format_designer',
-                $filearea,
-                $itemid,
-                'itemid, filepath, filename',
-                false
-            );
-            if (empty($files)) {
-                return '';
-            }
-            $file = current($files);
-            $fileurl = \moodle_url::make_pluginfile_url(
-                $file->get_contextid(),
-                $file->get_component(),
-                $file->get_filearea(),
-                $file->get_itemid(),
-                $file->get_filepath(),
-                $file->get_filename(),
-                false
-            );
-            return $fileurl->out(false);
+        if (empty($sectiondesignerbackgroundimage)) {
+            return '';
         }
+
+        // Determine filearea
+        $filearea = 'sectiondesignbackground';
+        $realtiveactivities = isset($course->calsectionprogress) &&
+            ($course->calsectionprogress == DESIGNER_PROGRESS_RELEVANTACTIVITIES) ? true : false;
+
+        if (
+            \format_designer\options::is_section_completed($section, $course, $modinfo, true, $realtiveactivities)
+            && (isset($section->sectiondesignerusecompletionbg) && $section->sectiondesignerusecompletionbg)
+        ) {
+            $filearea = 'sectiondesigncompletionbackground';
+        }
+
+        $cachekey = $basecachekey . '_' . $filearea;
+        // Return from preloaded cache
+        if (isset(self::$backgroundcache[$cachekey])) {
+            return self::$backgroundcache[$cachekey];
+        }
+        // If not in cache (shouldn't happen if preload was called), return empty
         return '';
     }
 
