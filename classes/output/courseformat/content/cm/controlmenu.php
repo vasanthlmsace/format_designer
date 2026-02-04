@@ -55,7 +55,7 @@ class controlmenu extends controlmenu_base {
             $controls = $this->get_cm_control_items();
         } else {
             $controls = $this->cm_control_items();
-        }/
+        }
 
         // Convert control array into an action_menu.
         $menu = new action_menu();
