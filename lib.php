@@ -2109,7 +2109,6 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $secondarymenutocoursecontent = '';
     // Add the module page to visible the back to main course.
     $modbacktomain = '';
-
     if ($course->secondarymenutocourse) {
         $secondarymenutocoursecontent .= html_writer::start_tag("li", ["data-key" => 'designercoursehome',
         "class" => "nav-item", "role" => "none", "data-forceintomoremenu" => "true", ]);
@@ -2139,6 +2138,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
             $modbacktomain .= html_writer::end_tag("li");
         }
     }
+
     $sql = "SELECT fd.* FROM
             {format_designer_options} fd
             JOIN {course_modules} cm ON fd.cmid = cm.id
@@ -2158,9 +2158,6 @@ function format_designer_extend_navigation_course($navigation, $course, $context
     $neg = [];
     $pos = [];
     $reports = \format_designer\helper::section_zero_tomake_hero($reports, $course);
-    if (empty($reports)) {
-        return;
-    }
 
     $modinfo = get_fast_modinfo($course);
     $cmcache = [];
@@ -2240,6 +2237,7 @@ function format_designer_extend_navigation_course($navigation, $course, $context
 
     $currentmodclass = ($PAGE->context->contextlevel == CONTEXT_MODULE) ? "nav.moremenu li[data-key=\"{$PAGE->cm->id}\"]" : "";
     $currentcmid = ($PAGE->context->contextlevel == CONTEXT_MODULE) ? $PAGE->cm->id : 0;
+
     $PAGE->requires->js_amd_inline("
         require(['jquery', 'core/moremenu'], function($, MenuMore) {
             $(document).ready(function() {
