@@ -121,7 +121,7 @@ class section extends \core_courseformat\output\local\content\section {
         if (!$this->isstealth) {
             if (method_exists($output, 'section_add_cm_controls')) {
                 $data->cmcontrols = $output->section_add_cm_controls($this->format, $this->section);
-            } else  {
+            } else {
                 $data->cmcontrols = $output->course_section_add_cm_control(
                     $course,
                     $this->section->section,

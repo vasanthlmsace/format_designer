@@ -349,4 +349,30 @@ class behat_format_designer extends behat_base {
         $this->execute('behat_forms::the_field_matches_value', ["Section name", ""]);
         $this->execute('behat_general::assert_page_contains_text', ["General"]);
     }
+
+    /**
+     * Select an activity from the activity chooser, handling differences between Moodle versions.
+     *
+     * In Moodle 5.1+, after clicking the activity link, an additional "Add selected activity" button
+     * must be clicked to confirm the selection.
+     *
+     * @Given /^I select "(?P<activity>(?:[^"]|\\")*)" activity from the activity chooser$/
+     * @param string $activity The activity name (e.g., "Forum", "Assignment")
+     */
+    public function i_select_activity_from_the_activity_chooser(string $activity): void {
+        global $CFG;
+
+        $this->execute('behat_general::i_click_on_in_the', [
+            "Add a new $activity", "link",
+            "Add an activity or resource", "dialogue",
+        ]);
+
+        // Moodle 5.1+ requires an additional confirmation button click.
+        if ($CFG->branch >= 501) {
+            $this->execute('behat_general::i_click_on_in_the', [
+                "Add selected activity", "button",
+                "Add an activity or resource", "dialogue",
+            ]);
+        }
+    }
 }

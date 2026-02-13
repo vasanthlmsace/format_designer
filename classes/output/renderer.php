@@ -579,8 +579,8 @@ class renderer extends \core_courseformat\output\section_renderer {
                 $sectioninfo = $cm->get_section_info();
                 if (
                     $cm->completion != COMPLETION_TRACKING_NONE && !$cm->deletioninprogress &&
-                    $cm->is_visible_on_course_page() && $sectioninfo->uservisible) {
-                    $result[$cm->id] = $cm;
+                        $cm->is_visible_on_course_page() && $sectioninfo->uservisible) {
+                        $result[$cm->id] = $cm;
                 }
             }
             $cache->set($key, $result);
