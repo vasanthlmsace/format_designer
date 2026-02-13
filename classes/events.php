@@ -115,8 +115,10 @@ class events {
 
         // Change the coursedisplay to the show all sections per page when the course type is flow or kanban mode.
         $course = $format->get_course();
-        if (isset($course->coursetype) && ($course->coursetype == DESIGNER_TYPE_FLOW ||
-            $course->coursetype == DESIGNER_TYPE_KANBAN)) {
+        if (
+            isset($course->coursetype) && ($course->coursetype == DESIGNER_TYPE_FLOW ||
+            $course->coursetype == DESIGNER_TYPE_KANBAN)
+        ) {
             $existrecord = $DB->get_record('course_format_options', ['courseid' => $course->id,
                             'name' => 'coursetype', 'format' => 'designer', ]);
             if ($existrecord) {
