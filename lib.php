@@ -636,7 +636,7 @@ class format_designer extends \core_courseformat\base {
                 'hiddensections' => [
                     'label' => new lang_string('hiddensections'),
                     'help' => 'hiddensections',
-                    'help_component' => 'moodle',
+                    'help_component' => 'format_designer',
                     'element_type' => 'select',
                     'element_attributes' => [
                         [
@@ -656,7 +656,7 @@ class format_designer extends \core_courseformat\base {
                     ],
                     'help' => 'coursedisplay',
                     'help_component' => 'moodle',
-                    'disabledif' => [['coursetype', 'eq', DESIGNER_TYPE_KANBAN]],
+                    'disabledif' => [['coursetype', 'eq', DESIGNER_TYPE_KANBAN], ['coursetype', 'eq', DESIGNER_TYPE_FLOW]],
                 ],
 
                 'accordion' => [
@@ -997,8 +997,7 @@ class format_designer extends \core_courseformat\base {
             if (isset($option['adv'])) {
                 $mform->setAdvanced($optionname);
             }
-
-            if ($optionname == 'coursestaff' && isset($design->coursestaff)) {
+            if (($option['element_type'] == 'autocomplete') && isset($design->{$optionname})) {
                 $select = $mform->getElement($optionname);
                 $select->setSelected($design->{$optionname});
             }
@@ -1199,6 +1198,7 @@ class format_designer extends \core_courseformat\base {
                 'type' => PARAM_TEXT,
                 'element_type' => 'text',
                 'label' => get_string('sectionestimatetime', 'format_designer'),
+                'default' => get_config('format_designer', 'sectionestimatetime'),
             ];
         }
 
@@ -1262,15 +1262,26 @@ class format_designer extends \core_courseformat\base {
                     );
                     $file = current($files);
                     if ($file) {
-                        $userdraft = [
-                            'contextid' => $coursecontext->id,
-                            'component' => $fileareasections[$option]['component'],
-                            'filearea' => $fileareasections[$option]['filearea'],
-                            'itemid' => $sectioninfo->id,
-                            'filepath' => '/',
-                            'filename' => $file->get_filename(),
-                        ];
-                        $fs->create_file_from_storedfile($userdraft, $file);
+                        // Check if the file already exists to avoid duplicate pathnamehash errors.
+                        $existingfile = $fs->file_exists(
+                            $coursecontext->id,
+                            $fileareasections[$option]['component'],
+                            $fileareasections[$option]['filearea'],
+                            $sectioninfo->id,
+                            '/',
+                            $file->get_filename()
+                        );
+                        if (!$existingfile) {
+                            $userdraft = [
+                                'contextid' => $coursecontext->id,
+                                'component' => $fileareasections[$option]['component'],
+                                'filearea' => $fileareasections[$option]['filearea'],
+                                'itemid' => $sectioninfo->id,
+                                'filepath' => '/',
+                                'filename' => $file->get_filename(),
+                            ];
+                            $fs->create_file_from_storedfile($userdraft, $file);
+                        }
                     }
                 }
             }
@@ -1287,15 +1298,26 @@ class format_designer extends \core_courseformat\base {
         );
         $file = current($files);
         if ($file) {
-            $userdraft = [
-                'contextid' => $coursecontext->id,
-                'component' => 'course',
-                'filearea' => 'section',
-                'itemid' => $sectioninfo->id,
-                'filepath' => '/',
-                'filename' => $file->get_filename(),
-            ];
-            $fs->create_file_from_storedfile($userdraft, $file);
+            // Check if the file already exists to avoid duplicate pathnamehash errors.
+            $existingfile = $fs->file_exists(
+                $coursecontext->id,
+                'course',
+                'section',
+                $sectioninfo->id,
+                '/',
+                $file->get_filename()
+            );
+            if (!$existingfile) {
+                $userdraft = [
+                    'contextid' => $coursecontext->id,
+                    'component' => 'course',
+                    'filearea' => 'section',
+                    'itemid' => $sectioninfo->id,
+                    'filepath' => '/',
+                    'filename' => $file->get_filename(),
+                ];
+                $fs->create_file_from_storedfile($userdraft, $file);
+            }
         }
         return $sectioninfo;
     }

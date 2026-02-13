@@ -576,10 +576,10 @@ class renderer extends \core_courseformat\output\section_renderer {
             $modinfo = get_fast_modinfo($course);
             $result = [];
             foreach ($modinfo->get_cms() as $cm) {
+                $sectioninfo = $cm->get_section_info();
                 if (
                     $cm->completion != COMPLETION_TRACKING_NONE && !$cm->deletioninprogress &&
-                    $cm->is_visible_on_course_page()
-                ) {
+                    $cm->is_visible_on_course_page() && $sectioninfo->uservisible) {
                     $result[$cm->id] = $cm;
                 }
             }
@@ -629,7 +629,7 @@ class renderer extends \core_courseformat\output\section_renderer {
      * @return array Modules progress
      */
     public static function criteria_progress($course, $userid) {
-        global $USER;
+        global $USER, $CFG;
         $cache = \format_designer\helper::get_cache_object();
         $cachekey = "c_p_c{$course->id}_u_{$userid}";
         if ($cache->get($cachekey) === false) {
@@ -654,14 +654,40 @@ class renderer extends \core_courseformat\output\section_renderer {
             $count = count($completionactivities);
 
             $isapplycompletioncourses = false;
+            $isapplyallcriteria = false;
             if (!isset($course->calcourseprogress)) {
                 $isapplycompletioncourses = true;
+                $isapplyallcriteria = true;
             } else if ($course->calcourseprogress == DESIGNER_PROGRESS_CRITERIA) {
                 $isapplycompletioncourses = true;
+                $isapplyallcriteria = true;
+            }
+
+            // Fetch all other completion criteria types (self, date, unenrol, duration, grade, role).
+            $othercriteria = [];
+            if ($isapplyallcriteria) {
+                $othertypes = [
+                    COMPLETION_CRITERIA_TYPE_SELF,
+                    COMPLETION_CRITERIA_TYPE_DATE,
+                    COMPLETION_CRITERIA_TYPE_UNENROL,
+                    COMPLETION_CRITERIA_TYPE_DURATION,
+                    COMPLETION_CRITERIA_TYPE_GRADE,
+                    COMPLETION_CRITERIA_TYPE_ROLE,
+                ];
+                foreach ($othertypes as $criteriatype) {
+                    $criteria = $completion->get_criteria($criteriatype);
+                    if ($criteria) {
+                        $othercriteria = array_merge($othercriteria, $criteria);
+                    }
+                }
             }
 
             if ($isapplycompletioncourses) {
                 $count += count($complteioncourses);
+            }
+            // Add other criteria types to the count.
+            if ($isapplyallcriteria) {
+                $count += count($othercriteria);
             }
             $cmidentifier = "moduleinstance";
 
@@ -672,9 +698,17 @@ class renderer extends \core_courseformat\output\section_renderer {
                     $count = count($modules);
                     $completionactivities = $modules;
                     $cmidentifier = "id";
+                    // In all-activities mode, don't include other criteria.
+                    $othercriteria = [];
+                    $isapplycompletioncourses = false;
+                    $isapplyallcriteria = false;
                 } else if ($course->calcourseprogress == DESIGNER_PROGRESS_SECTIONS) {
                     $completionactivities = [];
                     $count = self::get_count_sections_incourse($course);
+                    // In sections mode, don't include other criteria.
+                    $othercriteria = [];
+                    $isapplycompletioncourses = false;
+                    $isapplyallcriteria = false;
                 }
             }
 
@@ -710,17 +744,57 @@ class renderer extends \core_courseformat\output\section_renderer {
             if ($isapplycompletioncourses  && $complteioncourses) {
                 foreach ($complteioncourses as $coursecriteria) {
                     $courseid = $coursecriteria->courseinstance;
-                    $course = get_course($courseid);
-                    $completion = new \completion_info($course);
+                    $prereqcourse = get_course($courseid);
+                    $prereqcompletion = new \completion_info($prereqcourse);
                     $coursetooltiplink = html_writer::link(
-                        new moodle_url('/course/view.php', ['id' => $course->id]),
-                        get_string('strcourse', 'format_designer') . ": " . $course->fullname
+                        new moodle_url('/course/view.php', ['id' => $prereqcourse->id]),
+                        get_string('strcourse', 'format_designer') . ": " . $prereqcourse->fullname
                     );
-                    if ($completion->is_course_complete($userid)) {
+                    if ($prereqcompletion->is_course_complete($userid)) {
                         $completed += 1;
                         $completedcriteria[] = $coursetooltiplink;
                     } else {
                         $uncompletedcriteria[] = $coursetooltiplink;
+                    }
+                }
+            }
+
+            // Process all other completion criteria types (self, date, unenrol, duration, grade, role).
+            if ($isapplyallcriteria && !empty($othercriteria)) {
+                require_once($CFG->dirroot . '/completion/completion_criteria_completion.php');
+
+                // Map criteria type constants to human-readable labels.
+                $criteriatypelabels = [
+                    COMPLETION_CRITERIA_TYPE_SELF => get_string('criteriaself', 'format_designer'),
+                    COMPLETION_CRITERIA_TYPE_DATE => get_string('criteriadate', 'format_designer'),
+                    COMPLETION_CRITERIA_TYPE_UNENROL => get_string('criteriaunenrol', 'format_designer'),
+                    COMPLETION_CRITERIA_TYPE_DURATION => get_string('criteriaduration', 'format_designer'),
+                    COMPLETION_CRITERIA_TYPE_GRADE => get_string('criteriagrade', 'format_designer'),
+                    COMPLETION_CRITERIA_TYPE_ROLE => get_string('criteriarole', 'format_designer'),
+                ];
+
+                foreach ($othercriteria as $criterion) {
+                    // Get the completion record for this criterion and user.
+                    $criteriacompletion = new \completion_criteria_completion([
+                        'userid' => $userid,
+                        'course' => $course->id,
+                        'criteriaid' => $criterion->id,
+                    ]);
+
+                    $typelabel = isset($criteriatypelabels[$criterion->criteriatype])
+                        ? $criteriatypelabels[$criterion->criteriatype]
+                        : get_string('criteria', 'completion');
+
+                    $criteriadesc = $typelabel . ': ' . $criterion->get_title_detailed();
+
+                    $courseurl = new moodle_url('/course/view.php', ['id' => $course->id]);
+                    $tooltiplink = html_writer::link($courseurl, $criteriadesc);
+
+                    if ($criteriacompletion->is_complete()) {
+                        $completed += 1;
+                        $completedcriteria[] = $tooltiplink;
+                    } else {
+                        $uncompletedcriteria[] = $tooltiplink;
                     }
                 }
             }

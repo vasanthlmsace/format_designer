@@ -86,7 +86,7 @@ class cmitem extends \core_courseformat\output\local\content\section\cmitem {
         global $PAGE;
 
         $r = $this->format->get_renderer($PAGE);
-        $formatdata = $r->render_course_module($mod, 0, $this->displayoptions, $this->section, $data);
+        $formatdata = $r->render_course_module($mod, 0, $this->displayoptions, $this->section, $data, $this->section->sectiontype);
         $data = array_merge($data, $formatdata);
         $data['modclasses'] .= \format_designer\helper::get_module_layoutclass($this->format, $this->section);
         $data['modclasses'] .= (!empty($mod->availableinfo)) ? ' restricted ' : '';

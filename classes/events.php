@@ -106,9 +106,37 @@ class events {
      * @return bool
      */
     public static function course_updated($event) {
+        global $DB;
         $courseid = $event->courseid;
-        if (course_get_format($courseid)->get_course()->format !== 'designer') {
+        $format = course_get_format($courseid);
+        if ($format->get_course()->format !== 'designer') {
             return true;
+        }
+
+        // Change the coursedisplay to the show all sections per page when the course type is flow or kanban mode.
+        $course = $format->get_course();
+        if (isset($course->coursetype) && ($course->coursetype == DESIGNER_TYPE_FLOW || $course->coursetype == DESIGNER_TYPE_KANBAN)) {
+            $existrecord = $DB->get_record('course_format_options', ['courseid' => $course->id,
+                            'name' => 'coursetype', 'format' => 'designer', ]);
+            if ($existrecord) {
+                $existrecord->value = $course->coursetype;
+                $DB->update_record('course_format_options', $existrecord);
+            }
+        }
+
+        if (isset($course->coursetype) && ($course->coursetype == DESIGNER_TYPE_FLOW)) {
+            $comparevalue = $DB->sql_compare_text('value');
+            $sql = "SELECT id, courseid, sectionid, name, value FROM {course_format_options}
+                WHERE courseid = :courseid AND name = :name AND format = :format AND $comparevalue = :comparevalue";
+            $existrecords = $DB->get_recordset_sql($sql, ['courseid' => $course->id,
+                'name' => 'sectionbackgroundtype', 'format' => 'designer', 'comparevalue' => 'whole']);
+            if ($existrecords) {
+                foreach ($existrecords as $existrecord) {
+                    $existrecord->value = 'header';
+                    $DB->update_record('course_format_options', $existrecord);
+                }
+                $existrecords->close();
+            }
         }
         self::course_cache_updated($courseid);
     }

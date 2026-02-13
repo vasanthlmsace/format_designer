@@ -260,6 +260,19 @@ class controlmenu extends controlmenu_base {
             }
 
             if ($section->section) {
+                if ($CFG->branch >= 501) {
+                    // Moodle 5.1+: Use update.php endpoint.
+                    $duplicatesectionurl = new \moodle_url(
+                        '/course/format/update.php',
+                        [
+                            'courseid' => $course->id,
+                            'action' => 'section_duplicate',
+                            'ids[]' => $section->id,
+                            'sesskey' => sesskey(),
+                        ]
+                    );
+                }
+
                 $controls['duplicate'] = [
                     'url' => $duplicatesectionurl,
                     'icon' => 't/copy',
