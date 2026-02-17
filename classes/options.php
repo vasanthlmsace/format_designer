@@ -49,6 +49,13 @@ class options {
     public static $optionspercmid = [];
 
     /**
+     * Cache for bulk loaded course ids.
+     *
+     * @var array
+     */
+    public static $bulkloaded = [];
+
+    /**
      * Find the given string is JSON format or not.
      *
      * @param string $string
@@ -77,15 +84,13 @@ class options {
     public static function get_options($cmid) {
         global $DB, $PAGE;
 
-        static $optionspercmid = [];
-        static $bulkloaded = [];
         // Determine course ID.
         $courseid = null;
         if (isset($PAGE->course->id) && $PAGE->course->id > 1) {
             $courseid = $PAGE->course->id;
         } else {
             // Fallback: get course from the specific cm.
-            if (!isset($optionspercmid[$cmid])) {
+            if (!isset(self::$optionspercmid[$cmid])) {
                 $cm = $DB->get_record('course_modules', ['id' => $cmid], 'course', IGNORE_MISSING);
                 if ($cm) {
                     $courseid = $cm->course;
@@ -94,7 +99,7 @@ class options {
         }
 
         // Bulk load ALL options for this course in ONE query (only once per course).
-        if ($courseid && !isset($bulkloaded[$courseid])) {
+        if ($courseid && !isset(self::$bulkloaded[$courseid])) {
             // Get all cmids for this course first.
             $sql = "SELECT fdo.id, fdo.cmid, fdo.name, fdo.value
                     FROM {format_designer_options} fdo
@@ -106,8 +111,8 @@ class options {
 
             // Group options by cmid.
             foreach ($alloptions as $option) {
-                if (!isset($optionspercmid[$option->cmid])) {
-                    $optionspercmid[$option->cmid] = new \stdClass();
+                if (!isset(self::$optionspercmid[$option->cmid])) {
+                    self::$optionspercmid[$option->cmid] = new \stdClass();
                 }
 
                 $value = $option->value;
@@ -118,19 +123,19 @@ class options {
                         $value = $json;
                     }
                 }
-                $optionspercmid[$option->cmid]->{$option->name} = $value;
+                self::$optionspercmid[$option->cmid]->{$option->name} = $value;
             }
 
             // Mark this course as bulk loaded.
-            $bulkloaded[$courseid] = true;
+            self::$bulkloaded[$courseid] = true;
         }
 
         // Return cached data or create empty object.
-        if (!isset($optionspercmid[$cmid])) {
+        if (!isset(self::$optionspercmid[$cmid])) {
             // Check if bulk load happened for this course.
-            if ($courseid && isset($bulkloaded[$courseid])) {
+            if ($courseid && isset(self::$bulkloaded[$courseid])) {
                 // Module has no options - return empty object.
-                $optionspercmid[$cmid] = new \stdClass();
+                self::$optionspercmid[$cmid] = new \stdClass();
             } else {
                 // Fallback: fetch individually (only for edge cases).
                 $options = new \stdClass();
@@ -146,11 +151,11 @@ class options {
                     $options->{$field->name} = $value;
                 }
                 $optionrs->close();
-                $optionspercmid[$cmid] = $options;
+                self::$optionspercmid[$cmid] = $options;
             }
         }
 
-        return $optionspercmid[$cmid];
+        return self::$optionspercmid[$cmid];
     }
 
 
