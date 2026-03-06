@@ -51,7 +51,7 @@ class events {
         $option = get_config('format_designer', 'sectiondesignerbackgroundimage');
         $coursecontext = \context_course::instance($courseid);
 
-        if (course_get_format($courseid)->get_format() !== 'designer') {
+        if (course_get_format($courseid)->get_course()->format !== 'designer') {
             return true;
         }
 
@@ -198,7 +198,7 @@ class events {
     public static function course_module_deleted($event) {
         global $DB;
         $courseid = $event->courseid;
-        if (course_get_format($courseid)->get_format() !== 'designer') {
+        if (course_get_format($courseid)->get_course()->format !== 'designer') {
             return true;
         }
         $cmid = $event->objectid;
@@ -284,7 +284,7 @@ class events {
     public static function course_section_module_cache_updated($courseid, $cmid, $sectionid = 0) {
         global $DB;
 
-        if (course_get_format($courseid)->get_format() !== 'designer') {
+        if (course_get_format($courseid)->get_course()->format !== 'designer') {
             return true;
         }
 
@@ -308,7 +308,7 @@ class events {
      * @return bool
      */
     public static function course_section_cache_updated($courseid, $sectionid) {
-        if (course_get_format($courseid)->get_format() !== 'designer') {
+        if (course_get_format($courseid)->get_course()->format !== 'designer') {
             return true;
         }
         // Clear cache.
