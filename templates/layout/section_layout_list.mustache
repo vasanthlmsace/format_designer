@@ -24,11 +24,28 @@
         "reactionurl_dislike": "http://moodleurl/course/format/designer/renderer.php"
     }
 }}
-{{<format_designer/section_layout}}
-    {{$content}}
-        {{^sectionheader}}
-            {{> format_designer/section_content_list}}
-            {{{cmcontrol}}}
-        {{/sectionheader}}
-    {{/content}}
-{{/format_designer/section_layout}}
+{{#showmovehere}}
+<p>{{movingstr}} (<a href="{{{cancelcopyurl}}}">{{#str}} cancel {{/str}}</a>)</p>
+{{/showmovehere}}
+<ul class="section m-0 p-0 img-text list-layout {{sectioncontentlayout}} designer-section-content" data-sectionlayout="{{sectionlayoutclass}}"
+    style="{{#sectioncontentwidth}} {{sectioncontentwidth}} {{/sectioncontentwidth}}" data-for="cmlist">
+
+    {{#cms}}
+        {{#showmovehere}}
+        <li class="movehere">
+            <a href="{{{moveurl}}}" title="{{strmovefull}}" class="movehere"></a>
+        </li>
+        {{/showmovehere}}
+        {{#.}}
+        {{#cmitem}}
+            {{> format_designer/cm/module_layout_list}}
+        {{/cmitem}}
+        {{/.}}
+    {{/cms}}
+
+    {{#showmovehere}}
+        <li class="movehere">
+            <a href="{{{movetosectionurl}}}" title="{{strmovefull}}" class="movehere"></a>
+        </li>
+    {{/showmovehere}}
+</ul>

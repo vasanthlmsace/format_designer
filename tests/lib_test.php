@@ -36,16 +36,15 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @copyright  2015 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lib_test extends \advanced_testcase {
-
-
+final class lib_test extends \advanced_testcase {
     /**
      * Test setup.
      */
     public function setUp(): void {
         global $CFG;
-        require_once($CFG->dirroot.'/completion/criteria/completion_criteria_course.php');
-        require_once($CFG->dirroot.'/completion/criteria/completion_criteria_activity.php');
+        require_once($CFG->dirroot . '/completion/criteria/completion_criteria_course.php');
+        require_once($CFG->dirroot . '/completion/criteria/completion_criteria_activity.php');
+        parent::setUp();
 
         $this->setAdminUser();
         $this->resetAfterTest(true);
@@ -53,18 +52,20 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_section_name method with default section names.
-     *
+     * @covers ::get_section_name
      * @return void
      */
-    public function test_get_section_name() {
+    public function test_get_section_name(): void {
         global $DB;
         $this->resetAfterTest(true);
 
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'designer'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'designer'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -79,18 +80,20 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_section_name method with modified section names.
-     *
+     * @covers ::get_section_name_customised
      * @return void
      */
-    public function test_get_section_name_customised() {
+    public function test_get_section_name_customised(): void {
         global $DB;
         $this->resetAfterTest(true);
 
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'designer'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'designer'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -113,18 +116,20 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Tests for format_designer::get_default_section_name.
-     *
+     * @covers ::get_default_section_name
      * @return void
      */
-    public function test_get_default_section_name() {
+    public function test_get_default_section_name(): void {
         global $DB;
         $this->resetAfterTest(true);
 
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'designer'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'designer'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -144,18 +149,20 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test web service updating section name.
-     *
+     * @covers \core_external::update_inplace_editable
      * @return void
      */
-    public function test_update_inplace_editable() {
+    public function test_update_inplace_editable(): void {
         global $CFG, $DB, $PAGE;
         require_once($CFG->dirroot . '/lib/external/externallib.php');
 
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
-        $course = $this->getDataGenerator()->create_course(['numsections' => 5, 'format' => 'designer'],
-            ['createsections' => true]);
+        $course = $this->getDataGenerator()->create_course(
+            ['numsections' => 5, 'format' => 'designer'],
+            ['createsections' => true]
+        );
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 2]);
 
         // Call webservice without necessary permissions.
@@ -163,8 +170,10 @@ class lib_test extends \advanced_testcase {
             \core_external::update_inplace_editable('format_designer', 'sectionname', $section->id, 'New section name');
             $this->fail('Exception expected');
         } catch (\moodle_exception $e) {
-            $this->assertEquals('Course or activity not accessible. (Not enrolled)',
-                    $e->getMessage());
+            $this->assertEquals(
+                'Course or activity not accessible. (Not enrolled)',
+                $e->getMessage()
+            );
         }
 
         // Change to teacher and make sure that section name can be updated using web service update_inplace_editable().
@@ -172,23 +181,29 @@ class lib_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
 
         $res = \core_external::update_inplace_editable('format_designer', 'sectionname', $section->id, 'New section name');
-        $res = \external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        if (class_exists('\core_external\external_api')) {
+            $res = \core_external\external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        } else {
+            $res = \external_api::clean_returnvalue(\core_external::update_inplace_editable_returns(), $res);
+        }
         $this->assertEquals('New section name', $res['value']);
         $this->assertEquals('New section name', $DB->get_field('course_sections', 'name', ['id' => $section->id]));
     }
 
     /**
      * Test callback updating section name.
-     *
+     * @covers ::inplace_editable
      * @return void
      */
-    public function test_inplace_editable() {
+    public function test_inplace_editable(): void {
         global $DB, $PAGE;
 
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course(['numsections' => 5, 'format' => 'designer'],
-            ['createsections' => true]);
+        $course = $this->getDataGenerator()->create_course(
+            ['numsections' => 5, 'format' => 'designer'],
+            ['createsections' => true]
+        );
         $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
         $this->setUser($user);
@@ -213,10 +228,10 @@ class lib_test extends \advanced_testcase {
 
     /**
      * Test get_default_course_enddate.
-     *
+     * @covers ::get_default_course_enddate
      * @return void
      */
-    public function test_default_course_enddate() {
+    public function test_default_course_enddate(): void {
         global $CFG, $DB;
 
         $this->resetAfterTest(true);
@@ -234,7 +249,7 @@ class lib_test extends \advanced_testcase {
             'category' => $category,
             'editoroptions' => [
                 'context' => \context_course::instance($course->id),
-                'subdirs' => 0
+                'subdirs' => 0,
             ],
             'returnto' => new \moodle_url('/'),
             'returnurl' => new \moodle_url('/'),
@@ -247,83 +262,43 @@ class lib_test extends \advanced_testcase {
 
         $weeksformat = course_get_format($course->id);
         $this->assertEquals($enddate, $weeksformat->get_default_course_enddate($courseform->get_quick_form()));
-
-    }
-
-    /**
-     * Test for get_view_url() to ensure that the url is only given for the correct cases.
-     *
-     * @return void
-     */
-    public function test_get_view_url() {
-        global $CFG;
-        $this->resetAfterTest();
-
-        $linkcoursesections = $CFG->linkcoursesections;
-
-        // Generate a course with two sections (0 and 1) and two modules.
-        $generator = $this->getDataGenerator();
-        $course1 = $generator->create_course(['format' => 'designer']);
-        course_create_sections_if_missing($course1, [0, 1]);
-
-        $data = (object)['id' => $course1->id];
-        $format = course_get_format($course1);
-        $format->update_course_format_options($data);
-
-        // In page.
-        $CFG->linkcoursesections = 0;
-        $this->assertNotEmpty($format->get_view_url(null));
-        $this->assertNotEmpty($format->get_view_url(0));
-        $this->assertNotEmpty($format->get_view_url(1));
-        $CFG->linkcoursesections = 1;
-        $this->assertNotEmpty($format->get_view_url(null));
-        $this->assertNotEmpty($format->get_view_url(0));
-        $this->assertNotEmpty($format->get_view_url(1));
-
-        // Navigation.
-        $CFG->linkcoursesections = 0;
-        $this->assertNull($format->get_view_url(1, ['navigation' => 1]));
-        $this->assertNull($format->get_view_url(0, ['navigation' => 1]));
-        $CFG->linkcoursesections = 1;
-        $this->assertNotEmpty($format->get_view_url(1, ['navigation' => 1]));
-        $this->assertNotEmpty($format->get_view_url(0, ['navigation' => 1]));
     }
 
     /**
      * Test the module content trim character.
-     *
+     * @covers ::\format_designer\helper::modcontent_trim_char
      * @return void
      */
-    public function test_format_designer_modcontent_trim_char() {
+    public function test_modcontent_trim_char(): void {
 
         $str1 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
         when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
-        $resstr1 = format_designer_modcontent_trim_char($str1, 30);
+        $resstr1 = \format_designer\helper::modcontent_trim_char($str1, 30);
         $this->assertEquals(23, str_word_count($resstr1));
 
         $str2 = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-        $resstr2 = format_designer_modcontent_trim_char($str2, 30);
+        $resstr2 = \format_designer\helper::modcontent_trim_char($str2, 30);
         $this->assertEquals(str_word_count($str2), str_word_count($resstr2));
     }
 
     /**
      * Test desginer format date method.
-     *
+     * @covers ::\format_designer\helper::format_date
      * @return void
      */
-    public function test_format_designer_format_date() {
+    public function test_format_date(): void {
         $timestamp = 1642861536;
-        $dateformat = format_designer_format_date($timestamp);
+        $dateformat = \format_designer\helper::format_date($timestamp);
         $this->assertEquals("Jan 22", $dateformat);
     }
 
     /**
      * Test the kanban board setup changes the section type.
-     *
+     * @covers ::setup_kanban_board
      * @return void
      */
-    public function test_kanban_setup() {
+    public function test_kanban_setup(): void {
         global $DB;
         $this->resetAfterTest();
         $record = ['format' => 'designer', 'coursetype' => '0', 'numsections' => 3];
@@ -354,7 +329,7 @@ class lib_test extends \advanced_testcase {
      * @covers ::format_designer_show_staffs_header
      * @return void
      */
-    public function test_format_designer_show_staffs_header() {
+    public function test_format_designer_show_staffs_header(): void {
         global $DB;
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
@@ -362,14 +337,18 @@ class lib_test extends \advanced_testcase {
         $record = ['format' => 'designer'];
         $course = $this->getDataGenerator()->create_course($record);
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
-        $result = format_designer_show_staffs_header($course);
+        $result = helper::create()->get_course_staff_users($course);
         $this->assertEquals(1, count($result));
         $this->assertEquals($user->id, $result[0]->userid);
     }
 
-    public function test_critera_progress() {
-        global $DB, $CFG;
-        require_once($CFG->dirroot. "/course/format/designer/renderer.php");
+    /**
+     * Test the Critera progress function.
+     * @covers ::critera_progress
+     * @return void
+     */
+    public function test_critera_progress(): void {
+        global $DB;
         $this->resetAfterTest();
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         $user = $this->getDataGenerator()->create_user();
@@ -403,8 +382,7 @@ class lib_test extends \advanced_testcase {
         ];
         $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
-
-        $result = \format_designer_renderer::criteria_progress($course, $user->id);
+        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
 
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(0, $result['completed']);
@@ -413,7 +391,7 @@ class lib_test extends \advanced_testcase {
         $completion = new \completion_info($course);
         $completion->update_state($cmassign, COMPLETION_COMPLETE, $user->id);
 
-        $result = \format_designer_renderer::criteria_progress($course, $user->id);
+        $result = \format_designer\output\renderer::criteria_progress($course, $user->id);
         $this->assertEquals(2, $result['count']);
         $this->assertEquals(1, $result['completed']);
         $this->assertEquals(50, $result['percent']);

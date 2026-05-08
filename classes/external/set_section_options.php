@@ -35,14 +35,13 @@ use context_module;
 use coding_exception;
 use moodle_exception;
 use completion_info;
-require_once($CFG->libdir.'/externallib.php');
-require_once($CFG->dirroot.'/course/format/lib.php');
+require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->dirroot . '/course/format/lib.php');
 
 /**
  * Set section options web service function.
  */
 trait set_section_options {
-
     /**
      * Describes the structure of parameters for the function.
      *
@@ -54,8 +53,8 @@ trait set_section_options {
             'sectionid' => new external_value(PARAM_INT, 'Section ID'),
             'options' => new \external_multiple_structure(new external_single_structure([
                 'name' => new external_value(PARAM_TEXT, 'Option name to set on section'),
-                'value' => new external_value(PARAM_RAW, 'Value for option')
-            ]))
+                'value' => new external_value(PARAM_RAW, 'Value for option'),
+            ])),
         ]);
     }
 
@@ -73,7 +72,7 @@ trait set_section_options {
         $params = self::validate_parameters(self::set_section_options_parameters(), [
             'courseid' => $courseid,
             'sectionid' => $sectionid,
-            'options' => $options
+            'options' => $options,
         ]);
         $course = $DB->get_record('course', ['id' => $params['courseid']]);
         /** @var format_designer $format */
@@ -82,15 +81,8 @@ trait set_section_options {
         foreach ($params['options'] as $option) {
             $format->set_section_option($params['sectionid'], $option['name'], $option['value']);
         }
-        $modinfo = get_fast_modinfo($course);
-        $sectioninfo = $DB->get_record('course_sections', ['id' => $params['sectionid']]);
-        $section = $modinfo->get_section_info($sectioninfo->section);
-        $rv = course_get_format($section->course)->section_action($section, 'setsectionoption', 0);
-        if ($rv) {
-            return json_encode($rv);
-        } else {
-            return null;
-        }
+
+        return null;
     }
 
     /**
@@ -111,11 +103,11 @@ trait set_section_options {
      */
     public static function get_module_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'id' => new external_value(PARAM_INT, 'course module id', VALUE_REQUIRED),
                 'sectionid' => new external_value(PARAM_INT, 'course module section id', VALUE_REQUIRED),
                 'sectionreturn' => new external_value(PARAM_INT, 'section to return to', VALUE_DEFAULT, null),
-            )
+            ]
         );
     }
 
@@ -131,8 +123,10 @@ trait set_section_options {
     public static function get_module($id, $sectionid, $sectionreturn = null) {
         global $PAGE, $OUTPUT;
         // Validate and normalize parameters.
-        $params = self::validate_parameters(self::get_module_parameters(),
-            array('id' => $id, 'sectionid' => $sectionid, 'sectionreturn' => $sectionreturn));
+        $params = self::validate_parameters(
+            self::get_module_parameters(),
+            ['id' => $id, 'sectionid' => $sectionid, 'sectionreturn' => $sectionreturn]
+        );
         $id = $params['id'];
         $sectionreturn = $params['sectionreturn'];
 
@@ -148,26 +142,26 @@ trait set_section_options {
         $PAGE->set_other_editing_capability($contextarray);
 
         // Validate access to the course (note, this is html for the course view page, we don't validate access to the module).
-        list($course, $cm) = get_course_and_cm_from_cmid($id);
+        [$course, $cm] = get_course_and_cm_from_cmid($id);
         self::validate_context(context_course::instance($course->id));
         $renderer = $PAGE->get_renderer('format_designer');
 
         $format = course_get_format($course);
-        $sectiontype = $format->get_section_option($sectionid, 'sectiontype') ?: 'default';
+        $sectiontype = $format->get_section_option($sectionid, 'sectiontype') ?: get_config('format_designer', 'sectiontype');
 
         $section = (object) ['sectiontype' => $sectiontype];
         $cmlistdata = $renderer->render_course_module($cm, $sectionreturn, [], $section);
 
         $templatename = 'format_designer/cm/module_layout_' . $sectiontype;
-        $prolayouts = format_designer_get_pro_layouts();
+        $prolayouts = \format_designer\helper::get_pro_layouts();
         if (in_array($sectiontype, $prolayouts)) {
-            if (format_designer_has_pro()) {
+            if (\format_designer\helper::has_pro()) {
                 $templatename = 'layouts_' . $sectiontype . '/cm/module_layout_' . $sectiontype;
             }
         }
         $liclass = $sectiontype;
-        $liclass .= ' '.$sectiontype.'-layout';
-        $liclass .= ' '.$cmlistdata['modclasses'];
+        $liclass .= ' ' . $sectiontype . '-layout';
+        $liclass .= ' ' . $cmlistdata['modclasses'];
         $liclass .= (isset($cmlistdata['isrestricted']) && $cmlistdata['isrestricted']) ? ' restricted' : '';
         $html = \html_writer::start_tag('li', ['class' => $liclass, 'id' => $cmlistdata['id']]);
         $html .= $OUTPUT->render_from_template($templatename, $cmlistdata);
@@ -178,7 +172,6 @@ trait set_section_options {
     /**
      * Return structure for get_module()
      *
-     * @since Moodle 3.3
      * @return external_description
      */
     public static function get_module_returns() {
@@ -193,11 +186,12 @@ trait set_section_options {
      */
     public static function section_refresh_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'courseid' => new external_value(PARAM_INT, 'course id', VALUE_REQUIRED),
                 'sectionid' => new external_value(PARAM_INT, 'section id', VALUE_REQUIRED),
                 'sectionreturn' => new external_value(PARAM_INT, 'section to return to', VALUE_DEFAULT, null),
-            ));
+            ]
+        );
     }
 
     /**
@@ -221,8 +215,10 @@ trait set_section_options {
         $context = context_course::instance($courseid);
         $PAGE->set_context($context);
         // Validate and normalize parameters.
-        $params = self::validate_parameters(self::section_refresh_parameters(),
-            array('courseid' => $courseid, 'sectionid' => $sectionid, 'sectionreturn' => $sectionreturn));
+        $params = self::validate_parameters(
+            self::section_refresh_parameters(),
+            ['courseid' => $courseid, 'sectionid' => $sectionid, 'sectionreturn' => $sectionreturn]
+        );
         $courseid = $params['courseid'];
         $sectionid = $params['sectionid'];
         $sectionreturn = $params['sectionreturn'];
@@ -249,4 +245,72 @@ trait set_section_options {
     }
 
 
+    /**
+     * Parameters for function get_videotime_instace_parameters()
+     */
+    public static function get_videotime_instace_parameters() {
+        return new external_function_parameters(
+            [
+                'cmid' => new external_value(PARAM_INT, 'course module', VALUE_REQUIRED),
+            ]
+        );
+    }
+
+    /**
+     * Get the videotime instance.
+     *
+     * @param int $cmid cm id.
+     * @return array $data videotime instance data.
+     */
+    public static function get_videotime_instace($cmid) {
+        global $CFG, $PAGE;
+        $data = [];
+        if (file_exists($CFG->dirroot . "/mod/videotime/lib.php")) {
+            require_once($CFG->dirroot . "/mod/videotime/classes/videotime_instance.php");
+            require_once($CFG->dirroot . "/mod/videotime/lib.php");
+            $params = self::validate_parameters(
+                self::get_videotime_instace_parameters(),
+                ['cmid' => $cmid]
+            );
+            $cmid = $params['cmid'];
+            $cm = get_coursemodule_from_id('videotime', $cmid, 0, false, MUST_EXIST);
+            $context = context_course::instance($cm->course);
+            $PAGE->set_context($context);
+            $moduleinstance = \mod_videotime\videotime_instance::instance_by_id($cm->instance);
+            $record = $moduleinstance->to_record();
+            $data = [
+                'instance' => json_encode($record),
+                'cmid' => $cm->id,
+                'haspro' => videotime_has_pro(),
+                'interval' => $record->saveinterval ?? 5,
+                'plugins' => file_exists($CFG->dirroot . '/mod/videotime/plugin/pro/templates/plugins.mustache'),
+                'toast' => file_exists($CFG->dirroot . '/lib/amd/src/toast.js'),
+                'video_description' => $record->video_description,
+                'templatename' => 'videotimeplugin_vimeo/video_embed',
+                'playertype' => 'vimeo',
+            ];
+
+            if (
+                empty(get_config('videotimeplugin_vimeo', 'enabled'))
+                || !mod_videotime_get_vimeo_id_from_link($moduleinstance->vimeo_url)
+            ) {
+                $videojs = true;
+                $mimetype = resourcelib_guess_url_mimetype($moduleinstance->vimeo_url);
+                $data = array_merge($data, [
+                    'mimetype' => $mimetype,
+                    'video' => !file_mimetype_in_typegroup($mimetype, ['web_audio']),
+                    'templatename' => 'videotimeplugin_videojs/video_embed',
+                    'playertype' => 'videojs',
+                ]);
+            }
+        }
+        return json_encode($data);
+    }
+
+    /**
+     * Return structure for get_videotime_instace_returns()
+     */
+    public static function get_videotime_instace_returns() {
+        return new external_value(PARAM_RAW, 'Additional data for javascript (JSON-encoded string)');
+    }
 }

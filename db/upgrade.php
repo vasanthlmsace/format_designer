@@ -51,7 +51,6 @@ function xmldb_format_designer_upgrade($oldversion) {
     // Put any upgrade step following this.
 
     if ($oldversion < 2022020301) {
-
         $table = new xmldb_table('format_designer_options');
 
         // Adding fields to table designer options.
@@ -67,12 +66,54 @@ function xmldb_format_designer_upgrade($oldversion) {
         // Conditionally launch create table for designer activity customfields.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
-            if (format_designer_has_pro()) {
-                local_designer_update_prodata();
+            if (\format_designer\helper::has_pro()) {
+                \local_designer\helper::update_prodata();
             }
         }
 
         upgrade_plugin_savepoint(true, 2022020301, 'format', 'designer');
+    }
+
+    if ($oldversion < 2023040601) {
+        // Create start date.
+        $fields = ['enrolmentstartdate', 'enrolmentenddate', 'coursecompletiondate', 'courseduedate'];
+        [$insql, $inparams] = $DB->get_in_or_equal($fields, SQL_PARAMS_NAMED, 'time');
+        $sql = "SELECT * FROM {course_format_options} cf WHERE cf.name $insql";
+        $timerecords = $DB->get_records_sql($sql, $inparams);
+
+        $timemanagement = [];
+        foreach ($timerecords as $fieldid => $record) {
+            if ($record->value) {
+                $timemanagement[$record->courseid][] = $record->name;
+            }
+        }
+
+        foreach ($timemanagement as $courseid => $elements) {
+            $record = [
+                'courseid' => $courseid,
+                'format' => 'designer',
+                'name' => 'timemanagement',
+                'sectionid' => 0,
+            ];
+
+            if (!$DB->record_exists('course_format_options', $record)) {
+                $record['value'] = json_encode($elements);
+                $DB->insert_record('course_format_options', $record);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2023040601, 'format', 'designer');
+    }
+
+    if ($oldversion < 2024073000) {
+        $deletesql = <<<EOF
+            SELECT fdo.id AS optionid
+                FROM {format_designer_options} fdo
+                LEFT JOIN {course_modules} cm ON cm.id = fdo.cmid
+                WHERE cm.id IS NULL
+        EOF;
+        $DB->delete_records_subquery('format_designer_options', 'id', 'optionid', $deletesql);
+        upgrade_plugin_savepoint(true, 2024073000, 'format', 'designer');
     }
 
     return true;

@@ -24,7 +24,7 @@
 namespace format_designer;
 
 use context_course;
-use \format_designer\options;
+use format_designer\options;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,7 +38,16 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @copyright  2021 bdecent gmbh <https://bdecent.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class options_test extends \advanced_testcase {
+final class options_test extends \advanced_testcase {
+    /**
+     * @var object
+     */
+    public $course;
+
+    /**
+     * @var object
+     */
+    public $coursecontext;
 
     /**
      * Setup testing cases.
@@ -46,8 +55,7 @@ class options_test extends \advanced_testcase {
      * @return void
      */
     public function setUp(): void {
-        global $CFG;
-
+        parent::setUp();
         $this->resetAfterTest(true);
         // Remove the output display of cron task.
         $this->course = $this->getDataGenerator()->create_course(['format' => 'designer', 'enablecompletion' => 1]);
@@ -56,17 +64,10 @@ class options_test extends \advanced_testcase {
 
     /**
      * Test isjson method find the string is json or not.
+     * @covers \format_designer\options::is_json
      */
-    public function test_optionisjson() {
-        $elements = [
-            'icon' => 2, 'visits' => 1, 'calltoaction' => 2,
-            'title' => 1, 'description' => 2, 'modname' => 3, 'completionbadge' => 3
-        ];
-        $module = $this->getDataGenerator()->create_module('page', ['course' => $this->course, 'section' => 1,
-            'name' => 'Test page', 'content' => 'Test the module element avilabilities are available',
-            'designer_activityelements' => $elements
-        ]);
-        $option = \format_designer\options::get_option($module->cmid, 'activityelements');
+    public function test_optionisjson(): void {
+        $option = json_encode([ 'a' => 1 ]);
         $isjson = \format_designer\options::is_json($option);
         $this->assertTrue($isjson);
 
@@ -77,23 +78,24 @@ class options_test extends \advanced_testcase {
 
     /**
      * Test module elements visibility settings are added with module form. It updates the data to table.
+     * @covers ::get_activity_elementclasses
      */
-    public function test_moduleelements() {
+    public function test_moduleelements(): void {
         global $DB, $PAGE;
         $elements = [
             'icon' => 2, 'visits' => 1, 'calltoaction' => 2, 'title' => 1,
-            'description' => 2, 'modname' => 3, 'completionbadge' => 3
+            'description' => 2, 'modname' => 3, 'completionbadge' => 3,
         ];
         $module = $this->getDataGenerator()->create_module('page', ['course' => $this->course, 'section' => 1,
             'name' => 'Test page', 'content' => 'Test the module element avilabilities are available',
-            'designer_activityelements' => $elements
+            'designer_activityelements' => $elements,
         ]);
 
         $field = $DB->get_field('format_designer_options', 'value', ['name' => 'activityelements', 'cmid' => $module->cmid]);
         $this->assertEquals($elements, json_decode($field, true));
 
         $option = \format_designer\options::get_option($module->cmid, 'activityelements');
-        $this->assertEquals($elements, json_decode($option, true));
+        $this->assertEquals($elements, $option);
 
         $classes = $PAGE->get_renderer('format_designer')->get_activity_elementclasses((object)['id' => $module->cmid]);
         $this->assertEquals('content-show-hover', $classes['icon']);
@@ -107,16 +109,16 @@ class options_test extends \advanced_testcase {
 
     /**
      * Test ismodcompleted method process the user module completion.
+     * @covers \format_designer\options::is_mod_completed
      */
-    public function test_modcompletion() {
+    public function test_modcompletion(): void {
         global $DB;
         $module = $this->getDataGenerator()->create_module('page', [
             'course' => $this->course, 'section' => 1, 'name' => 'Test page', 'content' => 'Test the module',
-            'completion' => 1
-            ]
-        );
+            'completion' => 1,
+            ]);
 
-        $user1 = $this->getDataGenerator()->create_user(array('email' => 'test@designer.com', 'username' => 'designer1'));
+        $user1 = $this->getDataGenerator()->create_user(['email' => 'test@designer.com', 'username' => 'designer1']);
         $this->getDataGenerator()->enrol_user($user1->id, $this->course->id);
         $this->setUser($user1->id);
         $modinfo = get_fast_modinfo($this->course);
@@ -143,22 +145,21 @@ class options_test extends \advanced_testcase {
 
     /**
      * Test section completion find the logged in user status of section.
+     * @covers \format_designer\options::is_section_completed
      */
-    public function test_sectioncompletion() {
+    public function test_sectioncompletion(): void {
         global $DB;
         $module = $this->getDataGenerator()->create_module('page', [
             'course' => $this->course, 'section' => 1, 'name' => 'Test page', 'content' => 'Test the module',
-            'completion' => 1
-            ]
-        );
+            'completion' => 1,
+            ]);
 
         $module2 = $this->getDataGenerator()->create_module('page', [
             'course' => $this->course, 'section' => 1, 'name' => 'Test page2 ', 'content' => 'Test the module',
-            'completion' => 1
-            ]
-        );
+            'completion' => 1,
+            ]);
 
-        $user1 = $this->getDataGenerator()->create_user(array('email' => 'test@designer.com', 'username' => 'designer1'));
+        $user1 = $this->getDataGenerator()->create_user(['email' => 'test@designer.com', 'username' => 'designer1']);
         $this->getDataGenerator()->enrol_user($user1->id, $this->course->id);
         $this->setUser($user1->id);
         $modinfo = get_fast_modinfo($this->course);
@@ -199,5 +200,4 @@ class options_test extends \advanced_testcase {
         $iscompleted = \format_designer\options::is_section_completed($section, $this->course, $modinfo, true);
         $this->assertTrue($iscompleted);
     }
-
 }

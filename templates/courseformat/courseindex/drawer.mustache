@@ -15,20 +15,23 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_designer/section_layout_cards
+    @template core_courseformat/local/courseindex/drawer
 
-    Displays the course module card layout
+    This template renders the course index drawer with the placeholder.
+
+    The code from this file is just an stub as the final code will come from
+    the new layouts for Moodle 4.0.
 
     Example context (json):
-    {
-        "reactionurl_dislike": "http://moodleurl/course/format/designer/renderer.php"
-    }
+    {}
 }}
-{{<format_designer/section_layout}}
-    {{$content}}
-        {{^sectionheader}}
-            {{> format_designer/section_content_cards}}
-            {{{cmcontrol}}}
-        {{/sectionheader}}
-    {{/content}}
-{{/format_designer/section_layout}}
+<nav id="courseindex" class="courseindex">
+    <div id="courseindex-content">
+        {{> format_designer/courseformat/courseindex/placeholders }}
+    </div>
+</nav>
+{{#js}}
+require(['core_courseformat/local/courseindex/drawer'], function(component) {
+    component.init('courseindex');
+});
+{{/js}}
