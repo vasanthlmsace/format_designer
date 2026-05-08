@@ -39,7 +39,6 @@ define(['jquery', 'core/fragment', 'core/templates', 'core/loadingicon', 'core/a
         }
     });
 
-
     /**
      * Control designer format action
      * @param {int} courseId
@@ -159,8 +158,8 @@ define(['jquery', 'core/fragment', 'core/templates', 'core/loadingicon', 'core/a
         let moduleHandler = document.querySelector(moduleid + " .aalink");
         if (moduleHandler.getAttribute('onclick') || document.querySelector(moduleid).classList.contains('popmodule')) {
             event.preventDefault();
-            var linode = event.target.closest('li.activity');
-            linode.querySelector('a[href]').click();
+            var li = event.target.closest('li.activity');
+            li.querySelector('a[href]').click();
         } else {
             var card = event.target.closest("[data-action=go-to-url]");
             let modurl = card.getAttribute('data-url');
